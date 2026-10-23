@@ -1,7 +1,7 @@
 # Kervan — Oyun Tasarım Dokümanı (GDD) v0.1
 
 > Çalışma adı: **Kervan**. Nimble Quest tarzı snake + otomatik savaş + roguelite meta ilerleme.
-> Platform: Web + Masaüstü (Mac / Windows / Linux). Tarih: 2026-10-18, son güncelleme 2026-10-23 (F1).
+> Platform: Web + Masaüstü (Mac / Windows / Linux). Tarih: 2026-10-18, son güncelleme 2026-10-23 (F2).
 
 ---
 
@@ -56,7 +56,7 @@ Saldırılar otomatiktir; her kahraman kendi menzilindeki en yakın düşmanı h
 | Rahip | Destek | 40 | 3 | 1.0 sn | 3 | Her 3 sn tüm kafileye +3 HP | 500 altın |
 | Barbar | Yakın dövüş, alan | 75 | 14 | 1.1 sn | 1 | Komşu tüm düşmanlara vurur | 800 altın |
 
-**Tur içi seviye:** Öldürmeler ortak XP verir. Her seviye: kafiledeki tüm kahramanlara +%8 hasar, +%8 maks. HP. Seviye eşiği: `20 × 1.35^seviye`.
+**Tur içi seviye:** Öldürmeler ortak XP verir (düşmanın bütçe maliyeti kadar). Her seviye: kafiledeki tüm kahramanlara +%8 hasar, +%8 maks. HP. Seviye eşiği: `20 × 1.35^seviye`. Seviye atlayınca maks. HP artışı mevcut HP'ye de eklenir; sonradan katılan kahramanlar güncel bonusla gelir.
 
 **Aynı kahramandan birden fazla** bulunabilir (kafile kompozisyonu stratejisi).
 
@@ -99,7 +99,7 @@ Düşmanlar da ızgarada, kendi tick hızlarıyla hareket eder. Yakın dövüş 
 | Güçlendirme | %6 | Haritada 10 sn kalır |
 | Kahraman jetonu | %1.5 | + her dalga sonunda 1 garanti |
 
-Ganimet 10 sn sonra yanıp sönüp kaybolur. Lider üzerinden geçince toplanır.
+Düşman başına tek zar atılır, eşikler tablodaki sırayla kümülatiftir (en fazla bir ganimet). Ganimet 10 sn sonra kaybolur (son 3 sn yanıp söner); dalga sonu garantili jetonun süresi dolmaz. Yalnızca lider üzerinden geçince toplar.
 
 **Güçlendirmeler (süre 8 sn)**
 
@@ -108,7 +108,7 @@ Ganimet 10 sn sonra yanıp sönüp kaybolur. Lider üzerinden geçince toplanır
 | Öfke | Tüm hasar ×2 |
 | Kalkan | Hasar alınmaz |
 | Hız | Tick 120 ms |
-| Mıknatıs | 5 hücre içindeki ganimet çekilir |
+| Mıknatıs | Liderin 5 hücre çevresindeki ganimet toplanır (kahraman jetonu hariç) |
 | Bomba | Anında: ekrandaki tüm düşmanlara 30 hasar |
 
 **Kahraman jetonu:** Açılmış kahramanlardan rastgele biri; toplanınca kafilenin sonuna eklenir.
@@ -201,7 +201,7 @@ kervan/
 |---|---|---|
 | ✅ **F0 İskelet** | Vite + Phaser + TS kurulum, ızgara, kafile hareketi, girdi tamponu, duvar/kuyruk çarpışması, geçici çizimler | Snake oynanıyor |
 | ✅ **F1 Savaş** | Kahraman otomatik saldırıları, mermiler, 4 düşman tipi + yapay zekâ, dalga sistemi, HP/ölüm, lider devri | 5 dalga hayatta kalınabiliyor |
-| **F2 Ganimet** | Altın, güçlendirmeler, kahraman jetonu, tur içi seviye | Kafile büyüyor, tur anlamlı |
+| ✅ **F2 Ganimet** | Altın, güçlendirmeler, kahraman jetonu, tur içi seviye | Kafile büyüyor, tur anlamlı |
 | **F3 Meta** | Menüler, kahraman seçimi, dükkan, kayıt, oyun sonu ekranı, mini boss | Turlar arası ilerleme var |
 | **F4 His** | Parçacıklar, sarsıntı, hasar sayıları, sesler, gamepad, denge turu | Oynaması keyifli |
 | **F5 Paketleme** | Tauri, CI derlemeleri, web yayını | 3 işletim sisteminde indirilebilir |

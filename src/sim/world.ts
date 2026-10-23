@@ -5,7 +5,8 @@ import { updateEnemies } from './enemies';
 import { add, DIR_VEC, type Dir, eq, isWall } from './grid';
 import { InputQueue } from './inputQueue';
 import { createRng } from './rng';
-import { endGame, enemyAt, isFree, makeHero, spawnPickup } from './state';
+import { collect, spawnHeroToken, updateLoot } from './loot';
+import { endGame, enemyAt, isFree, makeHero } from './state';
 import type { Enemy, World, WorldEvent } from './types';
 import { updateWaves } from './waves';
 
@@ -22,7 +23,9 @@ export function createWorld({ seed = Date.now(), waves = true }: WorldOptions = 
     party: [],
     enemies: [],
     projectiles: [],
-    pickup: null,
+    loot: [],
+    powers: {},
+    stats: { gold: 0, gems: 0, kills: 0, xp: 0, level: 0 },
     dir: 'right',
     input: new InputQueue(),
     tickMs: BASE_TICK_MS,
@@ -39,7 +42,7 @@ export function createWorld({ seed = Date.now(), waves = true }: WorldOptions = 
     events: [],
   };
   w.party.push(makeHero(w, 'knight', { x: Math.floor(GRID_W / 2) - 4, y: Math.floor(GRID_H / 2) }));
-  spawnPickup(w, 'archer');
+  spawnHeroToken(w, 'archer');
   w.events.length = 0;
   return w;
 }
@@ -80,6 +83,7 @@ function simStep(w: World, dt: number) {
   updateEnemies(w, dt);
   if (!w.alive) return;
   w.enemies = w.enemies.filter((e) => e.hp > 0);
+  updateLoot(w, dt);
   if (w.wavesEnabled) updateWaves(w, dt);
 }
 
@@ -96,7 +100,8 @@ function moveTick(w: World) {
     return;
   }
 
-  const grows = w.pickup !== null && eq(w.pickup.pos, target);
+  const token = w.loot.find((l) => l.type === 'hero' && eq(l.pos, target));
+  const grows = token?.type === 'hero';
   // Kuyruk ucu bu tick'te boşalacağı için, büyümüyorsak çarpışmaya dahil değil.
   const blockers = grows ? w.party : w.party.slice(0, -1);
   if (blockers.some((h) => eq(h.pos, target))) return endGame(w, 'self');
@@ -108,10 +113,10 @@ function moveTick(w: World) {
   });
   w.events.push({ type: 'moved' });
 
-  if (grows && w.pickup) {
-    const hero = makeHero(w, w.pickup.kind, old[old.length - 1]);
+  for (const l of w.loot.filter((l) => eq(l.pos, target))) collect(w, l);
+  if (token?.type === 'hero') {
+    const hero = makeHero(w, token.hero, old[old.length - 1]);
     w.party.push(hero);
-    w.pickup = null;
     w.events.push({ type: 'recruited', hero });
   }
 }

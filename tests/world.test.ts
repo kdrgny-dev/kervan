@@ -97,13 +97,13 @@ describe('world', () => {
       { x: 5, y: 5 },
       { x: 4, y: 5 },
     ]);
-    w.pickup = { pos: { x: 6, y: 5 }, kind: 'archer' };
+    w.loot = [{ id: 999, type: 'hero', hero: 'archer', pos: { x: 6, y: 5 }, expiresAt: Infinity }];
     const events = tick(w);
     expect(w.party).toHaveLength(3);
     expect(w.party[2]).toMatchObject({ kind: 'archer', pos: { x: 4, y: 5 } });
     expect(events.some((e) => e.type === 'recruited')).toBe(true);
     expect(w.party[2].hp).toBe(35);
-    expect(w.pickup).toBeNull();
+    expect(w.loot).toHaveLength(0);
   });
 
   it('stops simulating after death', () => {
@@ -117,6 +117,6 @@ describe('world', () => {
   it('is deterministic for the same seed', () => {
     const a = createWorld({ seed: 42 });
     const b = createWorld({ seed: 42 });
-    expect(a.pickup).toEqual(b.pickup);
+    expect(a.loot).toEqual(b.loot);
   });
 });

@@ -3,6 +3,7 @@ import { CELL, GRID_H, GRID_W } from '../config';
 import { SPAWN_WARN_MS } from '../data/balance';
 import { ENEMIES } from '../data/enemies';
 import { HEROES } from '../data/heroes';
+import { LOOT_BLINK_MS, POWERS, type PowerKind, score, xpToNext } from '../data/loot';
 import { bindControls } from '../input/controls';
 import { UnitView } from '../render/UnitView';
 import { isWall, type Vec } from '../sim/grid';
@@ -10,6 +11,7 @@ import {
   createWorld,
   enemyAlpha,
   type GameOverReason,
+  type Loot,
   type Projectile,
   stepWorld,
   tickAlpha,
@@ -24,6 +26,9 @@ const COLORS = {
   wall: 0x4a3f36,
   wallTop: 0x5e5145,
   leader: 0xfff3c4,
+  shield: 0x5ab8f0,
+  gold: 0xf0c23b,
+  gem: 0x5ef0e0,
   enemyOutline: 0x7a1414,
   text: '#f4efe6',
 };
@@ -44,9 +49,12 @@ export class GameScene extends Phaser.Scene {
   private heroViews = new Map<number, UnitView>();
   private enemyViews = new Map<number, UnitView>();
   private projectileViews = new Map<number, Phaser.GameObjects.Shape>();
-  private pickupView!: Phaser.GameObjects.Container;
+  private lootViews = new Map<number, Phaser.GameObjects.Container>();
   private markers!: Phaser.GameObjects.Graphics;
   private hud!: Phaser.GameObjects.Text;
+  private wallet!: Phaser.GameObjects.Text;
+  private powerText!: Phaser.GameObjects.Text;
+  private xpBar!: Phaser.GameObjects.Graphics;
   private banner!: Phaser.GameObjects.Text;
   private overlay!: Phaser.GameObjects.Container;
 
@@ -57,8 +65,17 @@ export class GameScene extends Phaser.Scene {
   create() {
     this.drawArena();
     this.markers = this.add.graphics().setDepth(2);
-    this.pickupView = this.add.container(0, 0).setDepth(5);
     this.hud = this.add.text(16, 10, '', { fontFamily: FONT, fontSize: '22px', color: COLORS.text }).setDepth(40);
+    this.wallet = this.add
+      .text(this.scale.width - 16, 10, '', { fontFamily: FONT, fontSize: '22px', color: COLORS.text })
+      .setOrigin(1, 0)
+      .setDepth(40);
+    this.powerText = this.add
+      .text(this.scale.width / 2, this.scale.height - 12, '', { fontFamily: FONT, fontSize: '20px', color: COLORS.text, fontStyle: 'bold' })
+      .setOrigin(0.5, 1)
+      .setDepth(40)
+      .setStroke('#14121c', 4);
+    this.xpBar = this.add.graphics().setDepth(40);
     this.banner = this.add
       .text(this.scale.width / 2, 120, '', { fontFamily: FONT, fontSize: '44px', color: COLORS.text, fontStyle: 'bold' })
       .setOrigin(0.5)
@@ -83,27 +100,40 @@ export class GameScene extends Phaser.Scene {
     this.renderParty();
     this.renderEnemies();
     this.renderProjectiles();
-    this.renderPickup();
+    this.renderLoot();
     this.renderMarkers();
     this.renderHud();
   }
 
   private restart() {
-    for (const v of [...this.heroViews.values(), ...this.enemyViews.values(), ...this.projectileViews.values()]) v.destroy();
-    this.heroViews.clear();
-    this.enemyViews.clear();
-    this.projectileViews.clear();
+    const views = [this.heroViews, this.enemyViews, this.projectileViews, this.lootViews];
+    for (const map of views) {
+      for (const v of map.values()) v.destroy();
+      map.clear();
+    }
     this.world = createWorld();
     this.overlay.setVisible(false);
-    this.refreshPickup();
     this.showBanner('Hazırlan!');
   }
 
   private handle(e: WorldEvent) {
     switch (e.type) {
-      case 'recruited':
-      case 'pickupSpawned':
-        this.refreshPickup();
+      case 'lootCollected':
+        this.collectFx(e.id, e.loot);
+        break;
+      case 'lootExpired':
+        this.removeLoot(e.id, false);
+        break;
+      case 'powerStart':
+        this.showBanner(POWERS[e.power].name + '!');
+        break;
+      case 'bomb':
+        this.cameras.main.flash(180, 255, 240, 200);
+        this.cameras.main.shake(220, 0.01);
+        break;
+      case 'levelUp':
+        this.showBanner(`Seviye ${e.level + 1}!`);
+        for (const v of this.heroViews.values()) v.flash(0xfff3c4, 160);
         break;
       case 'heroHit':
         this.heroViews.get(e.id)?.flash(0xff5a4a);
@@ -176,7 +206,8 @@ export class GameScene extends Phaser.Scene {
       const bob = w.alive ? Math.abs(Math.sin(t / 90 + i * 0.7)) * -4 : 0;
       view.setPosition(px(p.x), px(p.y) + bob);
       view.setDepth(i === 0 ? 11 : 10);
-      view.setOutline(i === 0 ? 4 : 3, i === 0 ? COLORS.leader : 0x14121c);
+      const ring = w.powers.shield ? COLORS.shield : i === 0 ? COLORS.leader : 0x14121c;
+      view.setOutline(i === 0 || w.powers.shield ? 4 : 3, ring);
       view.setAlpha(i === 0 && w.bumpInvuln > 0 && Math.floor(t / 60) % 2 ? 0.5 : 1);
       view.setHp(hero.hp / hero.maxHp);
     });
@@ -245,22 +276,72 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
-  private refreshPickup() {
-    this.pickupView.removeAll(true);
-    const pk = this.world.pickup;
-    if (!pk) return;
-    const def = HEROES[pk.kind];
-    const ring = this.add.circle(0, 0, CELL * 0.42, COLORS.leader, 0.25);
-    const token = new UnitView(this, { color: def.color, glyph: def.glyph, size: CELL - 20, shape: 'square' });
-    this.pickupView.add([ring, token]);
+  private makeLootView(loot: Loot) {
+    const c = this.add.container(0, 0).setDepth(5);
+    switch (loot.type) {
+      case 'coin':
+        c.add([this.add.circle(0, 0, 9, COLORS.gold).setStrokeStyle(3, 0x8a6a10), this.add.circle(-3, -3, 3, 0xfff3c4)]);
+        break;
+      case 'gem':
+        c.add(this.add.rectangle(0, 0, 15, 15, COLORS.gem).setStrokeStyle(3, 0x1d6b66).setRotation(Math.PI / 4));
+        break;
+      case 'power': {
+        const def = POWERS[loot.power];
+        c.add([
+          this.add.circle(0, 0, 15, def.color).setStrokeStyle(3, 0xf4efe6),
+          this.add.text(0, 0, def.glyph, { fontFamily: FONT, fontSize: '16px', color: '#ffffff', fontStyle: 'bold' }).setOrigin(0.5),
+        ]);
+        break;
+      }
+      case 'hero': {
+        const def = HEROES[loot.hero];
+        c.add([
+          this.add.circle(0, 0, CELL * 0.42, COLORS.leader, 0.25),
+          new UnitView(this, { color: def.color, glyph: def.glyph, size: CELL - 20, shape: 'square' }),
+        ]);
+        break;
+      }
+    }
+    this.tweens.add({ targets: c, scale: { from: 0, to: 1 }, duration: 180, ease: 'Back.Out' });
+    return c;
   }
 
-  private renderPickup() {
-    const pk = this.world.pickup;
-    this.pickupView.setVisible(!!pk);
-    if (!pk) return;
-    const float = Math.sin(this.time.now / 250) * 3;
-    this.pickupView.setPosition(px(pk.pos.x), px(pk.pos.y) + float);
+  private renderLoot() {
+    const w = this.world;
+    const t = this.time.now;
+    for (const loot of w.loot) {
+      let view = this.lootViews.get(loot.id);
+      if (!view) {
+        view = this.makeLootView(loot);
+        this.lootViews.set(loot.id, view);
+      }
+      const float = Math.sin(t / 250 + loot.id) * 3;
+      view.setPosition(px(loot.pos.x), px(loot.pos.y) + float);
+      const blinking = loot.expiresAt - w.time < LOOT_BLINK_MS;
+      view.setAlpha(blinking && Math.floor(t / 120) % 2 ? 0.3 : 1);
+    }
+  }
+
+  private removeLoot(id: number, collected: boolean) {
+    const view = this.lootViews.get(id);
+    if (!view) return;
+    this.lootViews.delete(id);
+    this.tweens.killTweensOf(view);
+    this.tweens.add({
+      targets: view,
+      y: collected ? view.y - 24 : view.y,
+      scale: collected ? 1.4 : 0,
+      alpha: 0,
+      duration: collected ? 220 : 160,
+      onComplete: () => view.destroy(),
+    });
+  }
+
+  private collectFx(id: number, loot: Loot) {
+    const view = this.lootViews.get(id);
+    if (view && loot.type === 'coin') this.popText(view.x, view.y, `+${loot.value}`, '#f0c23b');
+    if (view && loot.type === 'gem') this.popText(view.x, view.y, '+1 mücevher', '#5ef0e0');
+    this.removeLoot(id, true);
   }
 
   private renderHud() {
@@ -270,6 +351,15 @@ export class GameScene extends Phaser.Scene {
     if (w.wave.phase === 'active') parts.push(`Düşman ${foes}`);
     else parts.push(`Sonraki dalga ${Math.ceil(w.wave.timer / 1000)}`);
     this.hud.setText(parts.join('    '));
+    this.wallet.setText(`Altın ${w.stats.gold}    Mücevher ${w.stats.gems}    Seviye ${w.stats.level + 1}`);
+
+    const active = (Object.keys(w.powers) as PowerKind[]).map((k) => `${POWERS[k].name} ${Math.ceil((w.powers[k] ?? 0) / 1000)}`);
+    this.powerText.setText(active.join('   '));
+
+    const barW = 220;
+    const x = this.scale.width / 2 - barW / 2;
+    const ratio = w.stats.xp / xpToNext(w.stats.level);
+    this.xpBar.clear().fillStyle(0x000000, 0.5).fillRect(x, 16, barW, 8).fillStyle(0xfff3c4).fillRect(x, 16, barW * ratio, 8);
   }
 
   private killView(map: Map<number, UnitView>, id: number) {
@@ -280,9 +370,12 @@ export class GameScene extends Phaser.Scene {
   }
 
   private floatText(anchor: UnitView | undefined, text: string, color: string) {
-    if (!anchor) return;
+    if (anchor) this.popText(anchor.x + Phaser.Math.Between(-8, 8), anchor.y - 20, text, color);
+  }
+
+  private popText(x: number, y: number, text: string, color: string) {
     const t = this.add
-      .text(anchor.x + Phaser.Math.Between(-8, 8), anchor.y - 20, text, { fontFamily: FONT, fontSize: '18px', color, fontStyle: 'bold' })
+      .text(x, y, text, { fontFamily: FONT, fontSize: '18px', color, fontStyle: 'bold' })
       .setOrigin(0.5)
       .setStroke('#14121c', 4)
       .setDepth(30);
@@ -341,8 +434,10 @@ export class GameScene extends Phaser.Scene {
     this.cameras.main.shake(180, 0.008);
     const why = { wall: 'Duvara çarptın', self: 'Kendi kuyruğuna çarptın', wiped: 'Kafile düştü' }[reason];
     (this.overlay.getByName('title') as Phaser.GameObjects.Text).setText(why);
+    const { stats, wave } = this.world;
+    const n = Math.max(wave.n, 1);
     (this.overlay.getByName('stats') as Phaser.GameObjects.Text).setText(
-      `Ulaşılan dalga: ${Math.max(this.world.wave.n, 1)}`,
+      `Dalga ${n}  ·  Öldürme ${stats.kills}  ·  Altın ${stats.gold}  ·  Skor ${score(n, stats.kills, stats.gold)}`,
     );
     this.overlay.setVisible(true);
   }

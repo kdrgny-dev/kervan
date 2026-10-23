@@ -1,11 +1,15 @@
 import { GRID_H, GRID_W } from '../config';
-import { HERO_KINDS, HEROES, type HeroKind } from '../data/heroes';
+import { HEROES, type HeroKind } from '../data/heroes';
+import { LEVEL_BONUS } from '../data/loot';
 import { eq, isWall, type Vec } from './grid';
-import { pick } from './rng';
 import type { GameOverReason, Hero, World } from './types';
 
+export const levelMult = (w: World) => 1 + LEVEL_BONUS * w.stats.level;
+
+export const scaledMaxHp = (w: World, kind: HeroKind) => Math.round(HEROES[kind].hp * levelMult(w));
+
 export function makeHero(w: World, kind: HeroKind, pos: Vec): Hero {
-  const hp = HEROES[kind].hp;
+  const hp = scaledMaxHp(w, kind);
   return { id: w.nextId++, kind, pos, prev: pos, hp, maxHp: hp, cooldown: 0, healCd: HEROES[kind].heal?.everyMs ?? 0 };
 }
 
@@ -24,13 +28,6 @@ export function freeCells(w: World, accept: (p: Vec) => boolean = () => true): V
     }
   }
   return out;
-}
-
-export function spawnPickup(w: World, kind?: HeroKind) {
-  const cells = freeCells(w);
-  if (cells.length === 0) return;
-  w.pickup = { pos: pick(w.rng, cells), kind: kind ?? pick(w.rng, HERO_KINDS) };
-  w.events.push({ type: 'pickupSpawned' });
 }
 
 export function endGame(w: World, reason: GameOverReason) {

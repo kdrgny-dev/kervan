@@ -11,7 +11,8 @@ import { ENEMIES, ENEMY_KINDS, type EnemyKind } from '../data/enemies';
 import { chebyshev, eq, type Vec } from './grid';
 import { spawnEnemy } from './enemies';
 import { pick } from './rng';
-import { freeCells, isFree, spawnPickup } from './state';
+import { hasHeroToken, spawnHeroToken } from './loot';
+import { freeCells, isFree } from './state';
 import type { PendingSpawn, World } from './types';
 
 const onEdgeRing = (p: Vec) => p.x === 1 || p.y === 1 || p.x === GRID_W - 2 || p.y === GRID_H - 2;
@@ -39,7 +40,7 @@ export function updateWaves(w: World, dt: number) {
     w.events.push({ type: 'waveCleared', n: s.n });
     s.phase = 'break';
     s.timer = WAVE_BREAK_MS;
-    if (!w.pickup) spawnPickup(w);
+    if (!hasHeroToken(w)) spawnHeroToken(w);
   }
 }
 

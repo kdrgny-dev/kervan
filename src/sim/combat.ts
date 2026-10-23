@@ -1,18 +1,22 @@
 import { HIT_RADIUS, PROJECTILE_SPEED, type ProjectileKind } from '../data/balance';
-import { HEROES } from '../data/heroes';
+import { HEROES, type HeroDef } from '../data/heroes';
+import { RAGE_MULT } from '../data/loot';
 import { chebyshev, type Vec } from './grid';
-import { endGame } from './state';
+import { onEnemyKilled } from './loot';
+import { endGame, levelMult } from './state';
 import type { Enemy, Hero, Projectile, World } from './types';
 
 export function damageEnemy(w: World, e: Enemy, dmg: number) {
   if (e.hp <= 0) return;
   e.hp -= dmg;
   w.events.push({ type: 'enemyHit', id: e.id, dmg });
-  if (e.hp <= 0) w.events.push({ type: 'enemyDied', id: e.id, pos: e.pos });
+  if (e.hp > 0) return;
+  w.events.push({ type: 'enemyDied', id: e.id, pos: e.pos });
+  onEnemyKilled(w, e);
 }
 
 export function damageHero(w: World, h: Hero, dmg: number) {
-  if (h.hp <= 0) return;
+  if (h.hp <= 0 || w.powers.shield) return;
   h.hp -= dmg;
   w.events.push({ type: 'heroHit', id: h.id, dmg });
   if (h.hp > 0) return;
@@ -21,6 +25,9 @@ export function damageHero(w: World, h: Hero, dmg: number) {
   w.events.push({ type: 'heroDied', id: h.id, pos: h.pos });
   if (w.party.length === 0) endGame(w, 'wiped');
 }
+
+export const heroDamage = (w: World, def: HeroDef) =>
+  Math.round(def.dmg * levelMult(w) * (w.powers.rage ? RAGE_MULT : 1));
 
 export function nearestEnemy(w: World, from: Vec, range: number): Enemy | undefined {
   let best: Enemy | undefined;
@@ -91,22 +98,23 @@ export function updateHeroes(w: World, dt: number) {
     const target = nearestEnemy(w, h.pos, def.range);
     if (!target) continue;
     h.cooldown = def.cooldownMs;
+    const dmg = heroDamage(w, def);
 
     switch (def.attack) {
       case 'melee':
-        damageEnemy(w, target, def.dmg);
+        damageEnemy(w, target, dmg);
         w.events.push({ type: 'slash', pos: target.pos });
         break;
       case 'cleave':
         for (const e of w.enemies) {
           if (e.hp > 0 && chebyshev(h.pos, e.pos) <= 1) {
-            damageEnemy(w, e, def.dmg);
+            damageEnemy(w, e, dmg);
             w.events.push({ type: 'slash', pos: e.pos });
           }
         }
         break;
       default:
-        fire(w, def.attack, 'hero', h.pos, target, def.dmg, def.splash);
+        fire(w, def.attack, 'hero', h.pos, target, dmg, def.splash);
     }
   }
 }

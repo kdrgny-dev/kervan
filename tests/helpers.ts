@@ -8,7 +8,7 @@ export const tick = (w: World, n = 1) => stepWorld(w, BASE_TICK_MS * n);
 export function arena(cells: Vec[], kinds: HeroKind[] = [], opts: { waves?: boolean; seed?: number } = {}) {
   const w = createWorld({ seed: opts.seed ?? 1, waves: opts.waves ?? false });
   w.party = cells.map((pos, i) => makeHero(w, kinds[i] ?? 'knight', pos));
-  w.pickup = null;
+  w.loot = [];
   return w;
 }
 

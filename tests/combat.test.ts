@@ -170,6 +170,6 @@ describe('waves', () => {
     expect(events).toContainEqual({ type: 'waveCleared', n: 1 });
     expect(w.wave.phase).toBe('break');
     expect(w.wave.timer).toBeCloseTo(WAVE_BREAK_MS, -2);
-    expect(w.pickup).not.toBeNull();
+    expect(w.loot.some((l) => l.type === 'hero')).toBe(true);
   });
 });
