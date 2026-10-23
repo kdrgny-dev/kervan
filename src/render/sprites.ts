@@ -11,6 +11,7 @@ export interface SpriteSet {
 
 /** Doku anahtarı → public/ altındaki dosya ve rasterleştirme boyutu (px). */
 const FILES: Record<string, { file: string; size: number }> = {
+  'knight.idle': { file: 'assets/knight_idle_1.svg', size: 96 },
   'knight.walk1': { file: 'assets/knight_walk_1.svg', size: 96 },
   'knight.walk2': { file: 'assets/knight_walk_2.svg', size: 96 },
   'knight.walk3': { file: 'assets/knight_walk_3.svg', size: 96 },
@@ -21,6 +22,10 @@ const FILES: Record<string, { file: string; size: number }> = {
   archer: { file: 'assets/archer.svg', size: 96 },
   mage: { file: 'assets/mage.svg', size: 96 },
   rogue: { file: 'assets/rogue.svg', size: 96 },
+  priest: { file: 'assets/priest_idle_1.svg', size: 96 },
+  bat: { file: 'assets/bat_idle_1.svg', size: 96 },
+  'tile.floor': { file: 'assets/tile_floor_1.svg', size: 96 },
+  'tile.wall': { file: 'assets/tile_wall.svg', size: 96 },
   slime: { file: 'assets/slime.svg', size: 96 },
   skeleton: { file: 'assets/skeleton.svg', size: 96 },
   goblin: { file: 'assets/goblin.svg', size: 96 },
@@ -29,7 +34,7 @@ const FILES: Record<string, { file: string; size: number }> = {
 
 export const HERO_SPRITES: Partial<Record<HeroKind, SpriteSet>> = {
   knight: {
-    idle: 'knight.walk1',
+    idle: 'knight.idle',
     walk: ['knight.walk1', 'knight.walk2', 'knight.walk3', 'knight.walk4'],
     attack: ['knight.attack1', 'knight.attack2'],
     hurt: 'knight.hurt',
@@ -37,14 +42,18 @@ export const HERO_SPRITES: Partial<Record<HeroKind, SpriteSet>> = {
   archer: { idle: 'archer' },
   mage: { idle: 'mage' },
   rogue: { idle: 'rogue' },
+  priest: { idle: 'priest' },
 };
 
 export const ENEMY_SPRITES: Partial<Record<EnemyKind, SpriteSet>> = {
   slime: { idle: 'slime' },
+  bat: { idle: 'bat' },
   skeleton: { idle: 'skeleton' },
   goblin: { idle: 'goblin' },
   slimeKing: { idle: 'slimeKing' },
 };
+
+export const TILE_TEXTURES = { floor: 'tile.floor', wall: 'tile.wall' };
 
 export function preloadSprites(scene: Phaser.Scene) {
   for (const [key, { file, size }] of Object.entries(FILES)) {
