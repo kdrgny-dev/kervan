@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { audio } from '../audio/audio';
 import { profile } from '../meta/profile';
+import { isFullscreen, toggleFullscreen } from '../platform';
 import type { Settings } from '../meta/save';
 import { bindPad } from '../input/gamepad';
 import { Button } from '../ui/Button';
@@ -42,11 +43,12 @@ export class SettingsScene extends Phaser.Scene {
       );
     });
 
-    const fs = () => (this.scale.isFullscreen ? 'Tam ekrandan çık' : 'Tam ekran');
-    const fsBtn: Button = new Button(this, width / 2, 180 + TOGGLES.length * 80, fs(), () => {
-      this.scale.toggleFullscreen();
-      this.time.delayedCall(100, () => fsBtn.setLabel(fs()));
+    const fsLabel = async () => ((await isFullscreen(this.scale)) ? 'Tam ekrandan çık (F11)' : 'Tam ekran (F11)');
+    const fsBtn: Button = new Button(this, width / 2, 180 + TOGGLES.length * 80, 'Tam ekran (F11)', async () => {
+      await toggleFullscreen(this.scale);
+      this.time.delayedCall(150, async () => fsBtn.setLabel(await fsLabel()));
     }, { width: 480 });
+    void fsLabel().then((l) => fsBtn.setLabel(l));
 
     new Button(this, width / 2, height - 70, 'Geri', () => this.scene.start('menu'), { width: 220 });
     this.input.keyboard?.on('keydown-ESC', () => this.scene.start('menu'));

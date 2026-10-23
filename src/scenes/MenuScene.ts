@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { HEROES } from '../data/heroes';
 import { profile } from '../meta/profile';
+import { isDesktop, quitApp } from '../platform';
 import { drawArena } from '../render/arena';
 import { HERO_SPRITES } from '../render/sprites';
 import { UnitView } from '../render/UnitView';
@@ -35,6 +36,7 @@ export class MenuScene extends Phaser.Scene {
     new Button(this, bx, 330, 'Oyna', () => this.scene.start('heroSelect'), { variant: 'primary', width: 300, height: 64, fontSize: 28 });
     new Button(this, bx, 410, 'Dükkan', () => this.scene.start('shop'), { width: 300 });
     new Button(this, bx, 480, 'Ayarlar', () => this.scene.start('settings'), { width: 300 });
+    if (isDesktop) new Button(this, bx, 550, 'Çıkış', () => void quitApp(), { width: 300 });
 
     this.drawBest(width - 300, 140);
     this.parade(height - 80);

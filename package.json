@@ -1,7 +1,7 @@
 {
   "name": "kervan",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,12 +9,17 @@
     "preview": "vite preview",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "balance": "vitest run --config vitest.balance.config.ts"
+    "balance": "vitest run --config vitest.balance.config.ts",
+    "tauri": "tauri",
+    "desktop:dev": "tauri dev",
+    "desktop:build": "tauri build"
   },
   "dependencies": {
+    "@tauri-apps/api": "^2.12.4",
     "phaser": "^3.90.0"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^2.12.4",
     "typescript": "^7.0.2",
     "vite": "^8.3.5",
     "vitest": "^5.0.5"

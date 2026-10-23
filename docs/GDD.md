@@ -1,7 +1,7 @@
 # Kervan — Oyun Tasarım Dokümanı (GDD) v0.1
 
 > Çalışma adı: **Kervan**. Nimble Quest tarzı snake + otomatik savaş + roguelite meta ilerleme.
-> Platform: Web + Masaüstü (Mac / Windows / Linux). Tarih: 2026-10-18, son güncelleme 2026-10-23 (F4).
+> Platform: Web + Masaüstü (Mac / Windows / Linux). Tarih: 2026-10-18, son güncelleme 2026-10-23 (F5).
 
 ---
 
@@ -195,7 +195,9 @@ kervan/
 
 **Dağıtım**
 - Web: `vite build` → statik dosyalar (itch.io HTML5 / Vercel).
-- Masaüstü: `tauri-action` ile etiket atılınca Mac (.dmg, Apple Silicon + Intel), Windows (.msi/.exe), Linux (.AppImage/.deb) otomatik derlenir, GitHub Releases'a yüklenir.
+- Masaüstü: `tauri-action` ile etiket atılınca Mac (.dmg, Apple Silicon + Intel), Windows (.msi/.exe), Linux (.AppImage/.deb) otomatik derlenir, taslak GitHub Release'e yüklenir; itch.io için web zip'i de eklenir (`.github/workflows/release.yml`).
+- Web: `main`'e her push'ta GitHub Pages'e yayın (`.github/workflows/web.yml`). Her push/PR'da test + tip kontrolü (`ci.yml`).
+- Masaüstüne özel: menüde Çıkış butonu, tam ekran pencere API'siyle (F11). Kimlik: `com.kdrgny.kervan`, pencere 1152 × 720 (en az 800 × 500).
 - İmzalama: başlangıçta imzasız; yayında Apple Developer ($99/yıl) + Windows sertifikası.
 
 ---
@@ -221,7 +223,7 @@ kervan/
 | ✅ **F2 Ganimet** | Altın, güçlendirmeler, kahraman jetonu, tur içi seviye | Kafile büyüyor, tur anlamlı |
 | ✅ **F3 Meta** | Menüler, kahraman seçimi, dükkan, kayıt, oyun sonu ekranı, mini boss | Turlar arası ilerleme var |
 | ✅ **F4 His** | Parçacıklar, sarsıntı, hasar sayıları, sesler, gamepad, denge turu | Oynaması keyifli |
-| **F5 Paketleme** | Tauri, CI derlemeleri, web yayını | 3 işletim sisteminde indirilebilir |
+| ✅ **F5 Paketleme** | Tauri, CI derlemeleri, web yayını | 3 işletim sisteminde indirilebilir |
 | **F6 Grafik** | Claude Design asset'lerinin manifest ile entegrasyonu | Nihai görünüm |
 
 F6 paralel yürüyebilir: grafik üretimi F0'dan itibaren başlayabilir.
