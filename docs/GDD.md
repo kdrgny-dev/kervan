@@ -1,7 +1,7 @@
 # Kervan — Oyun Tasarım Dokümanı (GDD) v0.1
 
 > Çalışma adı: **Kervan**. Nimble Quest tarzı snake + otomatik savaş + roguelite meta ilerleme.
-> Platform: Web + Masaüstü (Mac / Windows / Linux). Tarih: 2026-10-18, son güncelleme 2026-10-23 (F3).
+> Platform: Web + Masaüstü (Mac / Windows / Linux). Tarih: 2026-10-18, son güncelleme 2026-10-23 (F4).
 
 ---
 
@@ -35,7 +35,7 @@ Tur içi döngü: hareket et → düşman öldür → ganimet topla → kafile b
 | 180° dönüş | Yasak (yok sayılır) |
 | Klavye | Ok tuşları / WASD, `Esc` duraklat |
 | Mobil/dokunmatik | Kaydırma (swipe), min 24 px |
-| Gamepad | D-pad / sol çubuk (Faz 4) |
+| Gamepad | D-pad / sol çubuk: yön · A: onay/tekrar · B veya Start: duraklat/geri |
 
 **Çarpışma kuralları**
 - Duvar veya kendi kuyruğu → **oyun biter**.
@@ -52,9 +52,9 @@ Saldırılar otomatiktir; her kahraman kendi menzilindeki en yakın düşmanı h
 |---|---|---|---|---|---|---|---|
 | Şövalye | Yakın dövüş | 60 | 10 | 0.8 sn | 1 | — | Başlangıç |
 | Okçu | Menzilli tek hedef | 35 | 6 | 0.7 sn | 4 | Ok mermisi | Başlangıç |
-| Büyücü | Alan hasarı | 30 | 8 | 1.4 sn | 3 | Ateş topu, 1 hücre yarıçap | 300 altın |
-| Rahip | Destek | 40 | 3 | 1.0 sn | 3 | Her 3 sn tüm kafileye +3 HP | 500 altın |
-| Haydut | Hızlı yakın dövüş | 50 | 9 | 0.55 sn | 1 | %25 şansla x2 kritik vuruş | 800 altın |
+| Büyücü | Alan hasarı | 30 | 8 | 1.4 sn | 3 | Ateş topu, 1 hücre yarıçap | 200 altın |
+| Rahip | Destek | 40 | 3 | 1.0 sn | 3 | Her 3 sn tüm kafileye +3 HP | 350 altın |
+| Haydut | Hızlı yakın dövüş | 50 | 9 | 0.55 sn | 1 | %25 şansla x2 kritik vuruş | 500 altın |
 
 **Tur içi seviye:** Öldürmeler ortak XP verir (düşmanın bütçe maliyeti kadar). Her seviye: kafiledeki tüm kahramanlara +%8 hasar, +%8 maks. HP. Seviye eşiği: `20 × 1.35^seviye`. Seviye atlayınca maks. HP artışı mevcut HP'ye de eklenir; sonradan katılan kahramanlar güncel bonusla gelir.
 
@@ -72,13 +72,14 @@ Düşmanlar da ızgarada, kendi tick hızlarıyla hareket eder. Saldırı aralı
 | Yarasa | 8 | 4 | 200 ms | Hızlı, zikzak | 2 | 2 |
 | İskelet Okçu | 15 | 5 (mermi) | 350 ms | 4 hücre mesafe korur, ateş eder (2 sn) | 3 | 3 |
 | Goblin | 45 | 12 | 300 ms | Lideri kovalar, 3 hücreden yakında 2× hızlanır | 5 | 4 |
-| **Balçık Kralı** (mini boss) | 400 | 20 | 450 ms | 6 sn'de bir balçık çağırır (en fazla 4); 5 sn'de bir şok dalgası: 0.8 sn uyarı, 3 hücre içine 15 hasar. Ölünce 25 altın + 1 mücevher | — | Her 5. dalga |
+| **Balçık Kralı** (mini boss) | 260 (her sonraki boss +%50) | 20 | 450 ms | 6 sn'de bir balçık çağırır (en fazla 4); 5 sn'de bir şok dalgası: 0.8 sn uyarı, 3 hücre içine 10 hasar. Ölünce 25 altın + 1 mücevher | — | Her 5. dalga |
 
 ---
 
 ## 6. Dalga Sistemi
 
-- Dalga bütçesi: `6 + 6 × n` puan (ilk dalga 6 balçık). Bütçe, açık düşman tiplerinden rastgele harcanır.
+- Dalga bütçesi: `4 + 4n + ⌊n²/4⌋` puan (ilk dalga 4 balçık; başta yumuşak, sonra karesel artar).
+- Dalga temizleme ödülü: `5 + 2n` altın. Bütçe, açık düşman tiplerinden rastgele harcanır.
 - Düşmanlar harita kenarlarından doğar; doğmadan **1 sn önce** yer işareti gösterilir (haksız ölüm olmasın).
 - Kafileye 3 hücreden yakın yerde doğma yasak.
 - İlk dalga 2 sn sonra başlar. Başlangıçta haritada bir Okçu jetonu bulunur.
@@ -94,10 +95,10 @@ Düşmanlar da ızgarada, kendi tick hızlarıyla hareket eder. Saldırı aralı
 
 | Ganimet | Şans | Not |
 |---|---|---|
-| Altın | %70 | Değer: 1 (ork 3, boss 25) |
+| Altın | %70 | Değer: 1 (iskelet 2, goblin 3, boss 25) |
 | Mücevher | %2 | Nadir meta para birimi |
 | Güçlendirme | %6 | Haritada 10 sn kalır |
-| Kahraman jetonu | %1.5 | + her dalga sonunda 1 garanti |
+| Kahraman jetonu | %3 | + her dalga sonunda 1 garanti |
 
 Düşman başına tek zar atılır, eşikler tablodaki sırayla kümülatiftir (en fazla bir ganimet). Ganimet 10 sn sonra kaybolur (son 3 sn yanıp söner); dalga sonu garantili jetonun süresi dolmaz. Yalnızca lider üzerinden geçince toplar.
 
@@ -154,7 +155,9 @@ Düşman başına tek zar atılır, eşikler tablodaki sırayla kümülatiftir (
 - Hasar sayıları (kapatılabilir)
 - Kahramanlarda kod tabanlı animasyon: yürürken zıplama (squash & stretch), saldırıda ileri hamle, alınan hasarda kırmızı yanıp sönme
 - Ganimette hafif süzülme ve parıltı
-- Ses: saldırı, vuruş, toplama, seviye atlama, ölüm. Geçici sesler jsfxr ile üretilir.
+- Ses: tüm efektler ve müzik WebAudio ile kodda üretilir (dosya yok): `src/audio/`. Aynı efekt 40 ms içinde tekrar çalmaz. Müzik: La minör Am–F–C–G döngüsü, 112 BPM.
+- Parçacıklar: vuruş kıvılcımı, düşmana özel renkli ölüm bulutu, ganimet pırıltısı, seviye/boss konfetisi, lider ayak tozu.
+- Aynı anda en fazla 24 hasar sayısı (kritikler hariç).
 
 ---
 
@@ -197,7 +200,19 @@ kervan/
 
 ---
 
-## 12. Aşama Planı
+## 12. Denge Ölçümü
+
+`npm run balance` saf sim üzerinde açgözlü bir botla senaryo başına 40 tur oynatır. 2026-10-23 sonuçları (bot kaba; gerçek oyuncu daha iyi oynar):
+
+| Senaryo | Dalga p25/p50/p75 | Süre p50 | Ort. altın |
+|---|---|---|---|
+| Yeni oyuncu | 5/5/7 | 68 sn | 103 |
+| Orta (Sv3, Büyücü) | 6/9/12 | 112 sn | 268 |
+| Güçlü (hepsi Sv6 + perkler) | 14/19/24 | 352 sn | 964 |
+
+`tests/balance.test.ts` bu eğrinin kırılmasını yakalayan hızlı bir bekçidir.
+
+## 13. Aşama Planı
 
 | Faz | İçerik | Bitti sayılır |
 |---|---|---|
@@ -205,7 +220,7 @@ kervan/
 | ✅ **F1 Savaş** | Kahraman otomatik saldırıları, mermiler, 4 düşman tipi + yapay zekâ, dalga sistemi, HP/ölüm, lider devri | 5 dalga hayatta kalınabiliyor |
 | ✅ **F2 Ganimet** | Altın, güçlendirmeler, kahraman jetonu, tur içi seviye | Kafile büyüyor, tur anlamlı |
 | ✅ **F3 Meta** | Menüler, kahraman seçimi, dükkan, kayıt, oyun sonu ekranı, mini boss | Turlar arası ilerleme var |
-| **F4 His** | Parçacıklar, sarsıntı, hasar sayıları, sesler, gamepad, denge turu | Oynaması keyifli |
+| ✅ **F4 His** | Parçacıklar, sarsıntı, hasar sayıları, sesler, gamepad, denge turu | Oynaması keyifli |
 | **F5 Paketleme** | Tauri, CI derlemeleri, web yayını | 3 işletim sisteminde indirilebilir |
 | **F6 Grafik** | Claude Design asset'lerinin manifest ile entegrasyonu | Nihai görünüm |
 
@@ -213,7 +228,7 @@ F6 paralel yürüyebilir: grafik üretimi F0'dan itibaren başlayabilir.
 
 ---
 
-## 13. Asset Listesi (Claude Design için)
+## 14. Asset Listesi (Claude Design için)
 
 **Tarz önerisi:** Düz vektör (flat), kalın koyu kontur (3 px), sınırlı palet (~16 renk), yukarıdan 3/4 bakış, sevimli/chibi oranlar (büyük kafa). Animasyon kodla yapılacağı için **her karakter tek kare** yeterli. Sağa bakan çizilir; sola bakış yatay aynalama ile.
 
@@ -258,7 +273,7 @@ F6 paralel yürüyebilir: grafik üretimi F0'dan itibaren başlayabilir.
 
 ---
 
-## 14. Açık Sorular
+## 15. Açık Sorular
 
 1. Nihai oyun adı?
 2. Steam hedefi var mı? (Varsa Electron'a geçiş ve Steamworks değerlendirilir.)
