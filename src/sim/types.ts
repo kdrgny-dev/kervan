@@ -1,0 +1,102 @@
+import type { ProjectileKind } from '../data/balance';
+import type { EnemyKind } from '../data/enemies';
+import type { HeroKind } from '../data/heroes';
+import type { Dir, Vec } from './grid';
+import type { InputQueue } from './inputQueue';
+import type { Rng } from './rng';
+
+export interface Hero {
+  id: number;
+  kind: HeroKind;
+  pos: Vec;
+  prev: Vec;
+  hp: number;
+  maxHp: number;
+  cooldown: number;
+  healCd: number;
+}
+
+export interface Enemy {
+  id: number;
+  kind: EnemyKind;
+  pos: Vec;
+  prev: Vec;
+  hp: number;
+  maxHp: number;
+  moveAcc: number;
+  moveMs: number;
+  attackCd: number;
+}
+
+export interface Projectile {
+  id: number;
+  kind: ProjectileKind;
+  owner: 'hero' | 'enemy';
+  x: number;
+  y: number;
+  tx: number;
+  ty: number;
+  targetId: number;
+  dmg: number;
+  splash: number;
+  speed: number;
+  done?: boolean;
+}
+
+export interface Pickup {
+  pos: Vec;
+  kind: HeroKind;
+}
+
+export interface PendingSpawn {
+  kind: EnemyKind;
+  pos: Vec;
+  at: number;
+}
+
+export interface WaveState {
+  n: number;
+  phase: 'break' | 'active';
+  timer: number;
+  pending: PendingSpawn[];
+}
+
+export type GameOverReason = 'wall' | 'self' | 'wiped';
+
+export type WorldEvent =
+  | { type: 'moved' }
+  | { type: 'recruited'; hero: Hero }
+  | { type: 'gameOver'; reason: GameOverReason }
+  | { type: 'heroHit'; id: number; dmg: number }
+  | { type: 'heroHealed'; id: number; amount: number }
+  | { type: 'heroDied'; id: number; pos: Vec }
+  | { type: 'enemySpawned'; id: number }
+  | { type: 'enemyHit'; id: number; dmg: number }
+  | { type: 'enemyDied'; id: number; pos: Vec }
+  | { type: 'slash'; pos: Vec }
+  | { type: 'explosion'; x: number; y: number; radius: number }
+  | { type: 'bump'; pos: Vec }
+  | { type: 'pickupSpawned' }
+  | { type: 'waveStart'; n: number }
+  | { type: 'waveCleared'; n: number };
+
+export interface World {
+  party: Hero[];
+  enemies: Enemy[];
+  projectiles: Projectile[];
+  pickup: Pickup | null;
+  dir: Dir;
+  input: InputQueue;
+  tickMs: number;
+  moveAcc: number;
+  simAcc: number;
+  time: number;
+  bumpInvuln: number;
+  alive: boolean;
+  rng: Rng;
+  nextId: number;
+  ticks: number;
+  wave: WaveState;
+  wavesEnabled: boolean;
+  events: WorldEvent[];
+}

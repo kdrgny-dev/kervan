@@ -1,0 +1,133 @@
+import { BASE_TICK_MS, GRID_H, GRID_W } from '../config';
+import { BUMP_DMG_RATIO, BUMP_INVULN_MS, FIRST_BREAK_MS, SIM_DT } from '../data/balance';
+import { damageHero, updateHeroes, updateProjectiles } from './combat';
+import { updateEnemies } from './enemies';
+import { add, DIR_VEC, type Dir, eq, isWall } from './grid';
+import { InputQueue } from './inputQueue';
+import { createRng } from './rng';
+import { endGame, enemyAt, isFree, makeHero, spawnPickup } from './state';
+import type { Enemy, World, WorldEvent } from './types';
+import { updateWaves } from './waves';
+
+export type * from './types';
+export { makeHero } from './state';
+
+export interface WorldOptions {
+  seed?: number;
+  waves?: boolean;
+}
+
+export function createWorld({ seed = Date.now(), waves = true }: WorldOptions = {}): World {
+  const w: World = {
+    party: [],
+    enemies: [],
+    projectiles: [],
+    pickup: null,
+    dir: 'right',
+    input: new InputQueue(),
+    tickMs: BASE_TICK_MS,
+    moveAcc: 0,
+    simAcc: 0,
+    time: 0,
+    bumpInvuln: 0,
+    alive: true,
+    rng: createRng(seed),
+    nextId: 1,
+    ticks: 0,
+    wave: { n: 0, phase: 'break', timer: FIRST_BREAK_MS, pending: [] },
+    wavesEnabled: waves,
+    events: [],
+  };
+  w.party.push(makeHero(w, 'knight', { x: Math.floor(GRID_W / 2) - 4, y: Math.floor(GRID_H / 2) }));
+  spawnPickup(w, 'archer');
+  w.events.length = 0;
+  return w;
+}
+
+export function turn(w: World, dir: Dir) {
+  if (w.alive) w.input.push(dir, w.dir);
+}
+
+export function stepWorld(w: World, dtMs: number): WorldEvent[] {
+  if (w.alive) {
+    w.simAcc += dtMs;
+    while (w.alive && w.simAcc >= SIM_DT) {
+      w.simAcc -= SIM_DT;
+      simStep(w, SIM_DT);
+    }
+  }
+  return w.events.splice(0);
+}
+
+/** Son lider adımından bu yana geçen oran (0..1), çizim interpolasyonu için. */
+export const tickAlpha = (w: World) => (w.alive ? Math.min((w.moveAcc + w.simAcc) / w.tickMs, 1) : 1);
+
+export const enemyAlpha = (w: World, e: Enemy) => (w.alive ? Math.min((e.moveAcc + w.simAcc) / e.moveMs, 1) : 1);
+
+function simStep(w: World, dt: number) {
+  w.time += dt;
+  w.bumpInvuln = Math.max(0, w.bumpInvuln - dt);
+
+  w.moveAcc += dt;
+  if (w.moveAcc >= w.tickMs) {
+    w.moveAcc -= w.tickMs;
+    moveTick(w);
+  }
+  if (!w.alive) return;
+  updateHeroes(w, dt);
+  updateProjectiles(w, dt);
+  if (!w.alive) return;
+  updateEnemies(w, dt);
+  if (!w.alive) return;
+  w.enemies = w.enemies.filter((e) => e.hp > 0);
+  if (w.wavesEnabled) updateWaves(w, dt);
+}
+
+function moveTick(w: World) {
+  w.dir = w.input.next(w.dir);
+  w.ticks++;
+  const target = add(w.party[0].pos, DIR_VEC[w.dir]);
+
+  if (isWall(target)) return endGame(w, 'wall');
+
+  const enemy = enemyAt(w, target);
+  if (enemy && !bump(w, enemy)) {
+    for (const h of w.party) h.prev = h.pos;
+    return;
+  }
+
+  const grows = w.pickup !== null && eq(w.pickup.pos, target);
+  // Kuyruk ucu bu tick'te boşalacağı için, büyümüyorsak çarpışmaya dahil değil.
+  const blockers = grows ? w.party : w.party.slice(0, -1);
+  if (blockers.some((h) => eq(h.pos, target))) return endGame(w, 'self');
+
+  const old = w.party.map((h) => h.pos);
+  w.party.forEach((h, i) => {
+    h.prev = h.pos;
+    h.pos = i === 0 ? target : old[i - 1];
+  });
+  w.events.push({ type: 'moved' });
+
+  if (grows && w.pickup) {
+    const hero = makeHero(w, w.pickup.kind, old[old.length - 1]);
+    w.party.push(hero);
+    w.pickup = null;
+    w.events.push({ type: 'recruited', hero });
+  }
+}
+
+/** Lider düşmana çarptı. Düşman itilebildiyse true (lider o hücreye ilerler). */
+function bump(w: World, enemy: Enemy): boolean {
+  const leader = w.party[0];
+  w.events.push({ type: 'bump', pos: enemy.pos });
+  if (w.bumpInvuln === 0) {
+    w.bumpInvuln = BUMP_INVULN_MS;
+    damageHero(w, leader, Math.ceil(leader.maxHp * BUMP_DMG_RATIO));
+    if (!w.alive || w.party[0] !== leader) return false;
+  }
+  const dest = add(enemy.pos, DIR_VEC[w.dir]);
+  if (!isFree(w, dest)) return false;
+  enemy.prev = enemy.pos;
+  enemy.pos = dest;
+  return true;
+}
