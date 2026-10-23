@@ -1,15 +1,15 @@
 import { HIT_RADIUS, PROJECTILE_SPEED, type ProjectileKind } from '../data/balance';
-import { HEROES, type HeroDef } from '../data/heroes';
+import { HEROES, type HeroKind } from '../data/heroes';
 import { RAGE_MULT } from '../data/loot';
 import { chebyshev, type Vec } from './grid';
 import { onEnemyKilled } from './loot';
-import { endGame, levelMult } from './state';
+import { endGame, levelMult, upgradeMult } from './state';
 import type { Enemy, Hero, Projectile, World } from './types';
 
-export function damageEnemy(w: World, e: Enemy, dmg: number) {
+export function damageEnemy(w: World, e: Enemy, dmg: number, crit = false) {
   if (e.hp <= 0) return;
   e.hp -= dmg;
-  w.events.push({ type: 'enemyHit', id: e.id, dmg });
+  w.events.push({ type: 'enemyHit', id: e.id, dmg, crit });
   if (e.hp > 0) return;
   w.events.push({ type: 'enemyDied', id: e.id, pos: e.pos });
   onEnemyKilled(w, e);
@@ -26,8 +26,8 @@ export function damageHero(w: World, h: Hero, dmg: number) {
   if (w.party.length === 0) endGame(w, 'wiped');
 }
 
-export const heroDamage = (w: World, def: HeroDef) =>
-  Math.round(def.dmg * levelMult(w) * (w.powers.rage ? RAGE_MULT : 1));
+export const heroDamage = (w: World, kind: HeroKind) =>
+  Math.round(HEROES[kind].dmg * levelMult(w) * upgradeMult(w, kind, 'dmg') * (w.powers.rage ? RAGE_MULT : 1));
 
 export function nearestEnemy(w: World, from: Vec, range: number): Enemy | undefined {
   let best: Enemy | undefined;
@@ -98,23 +98,15 @@ export function updateHeroes(w: World, dt: number) {
     const target = nearestEnemy(w, h.pos, def.range);
     if (!target) continue;
     h.cooldown = def.cooldownMs;
-    const dmg = heroDamage(w, def);
+    const dmg = heroDamage(w, h.kind);
+    w.events.push({ type: 'heroAttack', id: h.id });
 
-    switch (def.attack) {
-      case 'melee':
-        damageEnemy(w, target, dmg);
-        w.events.push({ type: 'slash', pos: target.pos });
-        break;
-      case 'cleave':
-        for (const e of w.enemies) {
-          if (e.hp > 0 && chebyshev(h.pos, e.pos) <= 1) {
-            damageEnemy(w, e, dmg);
-            w.events.push({ type: 'slash', pos: e.pos });
-          }
-        }
-        break;
-      default:
-        fire(w, def.attack, 'hero', h.pos, target, dmg, def.splash);
+    if (def.attack === 'melee') {
+      const crit = !!def.crit && w.rng() < def.crit.chance;
+      damageEnemy(w, target, crit && def.crit ? Math.round(dmg * def.crit.mult) : dmg, crit);
+      w.events.push({ type: 'slash', pos: target.pos });
+    } else {
+      fire(w, def.attack, 'hero', h.pos, target, dmg, def.splash);
     }
   }
 }

@@ -6,12 +6,14 @@ import {
   SPAWN_WARN_MS,
   WAVE_BREAK_MS,
   waveBudget,
+  BOSS_EVERY,
 } from '../data/balance';
-import { ENEMIES, ENEMY_KINDS, type EnemyKind } from '../data/enemies';
+import { BOSS_KIND, ENEMIES, ENEMY_KINDS, type EnemyKind } from '../data/enemies';
+import { POWER_KINDS } from '../data/loot';
 import { chebyshev, eq, type Vec } from './grid';
 import { spawnEnemy } from './enemies';
 import { pick } from './rng';
-import { hasHeroToken, spawnHeroToken } from './loot';
+import { activatePower, hasHeroToken, spawnHeroToken } from './loot';
 import { freeCells, isFree } from './state';
 import type { PendingSpawn, World } from './types';
 
@@ -50,13 +52,15 @@ export function startWave(w: World) {
   s.phase = 'active';
   s.pending = rollWave(w, s.n);
   w.events.push({ type: 'waveStart', n: s.n });
+  if (s.n === 1 && w.loadout.startPower) activatePower(w, pick(w.rng, POWER_KINDS.filter((k) => k !== 'bomb')));
 }
 
 function rollWave(w: World, n: number): PendingSpawn[] {
   const kinds = ENEMY_KINDS.filter((k) => ENEMIES[k].firstWave <= n);
   const minCost = Math.min(...kinds.map((k) => ENEMIES[k].cost));
-  const roster: EnemyKind[] = [];
-  let budget = waveBudget(n);
+  const bossWave = n % BOSS_EVERY === 0;
+  const roster: EnemyKind[] = bossWave ? [BOSS_KIND] : [];
+  let budget = bossWave ? Math.floor(waveBudget(n) / 2) : waveBudget(n);
   while (budget >= minCost) {
     const affordable = kinds.filter((k) => ENEMIES[k].cost <= budget);
     const kind = pick(w.rng, affordable);

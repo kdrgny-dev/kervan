@@ -34,9 +34,9 @@ describe('hero attacks', () => {
 
   it('mage fireball splashes neighbours', () => {
     const w = arena([{ x: 5, y: 5 }], ['mage']);
-    const a = spawnEnemy(w, 'orc', { x: 5, y: 8 });
-    const b = spawnEnemy(w, 'orc', { x: 6, y: 9 });
-    const far = spawnEnemy(w, 'orc', { x: 9, y: 12 });
+    const a = spawnEnemy(w, 'goblin', { x: 5, y: 8 });
+    const b = spawnEnemy(w, 'goblin', { x: 6, y: 9 });
+    const far = spawnEnemy(w, 'goblin', { x: 9, y: 12 });
     freeze(w);
     stepWorld(w, 10);
     stepWorld(w, 500);
@@ -45,13 +45,22 @@ describe('hero attacks', () => {
     expect(far.hp).toBe(45);
   });
 
-  it('barbarian cleaves every adjacent enemy', () => {
-    const w = arena([{ x: 5, y: 5 }], ['barbarian']);
-    const a = spawnEnemy(w, 'orc', { x: 4, y: 4 });
-    const b = spawnEnemy(w, 'orc', { x: 6, y: 6 });
+  it('rogue crits on a lucky roll', () => {
+    const w = arena([{ x: 5, y: 5 }], ['rogue']);
+    w.rng = () => 0;
+    const gob = spawnEnemy(w, 'goblin', { x: 5, y: 6 });
+    freeze(w);
     stepWorld(w, 10);
-    expect(a.hp).toBe(45 - 14);
-    expect(b.hp).toBe(45 - 14);
+    expect(gob.hp).toBe(45 - 9 * 2);
+  });
+
+  it('rogue hits normally otherwise', () => {
+    const w = arena([{ x: 5, y: 5 }], ['rogue']);
+    w.rng = () => 0.99;
+    const gob = spawnEnemy(w, 'goblin', { x: 5, y: 6 });
+    freeze(w);
+    stepWorld(w, 10);
+    expect(gob.hp).toBe(45 - 9);
   });
 
   it('priest heals the party on its timer', () => {
@@ -111,18 +120,18 @@ describe('enemy attacks and hero death', () => {
 describe('bumping into enemies', () => {
   it('hurts the leader and pushes the enemy', () => {
     const w = arena([{ x: 5, y: 5 }], ['archer']);
-    const orc = spawnEnemy(w, 'orc', { x: 6, y: 5 });
-    orc.attackCd = 99999;
+    const gob = spawnEnemy(w, 'goblin', { x: 6, y: 5 });
+    gob.attackCd = 99999;
     tick(w);
     expect(w.party[0].hp).toBe(35 - Math.ceil(35 * 0.4));
     expect(w.party[0].pos).toEqual({ x: 6, y: 5 });
-    expect(orc.pos.x).toBeGreaterThanOrEqual(7);
+    expect(gob.pos.x).toBeGreaterThanOrEqual(7);
   });
 
   it('blocks movement when the enemy cannot be pushed', () => {
-    const w = arena([{ x: 21, y: 5 }], ['barbarian']);
-    const orc = spawnEnemy(w, 'orc', { x: 22, y: 5 });
-    orc.attackCd = 99999;
+    const w = arena([{ x: 21, y: 5 }], ['knight']);
+    const gob = spawnEnemy(w, 'goblin', { x: 22, y: 5 });
+    gob.attackCd = 99999;
     w.party[0].cooldown = 99999;
     tick(w);
     expect(w.alive).toBe(true);
@@ -130,9 +139,9 @@ describe('bumping into enemies', () => {
   });
 
   it('grants brief invulnerability after a bump', () => {
-    const w = arena([{ x: 21, y: 5 }], ['barbarian']);
-    const orc = spawnEnemy(w, 'orc', { x: 22, y: 5 });
-    orc.attackCd = 99999;
+    const w = arena([{ x: 21, y: 5 }], ['knight']);
+    const gob = spawnEnemy(w, 'goblin', { x: 22, y: 5 });
+    gob.attackCd = 99999;
     w.party[0].cooldown = 99999;
     tick(w);
     const hp = w.party[0].hp;

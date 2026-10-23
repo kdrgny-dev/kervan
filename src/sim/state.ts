@@ -1,12 +1,17 @@
 import { GRID_H, GRID_W } from '../config';
 import { HEROES, type HeroKind } from '../data/heroes';
+import { UPGRADE_STEP } from '../data/economy';
 import { LEVEL_BONUS } from '../data/loot';
 import { eq, isWall, type Vec } from './grid';
 import type { GameOverReason, Hero, World } from './types';
 
 export const levelMult = (w: World) => 1 + LEVEL_BONUS * w.stats.level;
 
-export const scaledMaxHp = (w: World, kind: HeroKind) => Math.round(HEROES[kind].hp * levelMult(w));
+export const upgradeMult = (w: World, kind: HeroKind, stat: 'hp' | 'dmg') =>
+  1 + UPGRADE_STEP * (w.loadout.upgrades[kind]?.[stat] ?? 0);
+
+export const scaledMaxHp = (w: World, kind: HeroKind) =>
+  Math.round(HEROES[kind].hp * levelMult(w) * upgradeMult(w, kind, 'hp'));
 
 export function makeHero(w: World, kind: HeroKind, pos: Vec): Hero {
   const hp = scaledMaxHp(w, kind);

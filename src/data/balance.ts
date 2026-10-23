@@ -12,13 +12,15 @@ export const SAFE_SPAWN_DIST = 3;
 export const waveBudget = (n: number) => 6 + 6 * n;
 export const enemyHpScale = (n: number) => (n > 10 ? 1.06 ** (n - 10) : 1);
 
+export const BOSS_EVERY = 5;
+
 export const BUMP_DMG_RATIO = 0.4;
 export const BUMP_INVULN_MS = 500;
 
 export const CHARGE_DIST = 3;
 export const CHARGE_SPEEDUP = 0.5;
 
-export type ProjectileKind = Exclude<AttackKind, 'melee' | 'cleave'> | 'bone';
+export type ProjectileKind = Exclude<AttackKind, 'melee'> | 'bone';
 
 /** hücre / saniye */
 export const PROJECTILE_SPEED: Record<ProjectileKind, number> = {

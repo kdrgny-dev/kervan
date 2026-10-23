@@ -4,10 +4,10 @@ import { damageHero, updateHeroes, updateProjectiles } from './combat';
 import { updateEnemies } from './enemies';
 import { add, DIR_VEC, type Dir, eq, isWall } from './grid';
 import { InputQueue } from './inputQueue';
-import { createRng } from './rng';
+import { createRng, pick } from './rng';
 import { collect, spawnHeroToken, updateLoot } from './loot';
 import { endGame, enemyAt, isFree, makeHero } from './state';
-import type { Enemy, World, WorldEvent } from './types';
+import type { Enemy, Loadout, World, WorldEvent } from './types';
 import { updateWaves } from './waves';
 
 export type * from './types';
@@ -16,10 +16,21 @@ export { makeHero } from './state';
 export interface WorldOptions {
   seed?: number;
   waves?: boolean;
+  loadout?: Partial<Loadout>;
 }
 
-export function createWorld({ seed = Date.now(), waves = true }: WorldOptions = {}): World {
+export const DEFAULT_LOADOUT: Loadout = {
+  leader: 'knight',
+  unlocked: ['knight', 'archer'],
+  upgrades: {},
+  startPower: false,
+  powerBonusMs: 0,
+  secondHero: false,
+};
+
+export function createWorld({ seed = Date.now(), waves = true, loadout = {} }: WorldOptions = {}): World {
   const w: World = {
+    loadout: { ...DEFAULT_LOADOUT, ...loadout },
     party: [],
     enemies: [],
     projectiles: [],
@@ -41,8 +52,10 @@ export function createWorld({ seed = Date.now(), waves = true }: WorldOptions = 
     wavesEnabled: waves,
     events: [],
   };
-  w.party.push(makeHero(w, 'knight', { x: Math.floor(GRID_W / 2) - 4, y: Math.floor(GRID_H / 2) }));
-  spawnHeroToken(w, 'archer');
+  const start = { x: Math.floor(GRID_W / 2) - 4, y: Math.floor(GRID_H / 2) };
+  w.party.push(makeHero(w, w.loadout.leader, start));
+  if (w.loadout.secondHero) w.party.push(makeHero(w, pick(w.rng, w.loadout.unlocked), { x: start.x - 1, y: start.y }));
+  spawnHeroToken(w);
   w.events.length = 0;
   return w;
 }

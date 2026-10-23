@@ -1,7 +1,17 @@
-export type EnemyKind = 'slime' | 'bat' | 'skeleton' | 'orc';
+export type EnemyKind = 'slime' | 'bat' | 'skeleton' | 'goblin' | 'slimeKing';
 
 /** wander: yavaş yaklaşır · erratic: zikzak · kite: mesafe korur, ateş eder · charge: lideri kovalar */
 export type EnemyBrain = 'wander' | 'erratic' | 'kite' | 'charge';
+
+export interface BossAbilities {
+  summon: EnemyKind;
+  summonEveryMs: number;
+  maxMinions: number;
+  shockEveryMs: number;
+  shockWarnMs: number;
+  shockRadius: number;
+  shockDmg: number;
+}
 
 export interface EnemyDef {
   name: string;
@@ -15,7 +25,9 @@ export interface EnemyDef {
   cost: number;
   firstWave: number;
   gold: number;
+  xp?: number;
   range?: number;
+  boss?: BossAbilities;
 }
 
 export const ENEMIES: Record<EnemyKind, EnemyDef> = {
@@ -25,7 +37,13 @@ export const ENEMIES: Record<EnemyKind, EnemyDef> = {
     name: 'İskelet Okçu', color: 0xd9d4c5, glyph: 'İ', hp: 15, dmg: 5, moveMs: 350, attackMs: 2000, brain: 'kite', cost: 3, firstWave: 3, gold: 1,
     range: 4,
   },
-  orc: { name: 'Ork', color: 0x5c8a3a, glyph: 'Or', hp: 45, dmg: 12, moveMs: 300, attackMs: 1200, brain: 'charge', cost: 5, firstWave: 4, gold: 3 },
+  goblin: { name: 'Goblin', color: 0x5c8a3a, glyph: 'Gb', hp: 45, dmg: 12, moveMs: 300, attackMs: 1200, brain: 'charge', cost: 5, firstWave: 4, gold: 3 },
+  slimeKing: {
+    name: 'Balçık Kralı', color: 0x8a5bd6, glyph: 'K', hp: 400, dmg: 20, moveMs: 450, attackMs: 1500, brain: 'charge',
+    cost: 0, firstWave: Infinity, gold: 25, xp: 30,
+    boss: { summon: 'slime', summonEveryMs: 6000, maxMinions: 4, shockEveryMs: 5000, shockWarnMs: 800, shockRadius: 3, shockDmg: 15 },
+  },
 };
 
 export const ENEMY_KINDS = Object.keys(ENEMIES) as EnemyKind[];
+export const BOSS_KIND: EnemyKind = 'slimeKing';

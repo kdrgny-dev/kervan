@@ -16,6 +16,7 @@ const KEYS: Record<string, Dir> = {
 export interface ControlHandlers {
   onDir: (dir: Dir) => void;
   onConfirm: () => void;
+  onPause: () => void;
 }
 
 export function bindControls(scene: Phaser.Scene, h: ControlHandlers) {
@@ -26,6 +27,8 @@ export function bindControls(scene: Phaser.Scene, h: ControlHandlers) {
       h.onDir(dir);
     } else if (e.code === 'Space' || e.code === 'Enter' || e.code === 'KeyR') {
       h.onConfirm();
+    } else if (e.code === 'Escape' || e.code === 'KeyP') {
+      h.onPause();
     }
   });
 
@@ -38,7 +41,7 @@ export function bindControls(scene: Phaser.Scene, h: ControlHandlers) {
     const dx = p.x - start.x;
     const dy = p.y - start.y;
     start = null;
-    if (Math.max(Math.abs(dx), Math.abs(dy)) < SWIPE_MIN_PX) return h.onConfirm();
+    if (Math.max(Math.abs(dx), Math.abs(dy)) < SWIPE_MIN_PX) return;
     if (Math.abs(dx) > Math.abs(dy)) h.onDir(dx > 0 ? 'right' : 'left');
     else h.onDir(dy > 0 ? 'down' : 'up');
   });

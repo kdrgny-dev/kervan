@@ -1,12 +1,16 @@
 import Phaser from 'phaser';
-import { CELL, GRID_H, GRID_W } from '../config';
+import { CELL } from '../config';
 import { SPAWN_WARN_MS } from '../data/balance';
 import { ENEMIES } from '../data/enemies';
-import { HEROES } from '../data/heroes';
+import { HEROES, type HeroKind } from '../data/heroes';
 import { LOOT_BLINK_MS, POWERS, type PowerKind, score, xpToNext } from '../data/loot';
 import { bindControls } from '../input/controls';
+import { profile } from '../meta/profile';
+import { applyRun, loadoutFrom } from '../meta/shop';
+import { drawArena } from '../render/arena';
+import { ENEMY_SPRITES, HERO_SPRITES } from '../render/sprites';
 import { UnitView } from '../render/UnitView';
-import { isWall, type Vec } from '../sim/grid';
+import type { Vec } from '../sim/grid';
 import {
   createWorld,
   enemyAlpha,
@@ -19,21 +23,17 @@ import {
   type World,
   type WorldEvent,
 } from '../sim/world';
+import { Button } from '../ui/Button';
+import { FONT, textStyle, UI } from '../ui/theme';
 
 const COLORS = {
-  floorA: 0x2b3a2e,
-  floorB: 0x2f4032,
-  wall: 0x4a3f36,
-  wallTop: 0x5e5145,
   leader: 0xfff3c4,
   shield: 0x5ab8f0,
+  enemyOutline: 0x7a1414,
   gold: 0xf0c23b,
   gem: 0x5ef0e0,
-  enemyOutline: 0x7a1414,
-  text: '#f4efe6',
 };
 
-const FONT = 'system-ui, sans-serif';
 const PROJECTILE_COLORS: Record<Projectile['kind'], number> = {
   arrow: 0xe8e0c8,
   fireball: 0xff8a2b,
@@ -45,7 +45,10 @@ const px = (v: number) => v * CELL + CELL / 2;
 const lerp = (a: Vec, b: Vec, t: number): Vec => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t });
 
 export class GameScene extends Phaser.Scene {
+  private hero: HeroKind = 'knight';
   private world!: World;
+  private paused = false;
+  private banked = false;
   private heroViews = new Map<number, UnitView>();
   private enemyViews = new Map<number, UnitView>();
   private projectileViews = new Map<number, Phaser.GameObjects.Shape>();
@@ -55,48 +58,47 @@ export class GameScene extends Phaser.Scene {
   private wallet!: Phaser.GameObjects.Text;
   private powerText!: Phaser.GameObjects.Text;
   private xpBar!: Phaser.GameObjects.Graphics;
+  private bossBar!: Phaser.GameObjects.Container;
   private banner!: Phaser.GameObjects.Text;
+  private pauseMenu!: Phaser.GameObjects.Container;
   private overlay!: Phaser.GameObjects.Container;
 
   constructor() {
     super('game');
   }
 
+  init(data: { hero?: HeroKind }) {
+    this.hero = data.hero ?? profile.data.lastHero;
+  }
+
   create() {
-    this.drawArena();
+    this.heroViews = new Map();
+    this.enemyViews = new Map();
+    this.projectileViews = new Map();
+    this.lootViews = new Map();
+
+    drawArena(this);
     this.markers = this.add.graphics().setDepth(2);
-    this.hud = this.add.text(16, 10, '', { fontFamily: FONT, fontSize: '22px', color: COLORS.text }).setDepth(40);
-    this.wallet = this.add
-      .text(this.scale.width - 16, 10, '', { fontFamily: FONT, fontSize: '22px', color: COLORS.text })
-      .setOrigin(1, 0)
-      .setDepth(40);
-    this.powerText = this.add
-      .text(this.scale.width / 2, this.scale.height - 12, '', { fontFamily: FONT, fontSize: '20px', color: COLORS.text, fontStyle: 'bold' })
-      .setOrigin(0.5, 1)
-      .setDepth(40)
-      .setStroke('#14121c', 4);
-    this.xpBar = this.add.graphics().setDepth(40);
-    this.banner = this.add
-      .text(this.scale.width / 2, 120, '', { fontFamily: FONT, fontSize: '44px', color: COLORS.text, fontStyle: 'bold' })
-      .setOrigin(0.5)
-      .setDepth(40)
-      .setStroke('#14121c', 6)
-      .setAlpha(0);
-    this.overlay = this.buildOverlay();
+    this.buildHud();
+    this.overlay = this.add.container(0, 0).setDepth(60).setVisible(false);
+    this.pauseMenu = this.buildPauseMenu();
 
     bindControls(this, {
-      onDir: (d) => turn(this.world, d),
+      onDir: (d) => !this.paused && turn(this.world, d),
       onConfirm: () => {
         if (!this.world.alive) this.restart();
       },
+      onPause: () => this.togglePause(),
     });
 
     this.restart();
   }
 
   update(_time: number, delta: number) {
-    // Sekme arka plana düşünce dev bir delta gelmesin
-    for (const e of stepWorld(this.world, Math.min(delta, 100))) this.handle(e);
+    if (!this.paused) {
+      // Sekme arka plana düşünce dev bir delta gelmesin
+      for (const e of stepWorld(this.world, Math.min(delta, 100))) this.handle(e);
+    }
     this.renderParty();
     this.renderEnemies();
     this.renderProjectiles();
@@ -105,19 +107,75 @@ export class GameScene extends Phaser.Scene {
     this.renderHud();
   }
 
+  private get settings() {
+    return profile.data.settings;
+  }
+
+  private shake(ms: number, intensity: number) {
+    if (this.settings.shake) this.cameras.main.shake(ms, intensity);
+  }
+
   private restart() {
-    const views = [this.heroViews, this.enemyViews, this.projectileViews, this.lootViews];
-    for (const map of views) {
+    for (const map of [this.heroViews, this.enemyViews, this.projectileViews, this.lootViews]) {
       for (const v of map.values()) v.destroy();
       map.clear();
     }
-    this.world = createWorld();
-    this.overlay.setVisible(false);
+    this.world = createWorld({ loadout: loadoutFrom(profile.data, this.hero) });
+    this.banked = false;
+    this.paused = false;
+    this.pauseMenu.setVisible(false);
+    this.overlay.removeAll(true).setVisible(false);
     this.showBanner('Hazırlan!');
   }
 
   private handle(e: WorldEvent) {
+    const now = this.time.now;
     switch (e.type) {
+      case 'heroAttack':
+        this.heroViews.get(e.id)?.playAttack(now);
+        break;
+      case 'heroHit': {
+        const v = this.heroViews.get(e.id);
+        v?.flash(0xff5a4a);
+        v?.playHurt(now);
+        this.damageText(v, `-${e.dmg}`, UI.danger);
+        break;
+      }
+      case 'heroHealed':
+        this.heroViews.get(e.id)?.flash(0x9cff9c, 140, 'tint');
+        break;
+      case 'heroDied':
+        this.killView(this.heroViews, e.id);
+        this.shake(120, 0.006);
+        break;
+      case 'enemyHit': {
+        const v = this.enemyViews.get(e.id);
+        v?.flash();
+        this.damageText(v, e.crit ? `${e.dmg}!` : `${e.dmg}`, e.crit ? UI.gold : '#ffffff', e.crit ? 24 : 18);
+        break;
+      }
+      case 'enemyDied':
+        this.killView(this.enemyViews, e.id);
+        this.burst(px(e.pos.x), px(e.pos.y), 0xf4efe6);
+        break;
+      case 'slash':
+        this.slash(e.pos);
+        break;
+      case 'explosion':
+        this.ring(px(e.x), px(e.y), CELL * (e.radius + 0.5), 0xff8a2b, 260);
+        break;
+      case 'shockwaveWarn': {
+        const v = this.enemyViews.get(e.id);
+        if (v) this.ring(v.x, v.y, CELL * (e.radius + 0.5), 0xe5533d, 800, true);
+        break;
+      }
+      case 'shockwave':
+        this.ring(px(e.pos.x), px(e.pos.y), CELL * (e.radius + 0.5), 0xc77dff, 320);
+        this.shake(260, 0.012);
+        break;
+      case 'bump':
+        this.shake(90, 0.004);
+        break;
       case 'lootCollected':
         this.collectFx(e.id, e.loot);
         break;
@@ -129,42 +187,14 @@ export class GameScene extends Phaser.Scene {
         break;
       case 'bomb':
         this.cameras.main.flash(180, 255, 240, 200);
-        this.cameras.main.shake(220, 0.01);
+        this.shake(220, 0.01);
         break;
       case 'levelUp':
         this.showBanner(`Seviye ${e.level + 1}!`);
-        for (const v of this.heroViews.values()) v.flash(0xfff3c4, 160);
-        break;
-      case 'heroHit':
-        this.heroViews.get(e.id)?.flash(0xff5a4a);
-        this.floatText(this.heroViews.get(e.id), `-${e.dmg}`, '#ff7a6a');
-        break;
-      case 'heroHealed':
-        this.heroViews.get(e.id)?.flash(0x9cff9c, 120);
-        break;
-      case 'heroDied':
-        this.killView(this.heroViews, e.id);
-        this.cameras.main.shake(120, 0.006);
-        break;
-      case 'enemyHit':
-        this.enemyViews.get(e.id)?.flash();
-        this.floatText(this.enemyViews.get(e.id), `${e.dmg}`, '#ffffff');
-        break;
-      case 'enemyDied':
-        this.killView(this.enemyViews, e.id);
-        this.burst(px(e.pos.x), px(e.pos.y), 0xf4efe6);
-        break;
-      case 'slash':
-        this.slash(e.pos);
-        break;
-      case 'explosion':
-        this.explosion(e.x, e.y, e.radius);
-        break;
-      case 'bump':
-        this.cameras.main.shake(90, 0.004);
+        for (const v of this.heroViews.values()) v.flash(0xfff3c4, 160, 'tint');
         break;
       case 'waveStart':
-        this.showBanner(`Dalga ${e.n}`);
+        this.showBanner(e.n % 5 === 0 ? `Dalga ${e.n} · Balçık Kralı!` : `Dalga ${e.n}`);
         break;
       case 'waveCleared':
         this.showBanner('Dalga temizlendi!');
@@ -175,19 +205,7 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
-  private drawArena() {
-    const g = this.add.graphics();
-    for (let y = 0; y < GRID_H; y++) {
-      for (let x = 0; x < GRID_W; x++) {
-        if (isWall({ x, y })) {
-          g.fillStyle(COLORS.wall).fillRect(x * CELL, y * CELL, CELL, CELL);
-          g.fillStyle(COLORS.wallTop).fillRect(x * CELL + 3, y * CELL + 3, CELL - 6, CELL - 12);
-        } else {
-          g.fillStyle((x + y) % 2 ? COLORS.floorA : COLORS.floorB).fillRect(x * CELL, y * CELL, CELL, CELL);
-        }
-      }
-    }
-  }
+  // ---------- birimler ----------
 
   private renderParty() {
     const w = this.world;
@@ -197,17 +215,24 @@ export class GameScene extends Phaser.Scene {
       let view = this.heroViews.get(hero.id);
       if (!view) {
         const def = HEROES[hero.kind];
-        view = new UnitView(this, { color: def.color, glyph: def.glyph, size: CELL - 10, shape: 'square' }).setDepth(10);
+        view = new UnitView(this, {
+          color: def.color,
+          glyph: def.glyph,
+          size: CELL - 10,
+          shape: 'square',
+          sprite: HERO_SPRITES[hero.kind],
+          spriteSize: CELL * 1.15,
+        });
         this.heroViews.set(hero.id, view);
         this.tweens.add({ targets: view, scale: { from: 1.4, to: 1 }, duration: 220, ease: 'Back.Out' });
       }
       const p = lerp(hero.prev, hero.pos, alpha);
-      // Yürüme zıplaması; her kahraman biraz faz kaydırılmış
-      const bob = w.alive ? Math.abs(Math.sin(t / 90 + i * 0.7)) * -4 : 0;
+      const bob = w.alive && !this.paused ? Math.abs(Math.sin(t / 90 + i * 0.7)) * -4 : 0;
       view.setPosition(px(p.x), px(p.y) + bob);
-      view.setDepth(i === 0 ? 11 : 10);
-      const ring = w.powers.shield ? COLORS.shield : i === 0 ? COLORS.leader : 0x14121c;
-      view.setOutline(i === 0 || w.powers.shield ? 4 : 3, ring);
+      view.setDepth(10 + p.y * 0.01 + (i === 0 ? 0.005 : 0));
+      view.face(hero.pos.x - hero.prev.x);
+      view.animate(t, w.alive && !this.paused);
+      view.setMarker(w.powers.shield ? COLORS.shield : i === 0 ? COLORS.leader : null);
       view.setAlpha(i === 0 && w.bumpInvuln > 0 && Math.floor(t / 60) % 2 ? 0.5 : 1);
       view.setHp(hero.hp / hero.maxHp);
     });
@@ -219,18 +244,24 @@ export class GameScene extends Phaser.Scene {
       let view = this.enemyViews.get(enemy.id);
       if (!view) {
         const def = ENEMIES[enemy.kind];
+        const boss = !!def.boss;
         view = new UnitView(this, {
           color: def.color,
           glyph: def.glyph,
-          size: CELL - 12,
+          size: boss ? CELL : CELL - 12,
           shape: 'circle',
           outline: COLORS.enemyOutline,
-        }).setDepth(9);
+          sprite: ENEMY_SPRITES[enemy.kind],
+          spriteSize: boss ? CELL * 1.8 : CELL * 1.05,
+        });
         this.enemyViews.set(enemy.id, view);
         this.tweens.add({ targets: view, scale: { from: 0, to: 1 }, duration: 200, ease: 'Back.Out' });
       }
       const p = lerp(enemy.prev, enemy.pos, enemyAlpha(w, enemy));
       view.setPosition(px(p.x), px(p.y));
+      view.setDepth(9 + p.y * 0.01);
+      const target = w.party[0]?.pos;
+      if (target) view.face(target.x - enemy.pos.x);
       view.setHp(enemy.hp / enemy.maxHp);
     }
   }
@@ -269,18 +300,20 @@ export class GameScene extends Phaser.Scene {
       if (s.at - w.time > SPAWN_WARN_MS) continue;
       const x = px(s.pos.x);
       const y = px(s.pos.y);
-      const r = CELL * 0.3;
+      const r = CELL * (ENEMIES[s.kind].boss ? 0.5 : 0.3);
       g.lineStyle(4, 0xe5533d, pulse);
       g.lineBetween(x - r, y - r, x + r, y + r);
       g.lineBetween(x - r, y + r, x + r, y - r);
     }
   }
 
+  // ---------- ganimet ----------
+
   private makeLootView(loot: Loot) {
     const c = this.add.container(0, 0).setDepth(5);
     switch (loot.type) {
       case 'coin':
-        c.add([this.add.circle(0, 0, 9, COLORS.gold).setStrokeStyle(3, 0x8a6a10), this.add.circle(-3, -3, 3, 0xfff3c4)]);
+        c.add([this.add.circle(0, 0, loot.value > 5 ? 14 : 9, COLORS.gold).setStrokeStyle(3, 0x8a6a10), this.add.circle(-3, -3, 3, 0xfff3c4)]);
         break;
       case 'gem':
         c.add(this.add.rectangle(0, 0, 15, 15, COLORS.gem).setStrokeStyle(3, 0x1d6b66).setRotation(Math.PI / 4));
@@ -289,15 +322,15 @@ export class GameScene extends Phaser.Scene {
         const def = POWERS[loot.power];
         c.add([
           this.add.circle(0, 0, 15, def.color).setStrokeStyle(3, 0xf4efe6),
-          this.add.text(0, 0, def.glyph, { fontFamily: FONT, fontSize: '16px', color: '#ffffff', fontStyle: 'bold' }).setOrigin(0.5),
+          this.add.text(0, 0, def.glyph, textStyle(16, { color: '#ffffff', fontStyle: 'bold' })).setOrigin(0.5),
         ]);
         break;
       }
       case 'hero': {
         const def = HEROES[loot.hero];
         c.add([
-          this.add.circle(0, 0, CELL * 0.42, COLORS.leader, 0.25),
-          new UnitView(this, { color: def.color, glyph: def.glyph, size: CELL - 20, shape: 'square' }),
+          this.add.circle(0, 0, CELL * 0.45, COLORS.leader, 0.25).setStrokeStyle(2, COLORS.leader, 0.6),
+          new UnitView(this, { color: def.color, glyph: def.glyph, size: CELL - 20, shape: 'square', sprite: HERO_SPRITES[loot.hero], spriteSize: CELL * 0.95 }),
         ]);
         break;
       }
@@ -315,8 +348,7 @@ export class GameScene extends Phaser.Scene {
         view = this.makeLootView(loot);
         this.lootViews.set(loot.id, view);
       }
-      const float = Math.sin(t / 250 + loot.id) * 3;
-      view.setPosition(px(loot.pos.x), px(loot.pos.y) + float);
+      view.setPosition(px(loot.pos.x), px(loot.pos.y) + Math.sin(t / 250 + loot.id) * 3);
       const blinking = loot.expiresAt - w.time < LOOT_BLINK_MS;
       view.setAlpha(blinking && Math.floor(t / 120) % 2 ? 0.3 : 1);
     }
@@ -339,9 +371,36 @@ export class GameScene extends Phaser.Scene {
 
   private collectFx(id: number, loot: Loot) {
     const view = this.lootViews.get(id);
-    if (view && loot.type === 'coin') this.popText(view.x, view.y, `+${loot.value}`, '#f0c23b');
-    if (view && loot.type === 'gem') this.popText(view.x, view.y, '+1 mücevher', '#5ef0e0');
+    if (view && loot.type === 'coin') this.popText(view.x, view.y, `+${loot.value}`, UI.gold);
+    if (view && loot.type === 'gem') this.popText(view.x, view.y, '+1 mücevher', UI.gem);
     this.removeLoot(id, true);
+  }
+
+  // ---------- HUD ----------
+
+  private buildHud() {
+    const { width, height } = this.scale;
+    this.hud = this.add.text(16, 10, '', textStyle(22)).setDepth(40);
+    this.wallet = this.add.text(width - 70, 10, '', textStyle(22)).setOrigin(1, 0).setDepth(40);
+    new Button(this, width - 30, 24, 'II', () => this.togglePause(), { width: 40, height: 36, fontSize: 18 }).setDepth(41);
+    this.powerText = this.add
+      .text(width / 2, height - 12, '', textStyle(20, { fontStyle: 'bold' }))
+      .setOrigin(0.5, 1)
+      .setDepth(40)
+      .setStroke('#14121c', 4);
+    this.xpBar = this.add.graphics().setDepth(40);
+    this.banner = this.add
+      .text(width / 2, 120, '', textStyle(44, { fontStyle: 'bold' }))
+      .setOrigin(0.5)
+      .setDepth(40)
+      .setStroke('#14121c', 6)
+      .setAlpha(0);
+
+    const barW = 420;
+    const bossName = this.add.text(0, -18, ENEMIES.slimeKing.name, textStyle(18, { fontStyle: 'bold' })).setOrigin(0.5);
+    const bg = this.add.rectangle(-barW / 2, 0, barW, 12, 0x000000, 0.6).setOrigin(0, 0.5);
+    const fill = this.add.rectangle(-barW / 2, 0, barW, 12, 0xc77dff).setOrigin(0, 0.5).setName('fill');
+    this.bossBar = this.add.container(width / 2, 70, [bossName, bg, fill]).setDepth(40).setVisible(false);
   }
 
   private renderHud() {
@@ -349,9 +408,9 @@ export class GameScene extends Phaser.Scene {
     const foes = w.enemies.length + w.wave.pending.length;
     const parts = [`Dalga ${Math.max(w.wave.n, 1)}`, `Kafile ${w.party.length}`];
     if (w.wave.phase === 'active') parts.push(`Düşman ${foes}`);
-    else parts.push(`Sonraki dalga ${Math.ceil(w.wave.timer / 1000)}`);
+    else parts.push(`Sonraki ${Math.max(0, Math.ceil(w.wave.timer / 1000))}`);
     this.hud.setText(parts.join('    '));
-    this.wallet.setText(`Altın ${w.stats.gold}    Mücevher ${w.stats.gems}    Seviye ${w.stats.level + 1}`);
+    this.wallet.setText(`Altın ${w.stats.gold}    Mücevher ${w.stats.gems}    Sv ${w.stats.level + 1}`);
 
     const active = (Object.keys(w.powers) as PowerKind[]).map((k) => `${POWERS[k].name} ${Math.ceil((w.powers[k] ?? 0) / 1000)}`);
     this.powerText.setText(active.join('   '));
@@ -360,7 +419,13 @@ export class GameScene extends Phaser.Scene {
     const x = this.scale.width / 2 - barW / 2;
     const ratio = w.stats.xp / xpToNext(w.stats.level);
     this.xpBar.clear().fillStyle(0x000000, 0.5).fillRect(x, 16, barW, 8).fillStyle(0xfff3c4).fillRect(x, 16, barW * ratio, 8);
+
+    const boss = w.enemies.find((e) => ENEMIES[e.kind].boss);
+    this.bossBar.setVisible(!!boss);
+    if (boss) (this.bossBar.getByName('fill') as Phaser.GameObjects.Rectangle).setScale(Math.max(0, boss.hp / boss.maxHp), 1);
   }
+
+  // ---------- efektler ----------
 
   private killView(map: Map<number, UnitView>, id: number) {
     const view = map.get(id);
@@ -369,13 +434,13 @@ export class GameScene extends Phaser.Scene {
     this.tweens.add({ targets: view, scale: 0, alpha: 0, duration: 180, onComplete: () => view.destroy() });
   }
 
-  private floatText(anchor: UnitView | undefined, text: string, color: string) {
-    if (anchor) this.popText(anchor.x + Phaser.Math.Between(-8, 8), anchor.y - 20, text, color);
+  private damageText(anchor: UnitView | undefined, text: string, color: string, size = 18) {
+    if (anchor && this.settings.damageNumbers) this.popText(anchor.x + Phaser.Math.Between(-8, 8), anchor.y - 20, text, color, size);
   }
 
-  private popText(x: number, y: number, text: string, color: string) {
+  private popText(x: number, y: number, text: string, color: string, size = 18) {
     const t = this.add
-      .text(x, y, text, { fontFamily: FONT, fontSize: '18px', color, fontStyle: 'bold' })
+      .text(x, y, text, { fontFamily: FONT, fontSize: `${size}px`, color, fontStyle: 'bold' })
       .setOrigin(0.5)
       .setStroke('#14121c', 4)
       .setDepth(30);
@@ -387,23 +452,23 @@ export class GameScene extends Phaser.Scene {
     this.tweens.add({ targets: line, alpha: 0, scaleX: 1.3, duration: 140, onComplete: () => line.destroy() });
   }
 
-  private explosion(x: number, y: number, radius: number) {
-    const ring = this.add.circle(px(x), px(y), CELL * (radius + 0.5), 0xff8a2b, 0.45).setDepth(14);
-    this.tweens.add({ targets: ring, alpha: 0, scale: { from: 0.4, to: 1 }, duration: 260, onComplete: () => ring.destroy() });
+  private ring(x: number, y: number, radius: number, color: number, ms: number, warning = false) {
+    const ring = this.add.circle(x, y, radius, color, warning ? 0.15 : 0.45).setDepth(14);
+    if (warning) ring.setStrokeStyle(3, color, 0.9);
+    this.tweens.add({
+      targets: ring,
+      alpha: warning ? { from: 0.3, to: 0.9 } : 0,
+      scale: warning ? { from: 1, to: 1 } : { from: 0.4, to: 1 },
+      duration: ms,
+      onComplete: () => ring.destroy(),
+    });
   }
 
   private burst(x: number, y: number, color: number) {
     for (let i = 0; i < 8; i++) {
       const a = (i / 8) * Math.PI * 2;
       const dot = this.add.circle(x, y, 4, color).setDepth(14);
-      this.tweens.add({
-        targets: dot,
-        x: x + Math.cos(a) * 26,
-        y: y + Math.sin(a) * 26,
-        alpha: 0,
-        duration: 300,
-        onComplete: () => dot.destroy(),
-      });
+      this.tweens.add({ targets: dot, x: x + Math.cos(a) * 26, y: y + Math.sin(a) * 26, alpha: 0, duration: 300, onComplete: () => dot.destroy() });
     }
   }
 
@@ -413,32 +478,83 @@ export class GameScene extends Phaser.Scene {
     this.tweens.add({ targets: this.banner, alpha: 1, scale: 1, duration: 200, ease: 'Back.Out', yoyo: true, hold: 900 });
   }
 
-  private buildOverlay() {
+  // ---------- duraklatma / oyun sonu ----------
+
+  private buildPauseMenu() {
     const { width, height } = this.scale;
-    const shade = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.6);
-    const title = this.add
-      .text(width / 2, height / 2 - 40, '', { fontFamily: FONT, fontSize: '48px', color: COLORS.text, fontStyle: 'bold' })
-      .setOrigin(0.5)
-      .setName('title');
-    const stats = this.add
-      .text(width / 2, height / 2 + 20, '', { fontFamily: FONT, fontSize: '26px', color: COLORS.text })
-      .setOrigin(0.5)
-      .setName('stats');
-    const hint = this.add
-      .text(width / 2, height / 2 + 70, 'Tekrar: Boşluk / R / dokun', { fontFamily: FONT, fontSize: '20px', color: '#bdb6a8' })
-      .setOrigin(0.5);
-    return this.add.container(0, 0, [shade, title, stats, hint]).setDepth(50).setVisible(false);
+    const c = this.add.container(0, 0).setDepth(60).setVisible(false);
+    c.add(this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.6));
+    c.add(this.add.text(width / 2, height / 2 - 110, 'Duraklatıldı', textStyle(48, { fontStyle: 'bold' })).setOrigin(0.5));
+    c.add(new Button(this, width / 2, height / 2 - 10, 'Devam', () => this.togglePause(), { variant: 'primary', width: 280 }));
+    c.add(new Button(this, width / 2, height / 2 + 60, 'Baştan başla', () => this.leave(() => this.restart()), { width: 280 }));
+    c.add(new Button(this, width / 2, height / 2 + 130, 'Menüye dön', () => this.leave(() => this.scene.start('menu')), { width: 280 }));
+    return c;
+  }
+
+  private togglePause() {
+    if (!this.world?.alive) return;
+    this.paused = !this.paused;
+    this.pauseMenu.setVisible(this.paused);
+    if (this.paused) this.tweens.pauseAll();
+    else this.tweens.resumeAll();
+  }
+
+  /** Turu yarıda bırakmak da kazancı bankaya yatırır. */
+  private leave(next: () => void) {
+    this.tweens.resumeAll();
+    this.bankRun();
+    next();
+  }
+
+  private bankRun() {
+    if (this.banked) return -1;
+    this.banked = true;
+    const { stats, wave } = this.world;
+    const n = Math.max(wave.n, 1);
+    const rank = applyRun(profile.data, {
+      hero: this.hero,
+      wave: n,
+      kills: stats.kills,
+      gold: stats.gold,
+      gems: stats.gems,
+      score: score(n, stats.kills, stats.gold),
+    });
+    profile.save();
+    return rank;
   }
 
   private showGameOver(reason: GameOverReason) {
-    this.cameras.main.shake(180, 0.008);
-    const why = { wall: 'Duvara çarptın', self: 'Kendi kuyruğuna çarptın', wiped: 'Kafile düştü' }[reason];
-    (this.overlay.getByName('title') as Phaser.GameObjects.Text).setText(why);
+    this.shake(180, 0.008);
+    const rank = this.bankRun();
+    const { width, height } = this.scale;
     const { stats, wave } = this.world;
     const n = Math.max(wave.n, 1);
-    (this.overlay.getByName('stats') as Phaser.GameObjects.Text).setText(
-      `Dalga ${n}  ·  Öldürme ${stats.kills}  ·  Altın ${stats.gold}  ·  Skor ${score(n, stats.kills, stats.gold)}`,
+    const why = { wall: 'Duvara çarptın', self: 'Kendi kuyruğuna çarptın', wiped: 'Kafile düştü' }[reason];
+    const rankText = rank === 0 ? 'Yeni rekor!' : rank > 0 ? `Rekor listesinde ${rank + 1}. sıra` : '';
+
+    const o = this.overlay.removeAll(true);
+    o.add(this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.65));
+    o.add(this.add.text(width / 2, height / 2 - 150, why, textStyle(52, { fontStyle: 'bold' })).setOrigin(0.5));
+    o.add(this.add.text(width / 2, height / 2 - 85, rankText, textStyle(26, { color: UI.gold, fontStyle: 'bold' })).setOrigin(0.5));
+    o.add(
+      this.add
+        .text(
+          width / 2,
+          height / 2 - 30,
+          `Dalga ${n}  ·  Öldürme ${stats.kills}  ·  Skor ${score(n, stats.kills, stats.gold)}`,
+          textStyle(24),
+        )
+        .setOrigin(0.5),
     );
-    this.overlay.setVisible(true);
+    o.add(
+      this.add
+        .text(width / 2, height / 2 + 10, `+${stats.gold} altın   +${stats.gems} mücevher kasaya eklendi`, textStyle(20, { color: UI.muted }))
+        .setOrigin(0.5),
+    );
+    o.add(new Button(this, width / 2 - 220, height / 2 + 100, 'Dükkan', () => this.scene.start('shop'), { width: 200 }));
+    o.add(new Button(this, width / 2, height / 2 + 100, 'Tekrar', () => this.restart(), { variant: 'primary', width: 200 }));
+    o.add(new Button(this, width / 2 + 220, height / 2 + 100, 'Menü', () => this.scene.start('menu'), { width: 200 }));
+    o.add(this.add.text(width / 2, height / 2 + 160, 'Boşluk / Enter: Tekrar', textStyle(16, { color: UI.muted })).setOrigin(0.5));
+    o.setVisible(true);
   }
 }

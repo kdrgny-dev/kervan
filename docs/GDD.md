@@ -1,7 +1,7 @@
 # Kervan — Oyun Tasarım Dokümanı (GDD) v0.1
 
 > Çalışma adı: **Kervan**. Nimble Quest tarzı snake + otomatik savaş + roguelite meta ilerleme.
-> Platform: Web + Masaüstü (Mac / Windows / Linux). Tarih: 2026-10-18, son güncelleme 2026-10-23 (F2).
+> Platform: Web + Masaüstü (Mac / Windows / Linux). Tarih: 2026-10-18, son güncelleme 2026-10-23 (F3).
 
 ---
 
@@ -54,7 +54,7 @@ Saldırılar otomatiktir; her kahraman kendi menzilindeki en yakın düşmanı h
 | Okçu | Menzilli tek hedef | 35 | 6 | 0.7 sn | 4 | Ok mermisi | Başlangıç |
 | Büyücü | Alan hasarı | 30 | 8 | 1.4 sn | 3 | Ateş topu, 1 hücre yarıçap | 300 altın |
 | Rahip | Destek | 40 | 3 | 1.0 sn | 3 | Her 3 sn tüm kafileye +3 HP | 500 altın |
-| Barbar | Yakın dövüş, alan | 75 | 14 | 1.1 sn | 1 | Komşu tüm düşmanlara vurur | 800 altın |
+| Haydut | Hızlı yakın dövüş | 50 | 9 | 0.55 sn | 1 | %25 şansla x2 kritik vuruş | 800 altın |
 
 **Tur içi seviye:** Öldürmeler ortak XP verir (düşmanın bütçe maliyeti kadar). Her seviye: kafiledeki tüm kahramanlara +%8 hasar, +%8 maks. HP. Seviye eşiği: `20 × 1.35^seviye`. Seviye atlayınca maks. HP artışı mevcut HP'ye de eklenir; sonradan katılan kahramanlar güncel bonusla gelir.
 
@@ -64,15 +64,15 @@ Saldırılar otomatiktir; her kahraman kendi menzilindeki en yakın düşmanı h
 
 ## 5. Düşmanlar (MVP: 4 + mini boss)
 
-Düşmanlar da ızgarada, kendi tick hızlarıyla hareket eder. Yakın dövüş düşmanları bir kahramana komşu (çapraz dahil) olunca durur ve saldırı aralığıyla vurur. Saldırı aralıkları: Balçık 1.0 sn, Yarasa 0.8 sn, Ork 1.2 sn, İskelet 2.0 sn (mermi).
+Düşmanlar da ızgarada, kendi tick hızlarıyla hareket eder. Saldırı aralıkları: Goblin 1.2 sn. Yakın dövüş düşmanları bir kahramana komşu (çapraz dahil) olunca durur ve saldırı aralığıyla vurur. Saldırı aralıkları: Balçık 1.0 sn, Yarasa 0.8 sn, İskelet 2.0 sn (mermi).
 
 | Düşman | HP | Temas hasarı | Hız (tick) | Davranış | Bütçe maliyeti | İlk dalga |
 |---|---|---|---|---|---|---|
 | Balçık | 20 | 8 | 400 ms | Rastgele dolaşır, kafileye yavaş yönelir | 2 | 1 |
 | Yarasa | 8 | 4 | 200 ms | Hızlı, zikzak | 2 | 2 |
 | İskelet Okçu | 15 | 5 (mermi) | 350 ms | 4 hücre mesafe korur, ateş eder (2 sn) | 3 | 3 |
-| Ork | 45 | 12 | 300 ms | Lideri kovalar, yakına gelince 1 sn hızlanır | 5 | 4 |
-| **Ork Şefi** (mini boss) | 400 | 20 | 350 ms | Ork çağırır, şok dalgası (3 hücre) | — | Her 5. dalga |
+| Goblin | 45 | 12 | 300 ms | Lideri kovalar, 3 hücreden yakında 2× hızlanır | 5 | 4 |
+| **Balçık Kralı** (mini boss) | 400 | 20 | 450 ms | 6 sn'de bir balçık çağırır (en fazla 4); 5 sn'de bir şok dalgası: 0.8 sn uyarı, 3 hücre içine 15 hasar. Ölünce 25 altın + 1 mücevher | — | Her 5. dalga |
 
 ---
 
@@ -83,7 +83,7 @@ Düşmanlar da ızgarada, kendi tick hızlarıyla hareket eder. Yakın dövüş 
 - Kafileye 3 hücreden yakın yerde doğma yasak.
 - İlk dalga 2 sn sonra başlar. Başlangıçta haritada bir Okçu jetonu bulunur.
 - Tüm düşmanlar ölünce dalga biter → 3 sn mola → **kahraman jetonu** haritaya düşer (yerde jeton yoksa).
-- Her 5. dalga: mini boss + bütçenin yarısı.
+- Her 5. dalga: Balçık Kralı + bütçenin yarısı.
 - Zorluk ölçeği: dalga 10 sonrası düşman HP'si dalga başına +%6.
 
 ---
@@ -123,9 +123,11 @@ Düşman başına tek zar atılır, eşikler tablodaki sırayla kümülatiftir (
   - HP +%10 / seviye, Hasar +%10 / seviye
   - Maliyet: `50 × 1.5^seviye` altın
 - **Genel yükseltmeler** (mücevherle):
-  - Başlangıçta rastgele güçlendirme (5 mücevher)
-  - Güçlendirme süresi +2 sn (10 mücevher, 3 seviye)
-  - Başlangıçta 2. kahraman (25 mücevher)
+  - Hızlı başlangıç: ilk dalga başlarken rastgele güçlendirme (5 mücevher)
+  - Uzun etki: güçlendirme süresi +2 sn (10 mücevher, 3 seviye)
+  - Yoldaş: tura açık kahramanlardan rastgele 2. kahramanla başla (25 mücevher)
+- Kahraman jetonları yalnızca açılmış kahramanlardan çıkar.
+- Turu duraklatma menüsünden bırakmak da kazancı kasaya ekler.
 - **Kayıt**: `localStorage` (web) — Tauri webview'de de çalışır. Faz 5'te isteğe bağlı dosyaya yedek.
 
 **Skor:** `ulaşılan dalga × 100 + öldürme × 5 + altın`. Yerel en iyi skor listesi (ilk 10).
@@ -185,7 +187,7 @@ kervan/
 - **Sabit adımlı simülasyon** (60 Hz), çizim bağımsız. Oyun mantığı `sim/` içinde, Phaser'ı bilmez → birim testleri kolay.
 - **Tohumlu RNG** — hata ayıklamada aynı turu tekrar oynatabilmek için.
 - **Veri odaklı denge** — tüm sayılar `data/` dosyalarında; kodu değiştirmeden ayarlanır.
-- **Asset manifesti** — sahneler dosya adı değil anahtar kullanır (`hero.knight`, `enemy.slime`).
+- **Sprite manifesti** — `src/render/sprites.ts`: doku anahtarı → dosya, kahraman/düşman → `SpriteSet` (idle, walk, attack, hurt). Çizimi olmayan birim geometrik geçici çizimle görünür.
 - Çözünürlük: mantıksal 1152 × 720, `Scale.FIT` ile ölçeklenir; masaüstünde tam ekran destekli.
 
 **Dağıtım**
@@ -202,7 +204,7 @@ kervan/
 | ✅ **F0 İskelet** | Vite + Phaser + TS kurulum, ızgara, kafile hareketi, girdi tamponu, duvar/kuyruk çarpışması, geçici çizimler | Snake oynanıyor |
 | ✅ **F1 Savaş** | Kahraman otomatik saldırıları, mermiler, 4 düşman tipi + yapay zekâ, dalga sistemi, HP/ölüm, lider devri | 5 dalga hayatta kalınabiliyor |
 | ✅ **F2 Ganimet** | Altın, güçlendirmeler, kahraman jetonu, tur içi seviye | Kafile büyüyor, tur anlamlı |
-| **F3 Meta** | Menüler, kahraman seçimi, dükkan, kayıt, oyun sonu ekranı, mini boss | Turlar arası ilerleme var |
+| ✅ **F3 Meta** | Menüler, kahraman seçimi, dükkan, kayıt, oyun sonu ekranı, mini boss | Turlar arası ilerleme var |
 | **F4 His** | Parçacıklar, sarsıntı, hasar sayıları, sesler, gamepad, denge turu | Oynaması keyifli |
 | **F5 Paketleme** | Tauri, CI derlemeleri, web yayını | 3 işletim sisteminde indirilebilir |
 | **F6 Grafik** | Claude Design asset'lerinin manifest ile entegrasyonu | Nihai görünüm |
@@ -220,16 +222,16 @@ F6 paralel yürüyebilir: grafik üretimi F0'dan itibaren başlayabilir.
 ### Karakterler — tuval 96 × 96 (oyunda 48 × 48)
 | Anahtar | Açıklama |
 |---|---|
-| `hero.knight` | Mavi zırhlı şövalye, kılıç + kalkan |
-| `hero.archer` | Yeşil kukuletalı okçu, yay |
-| `hero.mage` | Mor cübbeli büyücü, asa, sivri şapka |
+| `hero.knight` ✅ | Mavi zırhlı şövalye, kılıç + kalkan (yürüme 4, saldırı 2, hasar 1 kare) |
+| `hero.archer` ✅ | Yeşil kukuletalı okçu, yay |
+| `hero.mage` ✅ | Mor cübbeli büyücü, asa, sivri şapka |
 | `hero.priest` | Beyaz-altın cübbeli rahip, ışıklı asa |
-| `hero.barbarian` | Kızıl saçlı barbar, çift taraflı balta |
-| `enemy.slime` | Yeşil yarı saydam balçık |
+| `hero.rogue` ✅ | Mor kukuletalı haydut, hançer |
+| `enemy.slime` ✅ | Yeşil yarı saydam balçık |
 | `enemy.bat` | Mor yarasa, açık kanatlar |
-| `enemy.skeleton` | İskelet okçu |
-| `enemy.orc` | Yeşil tenli ork, sopa |
-| `boss.orc_chief` | Ork şefi, tuval 192 × 192, boynuzlu miğfer |
+| `enemy.skeleton` ✅ | İskelet okçu |
+| `enemy.goblin` ✅ | Yeşil goblin |
+| `boss.slime_king` ✅ | Taçlı mor balçık, tuval 128 × 128 |
 
 ### Harita karoları — 96 × 96, kesintisiz döşenebilir
 - `tile.floor_1..3` (çim/taş varyasyonları), `tile.wall`, `tile.wall_corner`, `tile.edge`, `tile.decor_1..4` (çiçek, taş, kemik, mantar — çarpışmasız)

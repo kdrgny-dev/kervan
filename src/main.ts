@@ -1,6 +1,12 @@
 import Phaser from 'phaser';
 import { CELL, GRID_H, GRID_W } from './config';
+import { profile } from './meta/profile';
+import { BootScene } from './scenes/BootScene';
 import { GameScene } from './scenes/GameScene';
+import { HeroSelectScene } from './scenes/HeroSelectScene';
+import { MenuScene } from './scenes/MenuScene';
+import { SettingsScene } from './scenes/SettingsScene';
+import { ShopScene } from './scenes/ShopScene';
 
 const game = new Phaser.Game({
   type: Phaser.AUTO,
@@ -9,7 +15,7 @@ const game = new Phaser.Game({
   height: GRID_H * CELL,
   backgroundColor: '#14121c',
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-  scene: [GameScene],
+  scene: [BootScene, MenuScene, HeroSelectScene, GameScene, ShopScene, SettingsScene],
 });
 
-if (import.meta.env.DEV) Object.assign(window, { __kervan: game });
+if (import.meta.env.DEV) Object.assign(window, { __kervan: game, __profile: profile });

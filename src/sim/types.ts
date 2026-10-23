@@ -27,6 +27,9 @@ export interface Enemy {
   moveAcc: number;
   moveMs: number;
   attackCd: number;
+  summonCd?: number;
+  shockCd?: number;
+  shockWarned?: boolean;
 }
 
 export interface Projectile {
@@ -85,11 +88,14 @@ export type WorldEvent =
   | { type: 'heroHealed'; id: number; amount: number }
   | { type: 'heroDied'; id: number; pos: Vec }
   | { type: 'enemySpawned'; id: number }
-  | { type: 'enemyHit'; id: number; dmg: number }
+  | { type: 'enemyHit'; id: number; dmg: number; crit?: boolean }
   | { type: 'enemyDied'; id: number; pos: Vec }
+  | { type: 'heroAttack'; id: number }
   | { type: 'slash'; pos: Vec }
   | { type: 'explosion'; x: number; y: number; radius: number }
   | { type: 'bump'; pos: Vec }
+  | { type: 'shockwaveWarn'; id: number; radius: number }
+  | { type: 'shockwave'; pos: Vec; radius: number }
   | { type: 'lootSpawned'; id: number }
   | { type: 'lootCollected'; id: number; loot: Loot }
   | { type: 'lootExpired'; id: number }
@@ -100,7 +106,17 @@ export type WorldEvent =
   | { type: 'waveStart'; n: number }
   | { type: 'waveCleared'; n: number };
 
+export interface Loadout {
+  leader: HeroKind;
+  unlocked: HeroKind[];
+  upgrades: Partial<Record<HeroKind, { hp: number; dmg: number }>>;
+  startPower: boolean;
+  powerBonusMs: number;
+  secondHero: boolean;
+}
+
 export interface World {
+  loadout: Loadout;
   party: Hero[];
   enemies: Enemy[];
   projectiles: Projectile[];

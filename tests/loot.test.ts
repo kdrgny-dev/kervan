@@ -12,7 +12,7 @@ describe('drop table', () => {
     expect(rollDrop(() => 0.001, 'slime')?.type).toBe('hero');
     expect(rollDrop(() => 0.05, 'slime')?.type).toBe('power');
     expect(rollDrop(() => 0.08, 'slime')?.type).toBe('gem');
-    expect(rollDrop(() => 0.5, 'orc')).toEqual({ type: 'coin', value: 3 });
+    expect(rollDrop(() => 0.5, 'goblin')).toEqual({ type: 'coin', value: 3 });
     expect(rollDrop(() => 0.99, 'slime')).toBeNull();
   });
 
@@ -68,10 +68,10 @@ describe('power-ups', () => {
   it('rage doubles hero damage', () => {
     const w = arena([{ x: 5, y: 5 }]);
     activatePower(w, 'rage');
-    const orc = spawnEnemy(w, 'orc', { x: 5, y: 6 });
+    const gob = spawnEnemy(w, 'goblin', { x: 5, y: 6 });
     freeze(w);
     stepWorld(w, 10);
-    expect(orc.hp).toBe(45 - 20);
+    expect(gob.hp).toBe(45 - 20);
   });
 
   it('shield blocks hero damage', () => {
@@ -96,8 +96,8 @@ describe('power-ups', () => {
 
   it('bomb hits every enemy at once', () => {
     const w = arena([{ x: 5, y: 5 }]);
-    const a = spawnEnemy(w, 'orc', { x: 15, y: 10 });
-    const b = spawnEnemy(w, 'orc', { x: 20, y: 2 });
+    const a = spawnEnemy(w, 'goblin', { x: 15, y: 10 });
+    const b = spawnEnemy(w, 'goblin', { x: 20, y: 2 });
     activatePower(w, 'bomb');
     expect(a.hp).toBe(45 - BOMB_DMG);
     expect(b.hp).toBe(45 - BOMB_DMG);
@@ -139,9 +139,9 @@ describe('levels', () => {
   it('levels raise hero damage', () => {
     const w = arena([{ x: 5, y: 5 }]);
     gainXp(w, xpToNext(0) + xpToNext(1) + xpToNext(2));
-    const orc = spawnEnemy(w, 'orc', { x: 5, y: 6 });
+    const gob = spawnEnemy(w, 'goblin', { x: 5, y: 6 });
     freeze(w);
     stepWorld(w, 10);
-    expect(orc.hp).toBe(45 - Math.round(10 * 1.24));
+    expect(gob.hp).toBe(45 - Math.round(10 * 1.24));
   });
 });

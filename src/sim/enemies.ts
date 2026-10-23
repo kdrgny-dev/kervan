@@ -1,5 +1,5 @@
 import { CHARGE_DIST, CHARGE_SPEEDUP, enemyHpScale } from '../data/balance';
-import { ENEMIES, type EnemyDef, type EnemyKind } from '../data/enemies';
+import { type BossAbilities, ENEMIES, type EnemyDef, type EnemyKind } from '../data/enemies';
 import { chebyshev, manhattan, neighbors, type Vec } from './grid';
 import { damageHero, fire, nearestHero } from './combat';
 import { pick } from './rng';
@@ -10,6 +10,10 @@ export function spawnEnemy(w: World, kind: EnemyKind, pos: Vec): Enemy {
   const def = ENEMIES[kind];
   const hp = Math.round(def.hp * enemyHpScale(w.wave.n));
   const e: Enemy = { id: w.nextId++, kind, pos, prev: pos, hp, maxHp: hp, moveAcc: 0, moveMs: def.moveMs, attackCd: def.attackMs / 2 };
+  if (def.boss) {
+    e.summonCd = def.boss.summonEveryMs / 2;
+    e.shockCd = def.boss.shockEveryMs;
+  }
   w.enemies.push(e);
   w.events.push({ type: 'enemySpawned', id: e.id });
   return e;
@@ -37,13 +41,43 @@ export function updateEnemies(w: World, dt: number) {
       }
     }
 
-    e.moveMs = def.brain === 'charge' && dist <= CHARGE_DIST ? def.moveMs * CHARGE_SPEEDUP : def.moveMs;
+    if (def.boss) {
+      bossAbilities(w, e, def.boss, dt);
+      if (!w.alive) return;
+    }
+
+    const charging = def.brain === 'charge' && !def.boss && dist <= CHARGE_DIST;
+    e.moveMs = charging ? def.moveMs * CHARGE_SPEEDUP : def.moveMs;
     e.moveAcc += dt;
     if (e.moveAcc < e.moveMs) continue;
     e.moveAcc = Math.min(e.moveAcc - e.moveMs, e.moveMs);
     e.prev = e.pos;
     const next = chooseStep(w, e, def, near.pos, dist);
     if (next) e.pos = next;
+  }
+}
+
+function bossAbilities(w: World, e: Enemy, b: BossAbilities, dt: number) {
+  e.summonCd = (e.summonCd ?? b.summonEveryMs) - dt;
+  if (e.summonCd <= 0) {
+    e.summonCd += b.summonEveryMs;
+    const minions = w.enemies.filter((m) => m.kind === b.summon && m.hp > 0).length;
+    const spots = neighbors(e.pos).filter((p) => isFree(w, p));
+    if (minions < b.maxMinions && spots.length > 0) spawnEnemy(w, b.summon, pick(w.rng, spots));
+  }
+
+  e.shockCd = (e.shockCd ?? b.shockEveryMs) - dt;
+  if (!e.shockWarned && e.shockCd <= b.shockWarnMs) {
+    e.shockWarned = true;
+    w.events.push({ type: 'shockwaveWarn', id: e.id, radius: b.shockRadius });
+  }
+  if (e.shockCd <= 0) {
+    e.shockCd += b.shockEveryMs;
+    e.shockWarned = false;
+    w.events.push({ type: 'shockwave', pos: e.pos, radius: b.shockRadius });
+    for (const h of [...w.party]) {
+      if (chebyshev(h.pos, e.pos) <= b.shockRadius) damageHero(w, h, b.shockDmg);
+    }
   }
 }
 

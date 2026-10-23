@@ -18,7 +18,7 @@ import { pick, type Rng } from './rng';
 import { freeCells, scaledMaxHp } from './state';
 import type { Enemy, Loot, LootDrop, World } from './types';
 
-export function rollDrop(rng: Rng, enemy: EnemyKind): LootDrop | null {
+export function rollDrop(rng: Rng, enemy: EnemyKind, heroes: readonly HeroKind[] = HERO_KINDS): LootDrop | null {
   const r = rng();
   let acc = 0;
   for (const row of DROP_TABLE) {
@@ -26,7 +26,7 @@ export function rollDrop(rng: Rng, enemy: EnemyKind): LootDrop | null {
     if (r >= acc) continue;
     switch (row.kind) {
       case 'hero':
-        return { type: 'hero', hero: pick(rng, HERO_KINDS) };
+        return { type: 'hero', hero: pick(rng, heroes) };
       case 'power':
         return { type: 'power', power: pick(rng, POWER_KINDS) };
       case 'gem':
@@ -49,7 +49,7 @@ export function dropLoot(w: World, drop: LootDrop, pos: Vec, lifetimeMs = LOOT_L
 export function spawnHeroToken(w: World, hero?: HeroKind) {
   const cells = freeCells(w, (p) => !w.loot.some((l) => eq(l.pos, p)));
   if (cells.length === 0) return;
-  dropLoot(w, { type: 'hero', hero: hero ?? pick(w.rng, HERO_KINDS) }, pick(w.rng, cells), Infinity);
+  dropLoot(w, { type: 'hero', hero: hero ?? pick(w.rng, w.loadout.unlocked) }, pick(w.rng, cells), Infinity);
 }
 
 export const hasHeroToken = (w: World) => w.loot.some((l) => l.type === 'hero');
@@ -77,7 +77,7 @@ export function activatePower(w: World, power: PowerKind) {
     for (const e of w.enemies) damageEnemy(w, e, BOMB_DMG);
     return;
   }
-  w.powers[power] = POWERS[power].durationMs;
+  w.powers[power] = POWERS[power].durationMs + w.loadout.powerBonusMs;
   if (power === 'speed') w.tickMs = SPEED_TICK_MS;
   w.events.push({ type: 'powerStart', power });
 }
@@ -109,8 +109,15 @@ export function updateLoot(w: World, dt: number) {
 
 export function onEnemyKilled(w: World, e: Enemy) {
   w.stats.kills++;
-  gainXp(w, ENEMIES[e.kind].cost);
-  const drop = rollDrop(w.rng, e.kind);
+  const def = ENEMIES[e.kind];
+  gainXp(w, def.xp ?? def.cost);
+  if (def.boss) {
+    dropLoot(w, { type: 'coin', value: def.gold }, e.pos);
+    const spot = freeCells(w, (p) => chebyshev(p, e.pos) === 1)[0];
+    if (spot) dropLoot(w, { type: 'gem' }, spot);
+    return;
+  }
+  const drop = rollDrop(w.rng, e.kind, w.loadout.unlocked);
   if (drop) dropLoot(w, drop, e.pos);
 }
 
