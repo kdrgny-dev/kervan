@@ -1,14 +1,16 @@
 import Phaser from 'phaser';
+import { audio } from '../audio/audio';
 import { profile } from '../meta/profile';
 import type { Settings } from '../meta/save';
+import { bindPad } from '../input/gamepad';
 import { Button } from '../ui/Button';
 import { textStyle, UI } from '../ui/theme';
 
 const TOGGLES: { key: keyof Settings; label: string; note?: string }[] = [
   { key: 'shake', label: 'Ekran sarsıntısı' },
   { key: 'damageNumbers', label: 'Hasar sayıları' },
-  { key: 'sfx', label: 'Ses efektleri', note: 'Faz 4' },
-  { key: 'music', label: 'Müzik', note: 'Faz 4' },
+  { key: 'sfx', label: 'Ses efektleri' },
+  { key: 'music', label: 'Müzik' },
 ];
 
 export class SettingsScene extends Phaser.Scene {
@@ -33,6 +35,7 @@ export class SettingsScene extends Phaser.Scene {
         () => {
           settings[t.key] = !settings[t.key];
           profile.save();
+          audio.configure(settings);
           btn.setLabel(label());
         },
         { width: 480 },
@@ -47,5 +50,6 @@ export class SettingsScene extends Phaser.Scene {
 
     new Button(this, width / 2, height - 70, 'Geri', () => this.scene.start('menu'), { width: 220 });
     this.input.keyboard?.on('keydown-ESC', () => this.scene.start('menu'));
+    bindPad(this, { back: () => this.scene.start('menu') });
   }
 }

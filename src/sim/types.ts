@@ -89,7 +89,7 @@ export type WorldEvent =
   | { type: 'heroDied'; id: number; pos: Vec }
   | { type: 'enemySpawned'; id: number }
   | { type: 'enemyHit'; id: number; dmg: number; crit?: boolean }
-  | { type: 'enemyDied'; id: number; pos: Vec }
+  | { type: 'enemyDied'; id: number; kind: EnemyKind; pos: Vec }
   | { type: 'heroAttack'; id: number }
   | { type: 'slash'; pos: Vec }
   | { type: 'explosion'; x: number; y: number; radius: number }
@@ -104,7 +104,7 @@ export type WorldEvent =
   | { type: 'bomb' }
   | { type: 'levelUp'; level: number }
   | { type: 'waveStart'; n: number }
-  | { type: 'waveCleared'; n: number };
+  | { type: 'waveCleared'; n: number; bonus: number };
 
 export interface Loadout {
   leader: HeroKind;

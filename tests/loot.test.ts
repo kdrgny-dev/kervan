@@ -11,7 +11,7 @@ describe('drop table', () => {
   it('maps the roll onto cumulative thresholds', () => {
     expect(rollDrop(() => 0.001, 'slime')?.type).toBe('hero');
     expect(rollDrop(() => 0.05, 'slime')?.type).toBe('power');
-    expect(rollDrop(() => 0.08, 'slime')?.type).toBe('gem');
+    expect(rollDrop(() => 0.1, 'slime')?.type).toBe('gem');
     expect(rollDrop(() => 0.5, 'goblin')).toEqual({ type: 'coin', value: 3 });
     expect(rollDrop(() => 0.99, 'slime')).toBeNull();
   });

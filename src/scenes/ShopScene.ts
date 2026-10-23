@@ -5,6 +5,7 @@ import { profile } from '../meta/profile';
 import { buyGemUpgrade, nextGemCost, nextUpgradeCost, unlockHero, upgradeHero } from '../meta/shop';
 import { HERO_SPRITES } from '../render/sprites';
 import { UnitView } from '../render/UnitView';
+import { bindPad } from '../input/gamepad';
 import { Button } from '../ui/Button';
 import { textStyle, UI } from '../ui/theme';
 
@@ -44,6 +45,7 @@ export class ShopScene extends Phaser.Scene {
 
     new Button(this, width / 2, height - 50, 'Geri', () => this.scene.start('menu'), { width: 220, height: 50 });
     this.input.keyboard?.on('keydown-ESC', () => this.scene.start('menu'));
+    bindPad(this, { back: () => this.scene.start('menu') });
   }
 
   private buy(action: () => boolean) {

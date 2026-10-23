@@ -11,7 +11,7 @@ export function damageEnemy(w: World, e: Enemy, dmg: number, crit = false) {
   e.hp -= dmg;
   w.events.push({ type: 'enemyHit', id: e.id, dmg, crit });
   if (e.hp > 0) return;
-  w.events.push({ type: 'enemyDied', id: e.id, pos: e.pos });
+  w.events.push({ type: 'enemyDied', id: e.id, kind: e.kind, pos: e.pos });
   onEnemyKilled(w, e);
 }
 

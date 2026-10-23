@@ -3,9 +3,9 @@ import type { HeroKind } from './heroes';
 export const UNLOCK_COST: Record<HeroKind, number> = {
   knight: 0,
   archer: 0,
-  mage: 300,
-  priest: 500,
-  rogue: 800,
+  mage: 200,
+  priest: 350,
+  rogue: 500,
 };
 
 export const STARTING_HEROES: HeroKind[] = ['knight', 'archer'];

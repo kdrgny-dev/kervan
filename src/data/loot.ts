@@ -20,7 +20,7 @@ export const POWER_KINDS = Object.keys(POWERS) as PowerKind[];
 
 /** Düşman başına tek zar; sıralı eşikler (kümülatif). */
 export const DROP_TABLE = [
-  { kind: 'hero', chance: 0.015 },
+  { kind: 'hero', chance: 0.03 },
   { kind: 'power', chance: 0.06 },
   { kind: 'gem', chance: 0.02 },
   { kind: 'coin', chance: 0.7 },

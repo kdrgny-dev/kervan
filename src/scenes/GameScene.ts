@@ -4,10 +4,12 @@ import { SPAWN_WARN_MS } from '../data/balance';
 import { ENEMIES } from '../data/enemies';
 import { HEROES, type HeroKind } from '../data/heroes';
 import { LOOT_BLINK_MS, POWERS, type PowerKind, score, xpToNext } from '../data/loot';
+import { audio } from '../audio/audio';
 import { bindControls } from '../input/controls';
 import { profile } from '../meta/profile';
 import { applyRun, loadoutFrom } from '../meta/shop';
 import { drawArena } from '../render/arena';
+import { Fx } from '../render/fx';
 import { ENEMY_SPRITES, HERO_SPRITES } from '../render/sprites';
 import { UnitView } from '../render/UnitView';
 import type { Vec } from '../sim/grid';
@@ -41,6 +43,8 @@ const PROJECTILE_COLORS: Record<Projectile['kind'], number> = {
   bone: 0xd9d4c5,
 };
 
+const MAX_DAMAGE_TEXTS = 24;
+
 const px = (v: number) => v * CELL + CELL / 2;
 const lerp = (a: Vec, b: Vec, t: number): Vec => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t });
 
@@ -48,12 +52,14 @@ export class GameScene extends Phaser.Scene {
   private hero: HeroKind = 'knight';
   private world!: World;
   private paused = false;
+  private liveTexts = 0;
   private banked = false;
   private heroViews = new Map<number, UnitView>();
   private enemyViews = new Map<number, UnitView>();
   private projectileViews = new Map<number, Phaser.GameObjects.Shape>();
   private lootViews = new Map<number, Phaser.GameObjects.Container>();
   private markers!: Phaser.GameObjects.Graphics;
+  private fx!: Fx;
   private hud!: Phaser.GameObjects.Text;
   private wallet!: Phaser.GameObjects.Text;
   private powerText!: Phaser.GameObjects.Text;
@@ -76,9 +82,11 @@ export class GameScene extends Phaser.Scene {
     this.enemyViews = new Map();
     this.projectileViews = new Map();
     this.lootViews = new Map();
+    this.liveTexts = 0;
 
     drawArena(this);
     this.markers = this.add.graphics().setDepth(2);
+    this.fx = new Fx(this);
     this.buildHud();
     this.overlay = this.add.container(0, 0).setDepth(60).setVisible(false);
     this.pauseMenu = this.buildPauseMenu();
@@ -131,76 +139,129 @@ export class GameScene extends Phaser.Scene {
   private handle(e: WorldEvent) {
     const now = this.time.now;
     switch (e.type) {
-      case 'heroAttack':
-        this.heroViews.get(e.id)?.playAttack(now);
+      case 'moved': {
+        const leader = this.world.party[0];
+        if (leader) this.fx.dust(px(leader.prev.x), px(leader.prev.y) + CELL * 0.35);
         break;
+      }
+      case 'heroAttack': {
+        this.heroViews.get(e.id)?.playAttack(now);
+        const kind = this.world.party.find((h) => h.id === e.id)?.kind;
+        const sound = kind && ({ archer: 'arrow', mage: 'fireball', priest: 'holy' } as const)[kind as 'archer'];
+        if (sound) audio.play(sound);
+        break;
+      }
       case 'heroHit': {
         const v = this.heroViews.get(e.id);
         v?.flash(0xff5a4a);
         v?.playHurt(now);
         this.damageText(v, `-${e.dmg}`, UI.danger);
+        audio.play('heroHurt');
         break;
       }
-      case 'heroHealed':
-        this.heroViews.get(e.id)?.flash(0x9cff9c, 140, 'tint');
+      case 'heroHealed': {
+        const v = this.heroViews.get(e.id);
+        v?.flash(0x9cff9c, 140, 'tint');
+        if (v) this.fx.sparkle(v.x, v.y, 0x9cff9c, 3);
+        audio.play('heal');
         break;
-      case 'heroDied':
+      }
+      case 'heroDied': {
+        const v = this.heroViews.get(e.id);
+        if (v) this.fx.puff(v.x, v.y, 0xe5533d, 16);
         this.killView(this.heroViews, e.id);
         this.shake(120, 0.006);
+        this.cameras.main.flash(120, 120, 20, 20);
+        audio.play('heroDie');
+        break;
+      }
+      case 'recruited':
+        audio.play('recruit');
+        this.fx.sparkle(px(e.hero.pos.x), px(e.hero.pos.y), COLORS.leader, 10);
         break;
       case 'enemyHit': {
         const v = this.enemyViews.get(e.id);
         v?.flash();
+        if (v) this.fx.spark(v.x, v.y, e.crit ? 8 : 3);
         this.damageText(v, e.crit ? `${e.dmg}!` : `${e.dmg}`, e.crit ? UI.gold : '#ffffff', e.crit ? 24 : 18);
+        audio.play(e.crit ? 'crit' : 'hit');
         break;
       }
-      case 'enemyDied':
+      case 'enemyDied': {
+        const enemy = this.enemyViews.get(e.id);
+        const color = ENEMIES[e.kind].color;
+        const boss = !!ENEMIES[e.kind].boss;
         this.killView(this.enemyViews, e.id);
-        this.burst(px(e.pos.x), px(e.pos.y), 0xf4efe6);
+        this.fx.puff(enemy?.x ?? px(e.pos.x), enemy?.y ?? px(e.pos.y), color, boss ? 60 : 14);
+        if (boss) {
+          this.fx.confetti(px(e.pos.x), px(e.pos.y), 60);
+          this.shake(300, 0.012);
+          this.showBanner('Balçık Kralı yenildi!');
+        }
+        audio.play(boss ? 'explosion' : 'enemyDie');
         break;
+      }
       case 'slash':
         this.slash(e.pos);
+        audio.play('slash');
         break;
       case 'explosion':
         this.ring(px(e.x), px(e.y), CELL * (e.radius + 0.5), 0xff8a2b, 260);
+        this.fx.puff(px(e.x), px(e.y), 0xff8a2b, 18);
+        audio.play('explosion');
         break;
       case 'shockwaveWarn': {
         const v = this.enemyViews.get(e.id);
         if (v) this.ring(v.x, v.y, CELL * (e.radius + 0.5), 0xe5533d, 800, true);
+        audio.play('shockWarn');
         break;
       }
       case 'shockwave':
         this.ring(px(e.pos.x), px(e.pos.y), CELL * (e.radius + 0.5), 0xc77dff, 320);
+        this.fx.puff(px(e.pos.x), px(e.pos.y), 0xc77dff, 30);
         this.shake(260, 0.012);
+        audio.play('shockwave');
         break;
       case 'bump':
         this.shake(90, 0.004);
+        audio.play('bump');
         break;
       case 'lootCollected':
         this.collectFx(e.id, e.loot);
+        if (e.loot.type === 'coin') audio.play('coin');
+        if (e.loot.type === 'gem') audio.play('gem');
         break;
       case 'lootExpired':
         this.removeLoot(e.id, false);
         break;
       case 'powerStart':
         this.showBanner(POWERS[e.power].name + '!');
+        audio.play('power');
         break;
       case 'bomb':
         this.cameras.main.flash(180, 255, 240, 200);
         this.shake(220, 0.01);
+        audio.play('bomb');
         break;
-      case 'levelUp':
+      case 'levelUp': {
         this.showBanner(`Seviye ${e.level + 1}!`);
         for (const v of this.heroViews.values()) v.flash(0xfff3c4, 160, 'tint');
+        const leader = this.heroViews.get(this.world.party[0]?.id ?? -1);
+        if (leader) this.fx.confetti(leader.x, leader.y, 30);
+        audio.play('levelUp');
         break;
+      }
       case 'waveStart':
         this.showBanner(e.n % 5 === 0 ? `Dalga ${e.n} · Balçık Kralı!` : `Dalga ${e.n}`);
+        audio.play('waveStart');
         break;
       case 'waveCleared':
-        this.showBanner('Dalga temizlendi!');
+        this.showBanner(`Dalga temizlendi! +${e.bonus} altın`);
+        audio.play('waveCleared');
         break;
       case 'gameOver':
         this.showGameOver(e.reason);
+        audio.play('gameOver');
         break;
     }
   }
@@ -371,8 +432,15 @@ export class GameScene extends Phaser.Scene {
 
   private collectFx(id: number, loot: Loot) {
     const view = this.lootViews.get(id);
-    if (view && loot.type === 'coin') this.popText(view.x, view.y, `+${loot.value}`, UI.gold);
-    if (view && loot.type === 'gem') this.popText(view.x, view.y, '+1 mücevher', UI.gem);
+    if (view && loot.type === 'coin') {
+      this.popText(view.x, view.y, `+${loot.value}`, UI.gold);
+      this.fx.sparkle(view.x, view.y, COLORS.gold, loot.value > 5 ? 20 : 5);
+    }
+    if (view && loot.type === 'gem') {
+      this.popText(view.x, view.y, '+1 mücevher', UI.gem);
+      this.fx.sparkle(view.x, view.y, COLORS.gem, 10);
+    }
+    if (view && loot.type === 'power') this.fx.sparkle(view.x, view.y, POWERS[loot.power].color, 12);
     this.removeLoot(id, true);
   }
 
@@ -435,6 +503,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   private damageText(anchor: UnitView | undefined, text: string, color: string, size = 18) {
+    // Kalabalık dalgalarda sayı yağmurunu sınırla
+    if (this.liveTexts > MAX_DAMAGE_TEXTS && size <= 18) return;
     if (anchor && this.settings.damageNumbers) this.popText(anchor.x + Phaser.Math.Between(-8, 8), anchor.y - 20, text, color, size);
   }
 
@@ -444,7 +514,17 @@ export class GameScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setStroke('#14121c', 4)
       .setDepth(30);
-    this.tweens.add({ targets: t, y: t.y - 26, alpha: 0, duration: 550, onComplete: () => t.destroy() });
+    this.liveTexts++;
+    this.tweens.add({
+      targets: t,
+      y: t.y - 26,
+      alpha: 0,
+      duration: 500,
+      onComplete: () => {
+        this.liveTexts--;
+        t.destroy();
+      },
+    });
   }
 
   private slash(pos: Vec) {
@@ -462,14 +542,6 @@ export class GameScene extends Phaser.Scene {
       duration: ms,
       onComplete: () => ring.destroy(),
     });
-  }
-
-  private burst(x: number, y: number, color: number) {
-    for (let i = 0; i < 8; i++) {
-      const a = (i / 8) * Math.PI * 2;
-      const dot = this.add.circle(x, y, 4, color).setDepth(14);
-      this.tweens.add({ targets: dot, x: x + Math.cos(a) * 26, y: y + Math.sin(a) * 26, alpha: 0, duration: 300, onComplete: () => dot.destroy() });
-    }
   }
 
   private showBanner(text: string) {

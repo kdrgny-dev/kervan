@@ -6,6 +6,7 @@ import {
   SPAWN_WARN_MS,
   WAVE_BREAK_MS,
   waveBudget,
+  waveGoldBonus,
   BOSS_EVERY,
 } from '../data/balance';
 import { BOSS_KIND, ENEMIES, ENEMY_KINDS, type EnemyKind } from '../data/enemies';
@@ -39,7 +40,9 @@ export function updateWaves(w: World, dt: number) {
   s.pending = s.pending.filter((p) => p.at >= 0);
 
   if (s.pending.length === 0 && w.enemies.every((e) => e.hp <= 0)) {
-    w.events.push({ type: 'waveCleared', n: s.n });
+    const bonus = waveGoldBonus(s.n);
+    w.stats.gold += bonus;
+    w.events.push({ type: 'waveCleared', n: s.n, bonus });
     s.phase = 'break';
     s.timer = WAVE_BREAK_MS;
     if (!hasHeroToken(w)) spawnHeroToken(w);

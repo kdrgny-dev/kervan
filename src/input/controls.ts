@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { SWIPE_MIN_PX } from '../config';
 import type { Dir } from '../sim/grid';
+import { bindPad } from './gamepad';
 
 const KEYS: Record<string, Dir> = {
   ArrowUp: 'up',
@@ -20,6 +21,8 @@ export interface ControlHandlers {
 }
 
 export function bindControls(scene: Phaser.Scene, h: ControlHandlers) {
+  bindPad(scene, { dir: h.onDir, confirm: h.onConfirm, back: h.onPause, pause: h.onPause });
+
   scene.input.keyboard?.on('keydown', (e: KeyboardEvent) => {
     const dir = KEYS[e.code];
     if (dir) {

@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { CELL, GRID_H, GRID_W } from './config';
+import { audio } from './audio/audio';
 import { profile } from './meta/profile';
 import { BootScene } from './scenes/BootScene';
 import { GameScene } from './scenes/GameScene';
@@ -8,6 +9,9 @@ import { MenuScene } from './scenes/MenuScene';
 import { SettingsScene } from './scenes/SettingsScene';
 import { ShopScene } from './scenes/ShopScene';
 
+audio.configure(profile.data.settings);
+audio.unlockOnGesture();
+
 const game = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'game',
@@ -15,6 +19,8 @@ const game = new Phaser.Game({
   height: GRID_H * CELL,
   backgroundColor: '#14121c',
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+  audio: { noAudio: true },
+  input: { gamepad: true },
   scene: [BootScene, MenuScene, HeroSelectScene, GameScene, ShopScene, SettingsScene],
 });
 

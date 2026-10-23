@@ -4,6 +4,7 @@ import { profile } from '../meta/profile';
 import { drawArena } from '../render/arena';
 import { HERO_SPRITES } from '../render/sprites';
 import { UnitView } from '../render/UnitView';
+import { bindPad } from '../input/gamepad';
 import { Button } from '../ui/Button';
 import { textStyle, UI } from '../ui/theme';
 
@@ -40,6 +41,7 @@ export class MenuScene extends Phaser.Scene {
 
     this.input.keyboard?.on('keydown-ENTER', () => this.scene.start('heroSelect'));
     this.input.keyboard?.on('keydown-SPACE', () => this.scene.start('heroSelect'));
+    bindPad(this, { confirm: () => this.scene.start('heroSelect') });
   }
 
   private drawBest(x: number, y: number) {
@@ -66,7 +68,7 @@ export class MenuScene extends Phaser.Scene {
     });
     const spacing = 58;
     let x = -40;
-    this.events.on(Phaser.Scenes.Events.UPDATE, (_t: number, dt: number) => {
+    const tick = (_t: number, dt: number) => {
       x += dt * 0.08;
       if (x - spacing * views.length > width + 40) x = -40;
       const now = this.time.now;
@@ -74,6 +76,8 @@ export class MenuScene extends Phaser.Scene {
         v.setPosition(x - i * spacing, y + Math.abs(Math.sin(now / 90 + i * 0.7)) * -4);
         v.animate(now, true);
       });
-    });
+    };
+    this.events.on(Phaser.Scenes.Events.UPDATE, tick);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.events.off(Phaser.Scenes.Events.UPDATE, tick));
   }
 }

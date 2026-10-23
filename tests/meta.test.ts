@@ -55,7 +55,7 @@ describe('shop', () => {
     const s = defaultSave();
     s.gold = 350;
     expect(unlockHero(s, 'mage')).toBe(true);
-    expect(s.gold).toBe(50);
+    expect(s.gold).toBe(150);
     expect(s.unlocked).toContain('mage');
     expect(unlockHero(s, 'mage')).toBe(false);
   });

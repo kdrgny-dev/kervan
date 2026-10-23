@@ -1,4 +1,4 @@
-import { CHARGE_DIST, CHARGE_SPEEDUP, enemyHpScale } from '../data/balance';
+import { bossHpScale, CHARGE_DIST, CHARGE_SPEEDUP, enemyHpScale } from '../data/balance';
 import { type BossAbilities, ENEMIES, type EnemyDef, type EnemyKind } from '../data/enemies';
 import { chebyshev, manhattan, neighbors, type Vec } from './grid';
 import { damageHero, fire, nearestHero } from './combat';
@@ -8,7 +8,7 @@ import type { Enemy, World } from './types';
 
 export function spawnEnemy(w: World, kind: EnemyKind, pos: Vec): Enemy {
   const def = ENEMIES[kind];
-  const hp = Math.round(def.hp * enemyHpScale(w.wave.n));
+  const hp = Math.round(def.hp * enemyHpScale(w.wave.n) * (def.boss ? bossHpScale(w.wave.n) : 1));
   const e: Enemy = { id: w.nextId++, kind, pos, prev: pos, hp, maxHp: hp, moveAcc: 0, moveMs: def.moveMs, attackCd: def.attackMs / 2 };
   if (def.boss) {
     e.summonCd = def.boss.summonEveryMs / 2;

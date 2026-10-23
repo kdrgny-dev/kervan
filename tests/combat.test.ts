@@ -176,7 +176,8 @@ describe('waves', () => {
     stepWorld(w, FIRST_BREAK_MS);
     w.wave.pending = [];
     const events = stepWorld(w, 10);
-    expect(events).toContainEqual({ type: 'waveCleared', n: 1 });
+    expect(events).toContainEqual({ type: 'waveCleared', n: 1, bonus: 7 });
+    expect(w.stats.gold).toBe(7);
     expect(w.wave.phase).toBe('break');
     expect(w.wave.timer).toBeCloseTo(WAVE_BREAK_MS, -2);
     expect(w.loot.some((l) => l.type === 'hero')).toBe(true);

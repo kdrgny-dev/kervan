@@ -4,6 +4,7 @@ import { HERO_KINDS, HEROES, type HeroKind } from '../data/heroes';
 import { profile } from '../meta/profile';
 import { HERO_SPRITES } from '../render/sprites';
 import { UnitView } from '../render/UnitView';
+import { bindPad } from '../input/gamepad';
 import { Button } from '../ui/Button';
 import { textStyle, UI } from '../ui/theme';
 
@@ -39,6 +40,11 @@ export class HeroSelectScene extends Phaser.Scene {
       else if (e.code === 'ArrowRight' || e.code === 'KeyD') this.step(1);
       else if (e.code === 'Enter' || e.code === 'Space') this.start();
       else if (e.code === 'Escape') this.scene.start('menu');
+    });
+    bindPad(this, {
+      dir: (d) => (d === 'left' ? this.step(-1) : d === 'right' ? this.step(1) : undefined),
+      confirm: () => this.start(),
+      back: () => this.scene.start('menu'),
     });
     this.refresh();
   }

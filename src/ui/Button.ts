@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { audio } from '../audio/audio';
 import { textStyle, UI } from './theme';
 
 export interface ButtonOptions {
@@ -35,7 +36,9 @@ export class Button extends Phaser.GameObjects.Container {
     this.bg.on('pointerdown', () => this.enabled && this.setScale(0.97));
     this.bg.on('pointerup', () => {
       this.setScale(1);
-      if (this.enabled) onClick();
+      if (!this.enabled) return;
+      audio.play('click');
+      onClick();
     });
 
     scene.add.existing(this);
