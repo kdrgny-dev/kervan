@@ -1,6 +1,6 @@
 [package]
 name = "kervan"
-version = "0.1.0"
+version = "0.2.0"
 description = "Kervan — snake + otomatik savaş roguelite"
 authors = ["Kadir Günay"]
 license = ""
