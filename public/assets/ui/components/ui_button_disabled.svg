@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="72" viewBox="0 0 240 72" role="img" aria-label="ui button disabled">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<rect x="1.5" y="7.5" width="237" height="63" rx="16" fill="#1b1826"/>
+<rect x="1.5" y="1.5" width="237" height="63" rx="16" fill="#2d2839"/>
+<rect x="4.5" y="4.5" width="231" height="51" rx="13" fill="#3a3348" stroke="none"/>
+<rect x="1.5" y="1.5" width="237" height="63" rx="16" fill="none"/>
+</g>
+</svg>

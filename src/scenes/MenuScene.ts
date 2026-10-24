@@ -1,13 +1,16 @@
 import Phaser from 'phaser';
-import { HEROES } from '../data/heroes';
+import { HEROES, type HeroKind } from '../data/heroes';
+import { bindPad } from '../input/gamepad';
 import { profile } from '../meta/profile';
 import { isDesktop, quitApp } from '../platform';
-import { drawArena } from '../render/arena';
 import { HERO_SPRITES } from '../render/sprites';
 import { UnitView } from '../render/UnitView';
-import { bindPad } from '../input/gamepad';
-import { Button } from '../ui/Button';
-import { textStyle, UI } from '../ui/theme';
+import { LOGO } from '../ui/assets';
+import { Button, enter, fmt, panel, ribbon } from '../ui/kit';
+import { backdrop, fadeIn, heroBadge, wallet } from '../ui/screen';
+import { displayStyle, textStyle, UI } from '../ui/theme';
+
+const PARADE: HeroKind[] = ['knight', 'rogue', 'archer', 'mage', 'priest'];
 
 export class MenuScene extends Phaser.Scene {
   constructor() {
@@ -15,67 +18,76 @@ export class MenuScene extends Phaser.Scene {
   }
 
   create() {
-    const { width, height } = this.scale;
-    const save = profile.data;
-    drawArena(this);
-    this.add.rectangle(width / 2, height / 2, width, height, UI.bg, 0.55);
+    fadeIn(this);
+    backdrop(this);
+    wallet(this);
 
-    this.add
-      .text(width / 2 - 170, 150, 'KERVAN', textStyle(104, { fontStyle: 'bold' }))
-      .setOrigin(0.5)
-      .setStroke('#14121c', 10);
-    this.add
-      .text(width / 2 - 170, 225, 'Kafileni büyüt, dalgalara dayan.', textStyle(24, { color: UI.muted }))
-      .setOrigin(0.5);
+    const logo = this.add.image(285, 165, LOGO).setDisplaySize(420, 210);
+    enter(this, logo, { y: -40 }, 0, 360);
 
-    this.add
-      .text(width - 24, 20, `Altın ${save.gold}    Mücevher ${save.gems}`, textStyle(22))
-      .setOrigin(1, 0);
+    const play = new Button(this, 265, 322, 'Oyna', () => this.play(), { variant: 'primary', width: 336, height: 80, fontSize: 36 });
+    const buttons = [
+      play,
+      new Button(this, 247, 416, 'Dükkan', () => this.scene.start('shop'), { width: 300, height: 64, icon: 'shop' }),
+      new Button(this, 247, 500, 'Ayarlar', () => this.scene.start('settings'), { width: 300, height: 64, icon: 'settings' }),
+    ];
+    if (isDesktop) buttons.push(new Button(this, 247, 584, 'Çıkış', () => void quitApp(), { width: 300, height: 64, icon: 'exit' }));
+    buttons.forEach((b, i) => enter(this, b, { x: -60 }, 120 + i * 60, 240));
+    this.tweens.add({ targets: play, scale: 1.03, duration: 900, delay: 800, ease: 'Sine.InOut', yoyo: true, repeat: -1 });
 
-    const bx = width / 2 - 170;
-    new Button(this, bx, 330, 'Oyna', () => this.scene.start('heroSelect'), { variant: 'primary', width: 300, height: 64, fontSize: 28 });
-    new Button(this, bx, 410, 'Dükkan', () => this.scene.start('shop'), { width: 300 });
-    new Button(this, bx, 480, 'Ayarlar', () => this.scene.start('settings'), { width: 300 });
-    if (isDesktop) new Button(this, bx, 550, 'Çıkış', () => void quitApp(), { width: 300 });
+    this.records(905, 325);
+    this.parade(this.scale.height - 62);
 
-    this.drawBest(width - 300, 140);
-    this.parade(height - 80);
-
-    this.input.keyboard?.on('keydown-ENTER', () => this.scene.start('heroSelect'));
-    this.input.keyboard?.on('keydown-SPACE', () => this.scene.start('heroSelect'));
-    bindPad(this, { confirm: () => this.scene.start('heroSelect') });
+    this.input.keyboard?.on('keydown-ENTER', () => this.play());
+    this.input.keyboard?.on('keydown-SPACE', () => this.play());
+    bindPad(this, { confirm: () => this.play() });
   }
 
-  private drawBest(x: number, y: number) {
+  private play() {
+    this.scene.start('heroSelect');
+  }
+
+  private records(x: number, y: number) {
+    const box = this.add.container(x, y);
+    box.add(panel(this, 0, 0, 396, 410));
+    box.add(ribbon(this, 0, -200, 'Rekorlar', { icon: 'trophy', width: 300 }));
+    enter(this, box, { x: 80 }, 200, 260);
+
     const best = profile.data.best.slice(0, 5);
-    this.add.rectangle(x, y - 20, 380, 300, UI.panel, 0.9).setOrigin(0.5, 0).setStrokeStyle(3, UI.panelEdge);
-    this.add.text(x, y, 'Rekorlar', textStyle(26, { fontStyle: 'bold' })).setOrigin(0.5, 0);
     if (best.length === 0) {
-      this.add.text(x, y + 60, 'Henüz tur yok.\nİlk kafileni yola çıkar!', textStyle(20, { color: UI.muted, align: 'center' })).setOrigin(0.5, 0);
+      box.add(this.add.text(0, 10, 'Henüz tur yok.\nİlk kafileni yola çıkar!', textStyle(20, { color: UI.muted, align: 'center' })).setOrigin(0.5));
       return;
     }
     best.forEach((b, i) => {
-      const line = `${i + 1}.  ${b.score}   Dalga ${b.wave} · ${HEROES[b.hero].name}`;
-      this.add.text(x - 160, y + 50 + i * 42, line, textStyle(20, { color: i === 0 ? UI.gold : UI.text }));
+      const ry = -120 + i * 66;
+      const row = this.add.container(0, ry);
+      row.add(this.add.text(-150, 0, `${i + 1}`, displayStyle(26, { color: i === 0 ? UI.gold : UI.muted })).setOrigin(0.5));
+      row.add(heroBadge(this, -98, 0, b.hero, 50));
+      row.add(this.add.text(-62, -12, fmt(b.score), displayStyle(24)).setOrigin(0, 0.5));
+      row.add(this.add.text(-62, 13, `Dalga ${b.wave}`, textStyle(15, { color: UI.muted })).setOrigin(0, 0.5));
+      if (i < best.length - 1) row.add(this.add.rectangle(0, 33, 344, 2, UI.panelEdge));
+      box.add(row);
+      row.setAlpha(0);
+      this.tweens.add({ targets: row, alpha: 1, duration: 160, delay: 360 + i * 50, ease: 'Quad.Out' });
     });
   }
 
-  /** Menü altında yürüyen kahraman kafilesi. */
+  /** Ekran altında soldan sağa yürüyen kafile. */
   private parade(y: number) {
-    const kinds = ['knight', 'archer', 'mage', 'rogue', 'priest'] as const;
     const { width } = this.scale;
-    const views = kinds.map((k) => {
+    const spacing = 96;
+    const views = PARADE.map((k) => {
       const def = HEROES[k];
-      return new UnitView(this, { color: def.color, glyph: def.glyph, size: 38, shape: 'square', sprite: HERO_SPRITES[k], spriteSize: 56 });
+      return new UnitView(this, { color: def.color, glyph: def.glyph, size: 60, shape: 'square', sprite: HERO_SPRITES[k], spriteSize: 92 });
     });
-    const spacing = 58;
-    let x = -40;
+    const span = width + 480 + spacing * views.length;
+    let x = -480;
     const tick = (_t: number, dt: number) => {
-      x += dt * 0.08;
-      if (x - spacing * views.length > width + 40) x = -40;
+      x += (span / 14000) * dt;
+      if (x - spacing * views.length > width) x = -480 + spacing;
       const now = this.time.now;
       views.forEach((v, i) => {
-        v.setPosition(x - i * spacing, y + Math.abs(Math.sin(now / 90 + i * 0.7)) * -4);
+        v.setPosition(x - i * spacing, y);
         v.animate(now, true);
       });
     };

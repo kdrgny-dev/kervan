@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1696" height="192" viewBox="0 0 1696 192">
+<svg x="16.0" y="16.0" width="320" height="72" viewBox="0 0 320 72">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M1.5 18 H34 V66 H1.5 L12 42.0 Z" fill="#c98a2b"/>
+<path d="M318.5 18 H286 V66 H318.5 L308 42.0 Z" fill="#c98a2b"/>
+<rect x="22" y="12" width="276" height="50" rx="8" fill="#7a4f19"/>
+<rect x="22" y="8" width="276" height="50" rx="8" fill="#f0c23b"/>
+<path d="M34 15 H286" stroke="#f7d978" stroke-width="3" stroke-opacity="0.9"/>
+<path d="M34 52 H286" stroke="#7a4f19" stroke-width="2" stroke-dasharray="6 6" stroke-opacity="0.8"/>
+</g>
+
+</svg>
+<svg x="412.0" y="24.0" width="200" height="56" viewBox="0 0 200 56">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M1.5 56 V17 Q1.5 1.5 17 1.5 H183 Q198.5 1.5 198.5 17 V56" fill="#231f2e"/><path d="M20 9 H180" stroke="#f0c23b" stroke-width="4"/>
+</g>
+
+</svg>
+<svg x="748.0" y="24.0" width="200" height="56" viewBox="0 0 200 56">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M1.5 54.5 V21 Q1.5 7.5 15 7.5 H185 Q198.5 7.5 198.5 21 V54.5 Z" fill="#1b1826"/><path d="M14 16 H186" stroke="#3a3348" stroke-width="2"/>
+</g>
+
+</svg>
+<svg x="1136.0" y="28.0" width="96" height="48" viewBox="0 0 96 48">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<rect x="1.5" y="4.5" width="93" height="42" rx="21" fill="#3f7f3a"/><rect x="1.5" y="1.5" width="93" height="42" rx="21" fill="#6fbf5a"/><path d="M16 22.5 L22 28.5 L32 16.5" stroke="#f0e6d2" stroke-width="4" fill="none"/><circle cx="72" cy="22.5" r="16" fill="#f0e6d2"/>
+</g>
+
+</svg>
+<svg x="1472.0" y="28.0" width="96" height="48" viewBox="0 0 96 48">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<rect x="1.5" y="4.5" width="93" height="42" rx="21" fill="#14121c"/><rect x="1.5" y="1.5" width="93" height="42" rx="21" fill="#3a3348"/><circle cx="24" cy="22.5" r="16" fill="#8d9ab0"/><path d="M60 22.5 H80" stroke="#6f6879" stroke-width="4"/>
+</g>
+
+</svg>
+<svg x="16.0" y="124.0" width="320" height="32" viewBox="0 0 320 32">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<rect x="1.5" y="1.5" width="317" height="29" rx="14.5" fill="#14121c"/><rect x="5" y="5" width="310" height="22" rx="11" fill="none" stroke="#3a3348" stroke-width="2"/>
+</g>
+
+</svg>
+<svg x="356.0" y="128.0" width="312" height="24" viewBox="0 0 312 24">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<rect x="0" y="0" width="312" height="24" rx="12" fill="#9e2f22" stroke="none"/><rect x="0" y="0" width="312" height="17" rx="10" fill="#e5533d" stroke="none"/><path d="M10 6 H302" stroke="#ff7a6a" stroke-width="3" stroke-opacity="0.85"/>
+</g>
+
+</svg>
+<svg x="692.0" y="128.0" width="312" height="24" viewBox="0 0 312 24">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<rect x="0" y="0" width="312" height="24" rx="12" fill="#3d74c9" stroke="none"/><rect x="0" y="0" width="312" height="17" rx="10" fill="#7fb3ec" stroke="none"/><path d="M10 6 H302" stroke="#d6deea" stroke-width="3" stroke-opacity="0.85"/>
+</g>
+
+</svg>
+<svg x="1028.0" y="128.0" width="312" height="24" viewBox="0 0 312 24">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<rect x="0" y="0" width="312" height="24" rx="12" fill="#5a3a8a" stroke="none"/><rect x="0" y="0" width="312" height="17" rx="10" fill="#8e5bc9" stroke="none"/><path d="M10 6 H302" stroke="#f0e6d2" stroke-width="3" stroke-opacity="0.85"/>
+</g>
+
+</svg>
+</svg>

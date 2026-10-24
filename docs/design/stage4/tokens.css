@@ -1,0 +1,47 @@
+:root{
+  --c-bg: #14121c;
+  --c-bg-raised: #1b1826;
+  --c-panel: #231f2e;
+  --c-panel-2: #2d2839;
+  --c-edge: #3a3348;
+  --c-edge-hi: #51486a;
+  --c-edge-hover: #5e5479;
+  --c-edge-light: #6c6189;
+  --c-text: #f4efe6;
+  --c-text-muted: #a39c8f;
+  --c-text-dim: #6f6879;
+  --c-gold: #f0c23b;
+  --c-gold-hi: #f7d978;
+  --c-gold-deep: #c98a2b;
+  --c-gold-shadow: #7a4f19;
+  --c-danger: #e5533d;
+  --c-danger-hi: #ff7a6a;
+  --c-danger-deep: #9e2f22;
+  --c-danger-shadow: #6b1f17;
+  --c-success: #6fbf5a;
+  --c-success-deep: #3f7f3a;
+  --c-xp: #7fb3ec;
+  --c-xp-deep: #3d74c9;
+  --c-boss: #8e5bc9;
+  --c-boss-deep: #5a3a8a;
+  --c-gem: #7fb3ec;
+  --c-parchment: #f0e6d2;
+  --c-leather: #8a5532;
+  --c-overlay: rgba(20,18,28,0.72);
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-pill: 999px;
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+  --font-display: 'Grandstander', 'Baloo 2', system-ui, sans-serif;
+  --font-body: 'Nunito', system-ui, sans-serif;
+}
+@font-face{font-family:'Grandstander';src:url('fonts/Grandstander[wght].ttf') format('truetype');font-weight:100 900;font-display:block}
+@font-face{font-family:'Nunito';src:url('fonts/Nunito[wght].ttf') format('truetype');font-weight:200 1000;font-display:block}

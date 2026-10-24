@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="280" viewBox="0 0 200 280" role="img" aria-label="ui card locked">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<rect x="7.5" y="7.5" width="185" height="265" rx="18" fill="#1b1826"/>
+<rect x="7.5" y="190" width="185" height="82.5" rx="18" fill="#231f2e" stroke="none"/>
+<rect x="7.5" y="190" width="185" height="16" fill="#231f2e" stroke="none"/>
+<path d="M7.5 190 H192.5" stroke="#3a3348" stroke-width="2"/>
+<rect x="13" y="13" width="174" height="254" rx="13" fill="none" stroke="#3a3348" stroke-width="2" stroke-dasharray="8 6"/>
+<rect x="7.5" y="7.5" width="185" height="265" rx="18" fill="none"/>
+<rect x="7.5" y="7.5" width="185" height="265" rx="18" fill="#14121c" fill-opacity="0.35" stroke="none"/>
+</g>
+</svg>

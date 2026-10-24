@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="72" viewBox="0 0 240 72" role="img" aria-label="ui button primary hover">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<rect x="1.5" y="7.5" width="237" height="63" rx="16" fill="#7a4f19"/>
+<rect x="1.5" y="1.5" width="237" height="63" rx="16" fill="#c98a2b"/>
+<rect x="4.5" y="4.5" width="231" height="51" rx="13" fill="#f7d978" stroke="none"/>
+<path d="M18 11 H222" stroke="#f7d978" stroke-width="4" stroke-opacity="0.9"/>
+<rect x="1.5" y="1.5" width="237" height="63" rx="16" fill="none"/>
+</g>
+</svg>

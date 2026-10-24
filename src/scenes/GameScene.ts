@@ -3,7 +3,7 @@ import { CELL } from '../config';
 import { SPAWN_WARN_MS } from '../data/balance';
 import { ENEMIES } from '../data/enemies';
 import { HEROES, type HeroKind } from '../data/heroes';
-import { LOOT_BLINK_MS, POWERS, type PowerKind, score, xpToNext } from '../data/loot';
+import { LOOT_BLINK_MS, POWERS, score } from '../data/loot';
 import { audio } from '../audio/audio';
 import { bindControls } from '../input/controls';
 import { profile } from '../meta/profile';
@@ -24,8 +24,10 @@ import {
   type World,
   type WorldEvent,
 } from '../sim/world';
-import { Button } from '../ui/Button';
-import { FONT, textStyle, UI } from '../ui/theme';
+import { Hud } from '../ui/hud';
+import { Button, fmt, panel, ribbon, slice } from '../ui/kit';
+import { displayStyle, FONT_DISPLAY, textStyle, UI } from '../ui/theme';
+import { icon } from '../ui/assets';
 
 const COLORS = {
   leader: 0xfff3c4,
@@ -44,6 +46,8 @@ export class GameScene extends Phaser.Scene {
   private hero: HeroKind = 'knight';
   private world!: World;
   private paused = false;
+  /** Duraklatınca dondurulan tween'ler; menü animasyonları serbest kalsın diye pauseAll kullanılmıyor. */
+  private frozen: Phaser.Tweens.Tween[] = [];
   private liveTexts = 0;
   private banked = false;
   private heroViews = new Map<number, UnitView>();
@@ -52,12 +56,7 @@ export class GameScene extends Phaser.Scene {
   private lootViews = new Map<number, Phaser.GameObjects.Container>();
   private markers = new Map<string, Phaser.GameObjects.Sprite>();
   private fx!: Fx;
-  private hud!: Phaser.GameObjects.Text;
-  private wallet!: Phaser.GameObjects.Text;
-  private powerText!: Phaser.GameObjects.Text;
-  private xpBar!: Phaser.GameObjects.Graphics;
-  private bossBar!: Phaser.GameObjects.Container;
-  private banner!: Phaser.GameObjects.Text;
+  private hud!: Hud;
   private pauseMenu!: Phaser.GameObjects.Container;
   private overlay!: Phaser.GameObjects.Container;
 
@@ -79,7 +78,7 @@ export class GameScene extends Phaser.Scene {
     drawArena(this);
     this.markers = new Map();
     this.fx = new Fx(this);
-    this.buildHud();
+    this.hud = new Hud(this, () => this.togglePause());
     this.overlay = this.add.container(0, 0).setDepth(60).setVisible(false);
     this.pauseMenu = this.buildPauseMenu();
 
@@ -104,7 +103,7 @@ export class GameScene extends Phaser.Scene {
     this.renderProjectiles();
     this.renderLoot();
     this.renderMarkers();
-    this.renderHud();
+    this.hud.update(this.world);
   }
 
   private get settings() {
@@ -125,7 +124,7 @@ export class GameScene extends Phaser.Scene {
     this.paused = false;
     this.pauseMenu.setVisible(false);
     this.overlay.removeAll(true).setVisible(false);
-    this.showBanner('Hazırlan!');
+    this.hud.toast('Hazırlan!');
   }
 
   private handle(e: WorldEvent) {
@@ -195,7 +194,7 @@ export class GameScene extends Phaser.Scene {
         if (boss) {
           this.fx.confetti(px(e.pos.x), px(e.pos.y), 60);
           this.shake(300, 0.012);
-          this.showBanner('Balçık Kralı yenildi!');
+          this.hud.toast('Balçık Kralı yenildi!', UI.gold);
         }
         audio.play(boss ? 'explosion' : 'enemyDie');
         break;
@@ -235,7 +234,7 @@ export class GameScene extends Phaser.Scene {
         this.removeLoot(e.id, false);
         break;
       case 'powerStart':
-        this.showBanner(POWERS[e.power].name + '!');
+        this.hud.toast(POWERS[e.power].name + '!');
         audio.play('power');
         break;
       case 'bomb':
@@ -244,7 +243,8 @@ export class GameScene extends Phaser.Scene {
         audio.play('bomb');
         break;
       case 'levelUp': {
-        this.showBanner(`Seviye ${e.level + 1}!`);
+        this.hud.toast(`Seviye ${e.level + 1}!`, UI.gold);
+        this.hud.levelUp();
         for (const v of this.heroViews.values()) v.flash(0xfff3c4, 160, 'tint');
         const leader = this.heroViews.get(this.world.party[0]?.id ?? -1);
         if (leader) this.fx.confetti(leader.x, leader.y, 30);
@@ -253,11 +253,14 @@ export class GameScene extends Phaser.Scene {
         break;
       }
       case 'waveStart':
-        this.showBanner(e.n % 5 === 0 ? `Dalga ${e.n} · Balçık Kralı!` : `Dalga ${e.n}`);
+        if (e.n % 5 === 0) {
+          this.hud.banner('boss', `Dalga ${e.n} · Balçık Kralı!`);
+          this.shake(300, 0.006);
+        } else this.hud.banner('wave', `Dalga ${e.n}`);
         audio.play('waveStart');
         break;
       case 'waveCleared':
-        this.showBanner(`Dalga temizlendi! +${e.bonus} altın`);
+        this.hud.banner('clear', 'Dalga temizlendi!', e.bonus);
         audio.play('waveCleared');
         break;
       case 'gameOver':
@@ -464,53 +467,6 @@ export class GameScene extends Phaser.Scene {
 
   // ---------- HUD ----------
 
-  private buildHud() {
-    const { width, height } = this.scale;
-    this.hud = this.add.text(16, 10, '', textStyle(22)).setDepth(40);
-    this.wallet = this.add.text(width - 70, 10, '', textStyle(22)).setOrigin(1, 0).setDepth(40);
-    new Button(this, width - 30, 24, 'II', () => this.togglePause(), { width: 40, height: 36, fontSize: 18 }).setDepth(41);
-    this.powerText = this.add
-      .text(width / 2, height - 12, '', textStyle(20, { fontStyle: 'bold' }))
-      .setOrigin(0.5, 1)
-      .setDepth(40)
-      .setStroke('#14121c', 4);
-    this.xpBar = this.add.graphics().setDepth(40);
-    this.banner = this.add
-      .text(width / 2, 120, '', textStyle(44, { fontStyle: 'bold' }))
-      .setOrigin(0.5)
-      .setDepth(40)
-      .setStroke('#14121c', 6)
-      .setAlpha(0);
-
-    const barW = 420;
-    const bossName = this.add.text(0, -18, ENEMIES.slimeKing.name, textStyle(18, { fontStyle: 'bold' })).setOrigin(0.5);
-    const bg = this.add.rectangle(-barW / 2, 0, barW, 12, 0x000000, 0.6).setOrigin(0, 0.5);
-    const fill = this.add.rectangle(-barW / 2, 0, barW, 12, 0xc77dff).setOrigin(0, 0.5).setName('fill');
-    this.bossBar = this.add.container(width / 2, 70, [bossName, bg, fill]).setDepth(40).setVisible(false);
-  }
-
-  private renderHud() {
-    const w = this.world;
-    const foes = w.enemies.length + w.wave.pending.length;
-    const parts = [`Dalga ${Math.max(w.wave.n, 1)}`, `Kafile ${w.party.length}`];
-    if (w.wave.phase === 'active') parts.push(`Düşman ${foes}`);
-    else parts.push(`Sonraki ${Math.max(0, Math.ceil(w.wave.timer / 1000))}`);
-    this.hud.setText(parts.join('    '));
-    this.wallet.setText(`Altın ${w.stats.gold}    Mücevher ${w.stats.gems}    Sv ${w.stats.level + 1}`);
-
-    const active = (Object.keys(w.powers) as PowerKind[]).map((k) => `${POWERS[k].name} ${Math.ceil((w.powers[k] ?? 0) / 1000)}`);
-    this.powerText.setText(active.join('   '));
-
-    const barW = 220;
-    const x = this.scale.width / 2 - barW / 2;
-    const ratio = w.stats.xp / xpToNext(w.stats.level);
-    this.xpBar.clear().fillStyle(0x000000, 0.5).fillRect(x, 16, barW, 8).fillStyle(0xfff3c4).fillRect(x, 16, barW * ratio, 8);
-
-    const boss = w.enemies.find((e) => ENEMIES[e.kind].boss);
-    this.bossBar.setVisible(!!boss);
-    if (boss) (this.bossBar.getByName('fill') as Phaser.GameObjects.Rectangle).setScale(Math.max(0, boss.hp / boss.maxHp), 1);
-  }
-
   // ---------- efektler ----------
 
   private killView(map: Map<number, UnitView>, id: number) {
@@ -528,7 +484,7 @@ export class GameScene extends Phaser.Scene {
 
   private popText(x: number, y: number, text: string, color: string, size = 18) {
     const t = this.add
-      .text(x, y, text, { fontFamily: FONT, fontSize: `${size}px`, color, fontStyle: 'bold' })
+      .text(x, y, text, { fontFamily: FONT_DISPLAY, fontSize: `${size}px`, color, fontStyle: '900' })
       .setOrigin(0.5)
       .setStroke('#14121c', 4)
       .setDepth(30);
@@ -585,36 +541,64 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
-  private showBanner(text: string) {
-    this.tweens.killTweensOf(this.banner);
-    this.banner.setText(text).setAlpha(0).setScale(0.8);
-    this.tweens.add({ targets: this.banner, alpha: 1, scale: 1, duration: 200, ease: 'Back.Out', yoyo: true, hold: 900 });
-  }
-
   // ---------- duraklatma / oyun sonu ----------
 
   private buildPauseMenu() {
     const { width, height } = this.scale;
     const c = this.add.container(0, 0).setDepth(60).setVisible(false);
-    c.add(this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.6));
-    c.add(this.add.text(width / 2, height / 2 - 110, 'Duraklatıldı', textStyle(48, { fontStyle: 'bold' })).setOrigin(0.5));
-    c.add(new Button(this, width / 2, height / 2 - 10, 'Devam', () => this.togglePause(), { variant: 'primary', width: 280 }));
-    c.add(new Button(this, width / 2, height / 2 + 60, 'Baştan başla', () => this.leave(() => this.restart()), { width: 280 }));
-    c.add(new Button(this, width / 2, height / 2 + 130, 'Menüye dön', () => this.leave(() => this.scene.start('menu')), { width: 280 }));
+    const shade = this.add.rectangle(0, 0, width, height, UI.bg, 0.72).setOrigin(0).setName('shade');
+    shade.setInteractive();
+    const box = this.add.container(width / 2, height / 2).setName('box');
+    box.add(panel(this, 0, 0, 420, 380));
+    box.add(ribbon(this, 0, -190, 'Duraklatıldı', { width: 320 }));
+    box.add(new Button(this, 0, -60, 'Devam', () => this.togglePause(), { variant: 'primary', width: 300, height: 72, fontSize: 30 }));
+    box.add(new Button(this, 0, 30, 'Baştan başla', () => this.leave(() => this.restart()), { width: 300, height: 64 }));
+    box.add(new Button(this, 0, 112, 'Menüye dön', () => this.leave(() => this.scene.start('menu')), { width: 300, height: 64 }));
+    c.add([shade, box]);
     return c;
   }
 
   private togglePause() {
     if (!this.world?.alive) return;
     this.paused = !this.paused;
-    this.pauseMenu.setVisible(this.paused);
-    if (this.paused) this.tweens.pauseAll();
-    else this.tweens.resumeAll();
+    const shade = this.pauseMenu.getByName('shade') as Phaser.GameObjects.Rectangle;
+    const box = this.pauseMenu.getByName('box') as Phaser.GameObjects.Container;
+    const cy = this.scale.height / 2;
+    if (this.paused) {
+      this.freeze();
+      this.pauseMenu.setVisible(true);
+      shade.setAlpha(0);
+      box.setY(cy - 200).setAlpha(0);
+      this.tweens.add({ targets: shade, alpha: 1, duration: 160 });
+      this.tweens.add({ targets: box, y: cy, alpha: 1, duration: 200, ease: 'Back.Out' });
+    } else {
+      this.tweens.add({
+        targets: box,
+        y: cy - 120,
+        alpha: 0,
+        duration: 140,
+        ease: 'Quad.In',
+        onComplete: () => {
+          this.pauseMenu.setVisible(false);
+          this.thaw();
+        },
+      });
+    }
+  }
+
+  private freeze() {
+    this.frozen = this.tweens.getTweens().filter((t) => t.isPlaying());
+    for (const t of this.frozen) t.pause();
+  }
+
+  private thaw() {
+    for (const t of this.frozen) t.resume();
+    this.frozen = [];
   }
 
   /** Turu yarıda bırakmak da kazancı bankaya yatırır. */
   private leave(next: () => void) {
-    this.tweens.resumeAll();
+    this.thaw();
     this.bankRun();
     next();
   }
@@ -642,32 +626,95 @@ export class GameScene extends Phaser.Scene {
     const { width, height } = this.scale;
     const { stats, wave } = this.world;
     const n = Math.max(wave.n, 1);
-    const why = { wall: 'Duvara çarptın', self: 'Kendi kuyruğuna çarptın', wiped: 'Kafile düştü' }[reason];
-    const rankText = rank === 0 ? 'Yeni rekor!' : rank > 0 ? `Rekor listesinde ${rank + 1}. sıra` : '';
+    const why = { wall: 'Duvara çarptın', self: 'Kuyruğuna çarptın', wiped: 'Kafile düştü' }[reason];
+    const cx = width / 2;
 
-    const o = this.overlay.removeAll(true);
-    o.add(this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.65));
-    o.add(this.add.text(width / 2, height / 2 - 150, why, textStyle(52, { fontStyle: 'bold' })).setOrigin(0.5));
-    o.add(this.add.text(width / 2, height / 2 - 85, rankText, textStyle(26, { color: UI.gold, fontStyle: 'bold' })).setOrigin(0.5));
-    o.add(
-      this.add
-        .text(
-          width / 2,
-          height / 2 - 30,
-          `Dalga ${n}  ·  Öldürme ${stats.kills}  ·  Skor ${score(n, stats.kills, stats.gold)}`,
-          textStyle(24),
-        )
-        .setOrigin(0.5),
-    );
-    o.add(
-      this.add
-        .text(width / 2, height / 2 + 10, `+${stats.gold} altın   +${stats.gems} mücevher kasaya eklendi`, textStyle(20, { color: UI.muted }))
-        .setOrigin(0.5),
-    );
-    o.add(new Button(this, width / 2 - 220, height / 2 + 100, 'Dükkan', () => this.scene.start('shop'), { width: 200 }));
-    o.add(new Button(this, width / 2, height / 2 + 100, 'Tekrar', () => this.restart(), { variant: 'primary', width: 200 }));
-    o.add(new Button(this, width / 2 + 220, height / 2 + 100, 'Menü', () => this.scene.start('menu'), { width: 200 }));
-    o.add(this.add.text(width / 2, height / 2 + 160, 'Boşluk / Enter: Tekrar', textStyle(16, { color: UI.muted })).setOrigin(0.5));
-    o.setVisible(true);
+    const o = this.overlay.removeAll(true).setVisible(true);
+    const shade = this.add.rectangle(0, 0, width, height, UI.bg, 0.78).setOrigin(0).setInteractive();
+    o.add(shade);
+    shade.setAlpha(0);
+    this.tweens.add({ targets: shade, alpha: 1, duration: 300 });
+
+    const title = this.add.container(cx, 102, [
+      slice(this, 'ui.banner_danger', 0, 0, 540),
+      this.add.text(0, -6, why, displayStyle(48)).setOrigin(0.5),
+    ]);
+    title.setScale(0.6).setAlpha(0);
+    this.tweens.add({ targets: title, scale: 1, alpha: 1, duration: 360, delay: 150, ease: 'Back.Out' });
+    o.add(title);
+
+    const stat = (x: number, label: string, value: number, i: number) => {
+      const valueText = this.add.text(0, 14, '0', displayStyle(36, { color: UI.gold })).setOrigin(0.5);
+      const card = this.add.container(x, 322, [
+        slice(this, 'ui.card', 0, 0, 152, 104),
+        this.add.text(0, -24, label.toLocaleUpperCase('tr-TR'), textStyle(14, { color: UI.muted, fontStyle: '800' })).setOrigin(0.5),
+        valueText,
+      ]);
+      card.setAlpha(0).y += 40;
+      this.tweens.add({ targets: card, y: 322, alpha: 1, duration: 220, delay: 450 + i * 120, ease: 'Back.Out' });
+      const counter = { v: 0 };
+      let lastTick = 0;
+      this.tweens.add({
+        targets: counter,
+        v: value,
+        duration: 700,
+        delay: 550 + i * 200,
+        ease: 'Quad.Out',
+        onUpdate: () => {
+          valueText.setText(fmt(counter.v));
+          if (this.time.now - lastTick > 50) {
+            lastTick = this.time.now;
+            audio.play('click');
+          }
+        },
+      });
+      o.add(card);
+    };
+    stat(cx - 190, 'Dalga', n, 0);
+    stat(cx, 'Öldürme', stats.kills, 1);
+    stat(cx + 190, 'Skor', score(n, stats.kills, stats.gold), 2);
+
+    if (rank >= 0) {
+      const text = rank === 0 ? '★  Yeni rekor!' : `★  Rekor listesinde ${rank + 1}.`;
+      const label = this.add.text(0, 0, text, displayStyle(24, { color: UI.ink })).setOrigin(0.5);
+      const bw = label.width + 40;
+      const bg = this.add.graphics();
+      bg.fillStyle(0x7a4f19).fillRoundedRect(-bw / 2 - 5, -26, bw + 10, 56, 14);
+      bg.fillStyle(UI.goldNum).fillRoundedRect(-bw / 2, -22, bw, 44, 10);
+      bg.lineStyle(3, 0x14121c).strokeRoundedRect(-bw / 2, -22, bw, 44, 10);
+      const glow = this.add.graphics().lineStyle(6, UI.goldNum, 1).strokeRoundedRect(-bw / 2 - 10, -30, bw + 20, 64, 16);
+      const badge = this.add.container(cx, 208, [glow, bg, label]).setScale(0).setAngle(-12);
+      this.tweens.add({ targets: badge, scale: 1, angle: -4, duration: 420, delay: 1300, ease: 'Back.Out(2)' });
+      this.tweens.add({ targets: glow, alpha: { from: 0.3, to: 0.8 }, duration: 700, ease: 'Sine.InOut', yoyo: true, repeat: -1 });
+      o.add(badge);
+    }
+
+    const parts: Phaser.GameObjects.GameObject[] = [];
+    let x = 0;
+    const add = (obj: Phaser.GameObjects.Text | Phaser.GameObjects.Image, w: number, gap = 10) => {
+      obj.x = x + w / 2;
+      x += w + gap;
+      parts.push(obj);
+    };
+    const goldTxt = this.add.text(0, 0, `+${fmt(stats.gold)}`, displayStyle(26, { color: UI.gold })).setOrigin(0.5);
+    add(goldTxt, goldTxt.width, 8);
+    add(this.add.image(0, 0, icon('coin')).setDisplaySize(26, 26), 26, 22);
+    const gemTxt = this.add.text(0, 0, `+${fmt(stats.gems)}`, displayStyle(26, { color: UI.gem })).setOrigin(0.5);
+    add(gemTxt, gemTxt.width, 8);
+    add(this.add.image(0, 0, icon('gem')).setDisplaySize(26, 26), 26, 18);
+    const note = this.add.text(0, 0, 'kasaya eklendi', textStyle(18, { color: UI.muted })).setOrigin(0.5);
+    add(note, note.width, 0);
+    const reward = this.add.container(cx - x / 2, 436, parts).setAlpha(0);
+    reward.y += 12;
+    this.tweens.add({ targets: reward, y: 436, alpha: 1, duration: 240, delay: 1500, ease: 'Quad.Out' });
+    o.add(reward);
+
+    const buttons = this.add.container(0, 0, [
+      new Button(this, cx - 268, 600, 'Dükkan', () => this.scene.start('shop'), { width: 196, height: 60, icon: 'shop' }),
+      new Button(this, cx, 603, 'Tekrar', () => this.restart(), { variant: 'primary', width: 290, height: 76, fontSize: 34 }),
+      new Button(this, cx + 268, 600, 'Menü', () => this.scene.start('menu'), { width: 196, height: 60 }),
+    ]).setAlpha(0);
+    this.tweens.add({ targets: buttons, alpha: 1, duration: 200, delay: 1700 });
+    o.add(buttons);
   }
 }

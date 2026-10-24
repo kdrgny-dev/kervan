@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="icon trophy">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M18 12 H46 V24 Q46 40 32 42 Q18 40 18 24 Z" fill="#f0c23b"/><path d="M18 16 Q8 16 9 25 Q10 32 19 32 M46 16 Q56 16 55 25 Q54 32 45 32" stroke-width="7" fill="none"/><path d="M18 16 Q8 16 9 25 Q10 32 19 32 M46 16 Q56 16 55 25 Q54 32 45 32" stroke="#f0c23b" stroke-width="3" fill="none"/><rect x="28" y="41" width="8" height="8" fill="#f28a3b"/><rect x="18" y="48" width="28" height="9" rx="2" fill="#8a5532"/><path d="M24 17 V26" stroke="#f0e6d2" stroke-width="3"/>
+</g>
+</svg>

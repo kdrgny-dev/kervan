@@ -1,0 +1,1325 @@
+{
+ "characters/knight_idle_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "knight_idle",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/knight_walk_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "knight_walk",
+  "frame": 1,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/knight_walk_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "knight_walk",
+  "frame": 2,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/knight_walk_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "knight_walk",
+  "frame": 3,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/knight_walk_4.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "knight_walk",
+  "frame": 4,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/knight_attack_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "knight_attack",
+  "frame": 1,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/knight_attack_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "knight_attack",
+  "frame": 2,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/knight_hurt_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "knight_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/archer_idle_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "archer_idle",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/archer_walk_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "archer_walk",
+  "frame": 1,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/archer_walk_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "archer_walk",
+  "frame": 2,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/archer_walk_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "archer_walk",
+  "frame": 3,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/archer_walk_4.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "archer_walk",
+  "frame": 4,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/archer_attack_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "archer_attack",
+  "frame": 1,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/archer_attack_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "archer_attack",
+  "frame": 2,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/archer_hurt_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "archer_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/mage_idle_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "mage_idle",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/mage_walk_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "mage_walk",
+  "frame": 1,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/mage_walk_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "mage_walk",
+  "frame": 2,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/mage_walk_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "mage_walk",
+  "frame": 3,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/mage_walk_4.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "mage_walk",
+  "frame": 4,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/mage_attack_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "mage_attack",
+  "frame": 1,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/mage_attack_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "mage_attack",
+  "frame": 2,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/mage_hurt_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "mage_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/rogue_idle_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "rogue_idle",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/rogue_walk_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "rogue_walk",
+  "frame": 1,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/rogue_walk_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "rogue_walk",
+  "frame": 2,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/rogue_walk_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "rogue_walk",
+  "frame": 3,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/rogue_walk_4.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "rogue_walk",
+  "frame": 4,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/rogue_attack_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "rogue_attack",
+  "frame": 1,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/rogue_attack_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "rogue_attack",
+  "frame": 2,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/rogue_hurt_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "rogue_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/priest_idle_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "priest_idle",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/priest_walk_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "priest_walk",
+  "frame": 1,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/priest_walk_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "priest_walk",
+  "frame": 2,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/priest_walk_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "priest_walk",
+  "frame": 3,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/priest_walk_4.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "priest_walk",
+  "frame": 4,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/priest_attack_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "priest_attack",
+  "frame": 1,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/priest_attack_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "priest_attack",
+  "frame": 2,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/priest_hurt_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "priest_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/slime_idle_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "slime_idle",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/slime_move_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "slime_move",
+  "frame": 1,
+  "frames": 3,
+  "ms": 110
+ },
+ "characters/slime_move_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "slime_move",
+  "frame": 2,
+  "frames": 3,
+  "ms": 110
+ },
+ "characters/slime_move_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "slime_move",
+  "frame": 3,
+  "frames": 3,
+  "ms": 110
+ },
+ "characters/slime_attack_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "slime_attack",
+  "frame": 1,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/slime_attack_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "slime_attack",
+  "frame": 2,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/slime_hurt_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "slime_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/bat_idle_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "bat_idle",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/bat_move_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "bat_move",
+  "frame": 1,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/bat_move_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "bat_move",
+  "frame": 2,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/bat_move_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "bat_move",
+  "frame": 3,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/bat_move_4.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "bat_move",
+  "frame": 4,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/bat_attack_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "bat_attack",
+  "frame": 1,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/bat_attack_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "bat_attack",
+  "frame": 2,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/bat_hurt_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "bat_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/skeleton_idle_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "skeleton_idle",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/skeleton_move_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "skeleton_move",
+  "frame": 1,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/skeleton_move_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "skeleton_move",
+  "frame": 2,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/skeleton_move_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "skeleton_move",
+  "frame": 3,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/skeleton_move_4.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "skeleton_move",
+  "frame": 4,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/skeleton_attack_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "skeleton_attack",
+  "frame": 1,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/skeleton_attack_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "skeleton_attack",
+  "frame": 2,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/skeleton_hurt_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "skeleton_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/goblin_idle_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "goblin_idle",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/goblin_move_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "goblin_move",
+  "frame": 1,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/goblin_move_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "goblin_move",
+  "frame": 2,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/goblin_move_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "goblin_move",
+  "frame": 3,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/goblin_move_4.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "goblin_move",
+  "frame": 4,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/goblin_attack_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "goblin_attack",
+  "frame": 1,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/goblin_attack_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "goblin_attack",
+  "frame": 2,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/goblin_hurt_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "goblin_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/slime_king_idle_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "slime_king_idle",
+  "frame": 1,
+  "frames": 2,
+  "ms": 400
+ },
+ "characters/slime_king_idle_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "slime_king_idle",
+  "frame": 2,
+  "frames": 2,
+  "ms": 400
+ },
+ "characters/slime_king_summon_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "slime_king_summon",
+  "frame": 1,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/slime_king_summon_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "slime_king_summon",
+  "frame": 2,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/slime_king_charge_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "slime_king_charge",
+  "frame": 1,
+  "frames": 2,
+  "ms": 200
+ },
+ "characters/slime_king_charge_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "slime_king_charge",
+  "frame": 2,
+  "frames": 2,
+  "ms": 200
+ },
+ "characters/slime_king_hurt_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "slime_king_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "tiles/tile_floor_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "tiles/tile_wall.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "tiles/tile_floor_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "tiles/tile_floor_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "tiles/tile_wall_side.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "tiles/tile_wall_corner.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "decor/decor_1.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "decor/decor_2.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "decor/decor_3.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "decor/decor_4.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "decor/decor_5.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "decor/decor_6.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "loot/coin_1.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "coin",
+  "frame": 1,
+  "frames": 4,
+  "ms": 100
+ },
+ "loot/coin_2.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "coin",
+  "frame": 2,
+  "frames": 4,
+  "ms": 100
+ },
+ "loot/coin_3.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "coin",
+  "frame": 3,
+  "frames": 4,
+  "ms": 100
+ },
+ "loot/coin_4.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "coin",
+  "frame": 4,
+  "frames": 4,
+  "ms": 100
+ },
+ "loot/coin_big.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "loot/gem_1.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "gem",
+  "frame": 1,
+  "frames": 3,
+  "ms": 150
+ },
+ "loot/gem_2.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "gem",
+  "frame": 2,
+  "frames": 3,
+  "ms": 150
+ },
+ "loot/gem_3.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "gem",
+  "frame": 3,
+  "frames": 3,
+  "ms": 150
+ },
+ "loot/hero_token.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "loot/power_rage.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "loot/power_shield.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "loot/power_speed.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "loot/power_magnet.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "loot/power_bomb.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "fx/fx_arrow.svg": {
+  "w": 48,
+  "h": 16,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "fx/fx_bone_arrow.svg": {
+  "w": 48,
+  "h": 16,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "fx/fx_fireball_1.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "fx_fireball",
+  "frame": 1,
+  "frames": 3,
+  "ms": 90
+ },
+ "fx/fx_fireball_2.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "fx_fireball",
+  "frame": 2,
+  "frames": 3,
+  "ms": 90
+ },
+ "fx/fx_fireball_3.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "fx_fireball",
+  "frame": 3,
+  "frames": 3,
+  "ms": 90
+ },
+ "fx/fx_holy.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "fx/fx_slash_1.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "fx_slash",
+  "frame": 1,
+  "frames": 3,
+  "ms": 60
+ },
+ "fx/fx_slash_2.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "fx_slash",
+  "frame": 2,
+  "frames": 3,
+  "ms": 60
+ },
+ "fx/fx_slash_3.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "fx_slash",
+  "frame": 3,
+  "frames": 3,
+  "ms": 60
+ },
+ "fx/fx_explosion_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "fx_explosion",
+  "frame": 1,
+  "frames": 4,
+  "ms": 80
+ },
+ "fx/fx_explosion_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "fx_explosion",
+  "frame": 2,
+  "frames": 4,
+  "ms": 80
+ },
+ "fx/fx_explosion_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "fx_explosion",
+  "frame": 3,
+  "frames": 4,
+  "ms": 80
+ },
+ "fx/fx_explosion_4.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "fx_explosion",
+  "frame": 4,
+  "frames": 4,
+  "ms": 80
+ },
+ "fx/fx_shockwave.svg": {
+  "w": 192,
+  "h": 192,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "fx/fx_spawn_marker_1.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "fx_spawn_marker",
+  "frame": 1,
+  "frames": 2,
+  "ms": 250
+ },
+ "fx/fx_spawn_marker_2.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "fx_spawn_marker",
+  "frame": 2,
+  "frames": 2,
+  "ms": 250
+ },
+ "fx/fx_level_up.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "ui/brand/app_icon.svg": {
+  "w": 1024,
+  "h": 1024,
+  "frames": 1
+ },
+ "ui/brand/logo_kervan.svg": {
+  "w": 1024,
+  "h": 512,
+  "frames": 1
+ },
+ "ui/components/ui_banner.svg": {
+  "w": 640,
+  "h": 128,
+  "frames": 1
+ },
+ "ui/components/ui_banner_danger.svg": {
+  "w": 640,
+  "h": 128,
+  "frames": 1
+ },
+ "ui/components/ui_bar_fill_boss.svg": {
+  "w": 312,
+  "h": 24,
+  "frames": 1
+ },
+ "ui/components/ui_bar_fill_hp.svg": {
+  "w": 312,
+  "h": 24,
+  "frames": 1
+ },
+ "ui/components/ui_bar_fill_xp.svg": {
+  "w": 312,
+  "h": 24,
+  "frames": 1
+ },
+ "ui/components/ui_bar_frame.svg": {
+  "w": 320,
+  "h": 32,
+  "frames": 1
+ },
+ "ui/components/ui_button_disabled.svg": {
+  "w": 240,
+  "h": 72,
+  "frames": 1
+ },
+ "ui/components/ui_button_primary.svg": {
+  "w": 240,
+  "h": 72,
+  "frames": 1
+ },
+ "ui/components/ui_button_primary_hover.svg": {
+  "w": 240,
+  "h": 72,
+  "frames": 1
+ },
+ "ui/components/ui_button_primary_pressed.svg": {
+  "w": 240,
+  "h": 72,
+  "frames": 1
+ },
+ "ui/components/ui_button_secondary.svg": {
+  "w": 240,
+  "h": 72,
+  "frames": 1
+ },
+ "ui/components/ui_button_secondary_hover.svg": {
+  "w": 240,
+  "h": 72,
+  "frames": 1
+ },
+ "ui/components/ui_button_secondary_pressed.svg": {
+  "w": 240,
+  "h": 72,
+  "frames": 1
+ },
+ "ui/components/ui_card.svg": {
+  "w": 200,
+  "h": 280,
+  "frames": 1
+ },
+ "ui/components/ui_card_locked.svg": {
+  "w": 200,
+  "h": 280,
+  "frames": 1
+ },
+ "ui/components/ui_card_selected.svg": {
+  "w": 200,
+  "h": 280,
+  "frames": 1
+ },
+ "ui/components/ui_panel.svg": {
+  "w": 256,
+  "h": 256,
+  "frames": 1
+ },
+ "ui/components/ui_panel_header.svg": {
+  "w": 320,
+  "h": 72,
+  "frames": 1
+ },
+ "ui/components/ui_tab_active.svg": {
+  "w": 200,
+  "h": 56,
+  "frames": 1
+ },
+ "ui/components/ui_tab_idle.svg": {
+  "w": 200,
+  "h": 56,
+  "frames": 1
+ },
+ "ui/components/ui_toggle_off.svg": {
+  "w": 96,
+  "h": 48,
+  "frames": 1
+ },
+ "ui/components/ui_toggle_on.svg": {
+  "w": 96,
+  "h": 48,
+  "frames": 1
+ },
+ "ui/icons/icon_back.svg": {
+  "w": 64,
+  "h": 64,
+  "frames": 1
+ },
+ "ui/icons/icon_coin.svg": {
+  "w": 64,
+  "h": 64,
+  "frames": 1
+ },
+ "ui/icons/icon_exit.svg": {
+  "w": 64,
+  "h": 64,
+  "frames": 1
+ },
+ "ui/icons/icon_fullscreen.svg": {
+  "w": 64,
+  "h": 64,
+  "frames": 1
+ },
+ "ui/icons/icon_gem.svg": {
+  "w": 64,
+  "h": 64,
+  "frames": 1
+ },
+ "ui/icons/icon_heart.svg": {
+  "w": 64,
+  "h": 64,
+  "frames": 1
+ },
+ "ui/icons/icon_lock.svg": {
+  "w": 64,
+  "h": 64,
+  "frames": 1
+ },
+ "ui/icons/icon_music.svg": {
+  "w": 64,
+  "h": 64,
+  "frames": 1
+ },
+ "ui/icons/icon_pause.svg": {
+  "w": 64,
+  "h": 64,
+  "frames": 1
+ },
+ "ui/icons/icon_range.svg": {
+  "w": 64,
+  "h": 64,
+  "frames": 1
+ },
+ "ui/icons/icon_settings.svg": {
+  "w": 64,
+  "h": 64,
+  "frames": 1
+ },
+ "ui/icons/icon_shop.svg": {
+  "w": 64,
+  "h": 64,
+  "frames": 1
+ },
+ "ui/icons/icon_sound.svg": {
+  "w": 64,
+  "h": 64,
+  "frames": 1
+ },
+ "ui/icons/icon_sword.svg": {
+  "w": 64,
+  "h": 64,
+  "frames": 1
+ },
+ "ui/icons/icon_trophy.svg": {
+  "w": 64,
+  "h": 64,
+  "frames": 1
+ },
+ "ui/mockups/game_over.png": {
+  "w": 1152,
+  "h": 720,
+  "frames": 1
+ },
+ "ui/mockups/hero_select.png": {
+  "w": 1152,
+  "h": 720,
+  "frames": 1
+ },
+ "ui/mockups/hud.png": {
+  "w": 1152,
+  "h": 720,
+  "frames": 1
+ },
+ "ui/mockups/loading.png": {
+  "w": 1152,
+  "h": 720,
+  "frames": 1
+ },
+ "ui/mockups/main_menu.png": {
+  "w": 1152,
+  "h": 720,
+  "frames": 1
+ },
+ "ui/mockups/pause.png": {
+  "w": 1152,
+  "h": 720,
+  "frames": 1
+ },
+ "ui/mockups/settings.png": {
+  "w": 1152,
+  "h": 720,
+  "frames": 1
+ },
+ "ui/mockups/shop_general.png": {
+  "w": 1152,
+  "h": 720,
+  "frames": 1
+ },
+ "ui/mockups/shop_heroes.png": {
+  "w": 1152,
+  "h": 720,
+  "frames": 1
+ },
+ "ui/mockups/wave_banner_boss.png": {
+  "w": 1152,
+  "h": 720,
+  "frames": 1
+ },
+ "ui/mockups/wave_banner_clear.png": {
+  "w": 1152,
+  "h": 720,
+  "frames": 1
+ },
+ "ui/mockups/assets/archer_walk_4.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "ui/mockups/assets/arena_preview.svg": {
+  "w": 768,
+  "h": 480,
+  "frames": 1
+ },
+ "ui/mockups/assets/hero_token.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "ui/mockups/assets/knight_walk_1.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "ui/mockups/assets/mage_walk_2.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "ui/mockups/assets/power_magnet.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "ui/mockups/assets/power_rage.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "ui/mockups/assets/priest_walk_3.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "ui/mockups/assets/rogue_walk_1.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "ui/mockups/assets/slime_king_idle_1.svg": {
+  "w": 128,
+  "h": 128,
+  "frames": 1
+ },
+ "ui/portraits/portrait_archer.svg": {
+  "w": 256,
+  "h": 256,
+  "frames": 1
+ },
+ "ui/portraits/portrait_knight.svg": {
+  "w": 256,
+  "h": 256,
+  "frames": 1
+ },
+ "ui/portraits/portrait_mage.svg": {
+  "w": 256,
+  "h": 256,
+  "frames": 1
+ },
+ "ui/portraits/portrait_priest.svg": {
+  "w": 256,
+  "h": 256,
+  "frames": 1
+ },
+ "ui/portraits/portrait_rogue.svg": {
+  "w": 256,
+  "h": 256,
+  "frames": 1
+ },
+ "ui/sheets/banners_sheet.svg": {
+  "w": 1328,
+  "h": 160,
+  "frames": 1
+ },
+ "ui/sheets/buttons_sheet.svg": {
+  "w": 784,
+  "h": 280,
+  "frames": 1
+ },
+ "ui/sheets/icons_sheet.svg": {
+  "w": 1216,
+  "h": 96,
+  "frames": 1
+ },
+ "ui/sheets/misc_sheet.svg": {
+  "w": 1696,
+  "h": 192,
+  "frames": 1
+ },
+ "ui/sheets/panels_sheet.svg": {
+  "w": 1104,
+  "h": 312,
+  "frames": 1
+ },
+ "ui/sheets/portraits_sheet.svg": {
+  "w": 1376,
+  "h": 288,
+  "frames": 1
+ }
+}

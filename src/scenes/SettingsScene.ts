@@ -1,17 +1,20 @@
 import Phaser from 'phaser';
 import { audio } from '../audio/audio';
-import { profile } from '../meta/profile';
-import { isFullscreen, toggleFullscreen } from '../platform';
-import type { Settings } from '../meta/save';
 import { bindPad } from '../input/gamepad';
-import { Button } from '../ui/Button';
+import { profile } from '../meta/profile';
+import type { Settings } from '../meta/save';
+import { isFullscreen, toggleFullscreen } from '../platform';
+import { icon, type IconName } from '../ui/assets';
+import { Button, enter, panel, ribbon, Toggle } from '../ui/kit';
+import { backdrop, fadeIn } from '../ui/screen';
 import { textStyle, UI } from '../ui/theme';
 
-const TOGGLES: { key: keyof Settings; label: string; note?: string }[] = [
+const ROWS: { key: keyof Settings | 'fullscreen'; label: string; icon?: IconName }[] = [
   { key: 'shake', label: 'Ekran sarsıntısı' },
   { key: 'damageNumbers', label: 'Hasar sayıları' },
-  { key: 'sfx', label: 'Ses efektleri' },
-  { key: 'music', label: 'Müzik' },
+  { key: 'sfx', label: 'Ses efektleri', icon: 'sound' },
+  { key: 'music', label: 'Müzik', icon: 'music' },
+  { key: 'fullscreen', label: 'Tam ekran', icon: 'fullscreen' },
 ];
 
 export class SettingsScene extends Phaser.Scene {
@@ -22,35 +25,43 @@ export class SettingsScene extends Phaser.Scene {
   create() {
     const { width, height } = this.scale;
     const settings = profile.data.settings;
-    this.add.rectangle(width / 2, height / 2, width, height, UI.bg);
-    this.add.text(width / 2, 70, 'Ayarlar', textStyle(40, { fontStyle: 'bold' })).setOrigin(0.5);
+    fadeIn(this);
+    backdrop(this);
 
-    TOGGLES.forEach((t, i) => {
-      const y = 180 + i * 80;
-      const label = () => `${t.label}: ${settings[t.key] ? 'Açık' : 'Kapalı'}${t.note ? `  (${t.note})` : ''}`;
-      const btn: Button = new Button(
-        this,
-        width / 2,
-        y,
-        label(),
-        () => {
-          settings[t.key] = !settings[t.key];
-          profile.save();
-          audio.configure(settings);
-          btn.setLabel(label());
-        },
-        { width: 480 },
-      );
+    const box = this.add.container(width / 2, 318);
+    box.add(panel(this, 0, 0, 516, 446));
+    box.add(ribbon(this, 0, -222, 'Ayarlar', { icon: 'settings', width: 300 }));
+    enter(this, box, { y: -48 }, 0, 200);
+
+    const rowH = 72;
+    ROWS.forEach((row, i) => {
+      const y = -125 + i * rowH;
+      const line = this.add.container(0, y);
+      if (row.icon) line.add(this.add.image(-208, 0, icon(row.icon)).setDisplaySize(28, 28));
+      line.add(this.add.text(-174, 0, row.label, textStyle(20)).setOrigin(0, 0.5));
+      if (i < ROWS.length - 1) line.add(this.add.rectangle(0, rowH / 2, 448, 2, UI.panelEdge));
+
+      if (row.key === 'fullscreen') {
+        const t = new Toggle(this, 176, 0, false, () => void toggleFullscreen(this.scale).then(sync));
+        const sync = () => this.time.delayedCall(150, async () => t.set(await isFullscreen(this.scale)));
+        void sync();
+        line.add(t);
+      } else {
+        const key = row.key;
+        line.add(
+          new Toggle(this, 176, 0, settings[key], (v) => {
+            settings[key] = v;
+            profile.save();
+            audio.configure(settings);
+          }),
+        );
+      }
+      box.add(line);
+      line.setAlpha(0);
+      this.tweens.add({ targets: line, alpha: 1, duration: 140, delay: 80 + i * 40, ease: 'Quad.Out' });
     });
 
-    const fsLabel = async () => ((await isFullscreen(this.scale)) ? 'Tam ekrandan çık (F11)' : 'Tam ekran (F11)');
-    const fsBtn: Button = new Button(this, width / 2, 180 + TOGGLES.length * 80, 'Tam ekran (F11)', async () => {
-      await toggleFullscreen(this.scale);
-      this.time.delayedCall(150, async () => fsBtn.setLabel(await fsLabel()));
-    }, { width: 480 });
-    void fsLabel().then((l) => fsBtn.setLabel(l));
-
-    new Button(this, width / 2, height - 70, 'Geri', () => this.scene.start('menu'), { width: 220 });
+    new Button(this, width / 2, height - 86, 'Geri', () => this.scene.start('menu'), { width: 196, height: 64, icon: 'back' });
     this.input.keyboard?.on('keydown-ESC', () => this.scene.start('menu'));
     bindPad(this, { back: () => this.scene.start('menu') });
   }

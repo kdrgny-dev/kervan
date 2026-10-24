@@ -3,7 +3,7 @@ import { CELL, GRID_H, GRID_W } from './config';
 import { audio } from './audio/audio';
 import { profile } from './meta/profile';
 import { toggleFullscreen } from './platform';
-import { BootScene } from './scenes/BootScene';
+import { BootScene, PreloadScene } from './scenes/BootScene';
 import { GameScene } from './scenes/GameScene';
 import { HeroSelectScene } from './scenes/HeroSelectScene';
 import { MenuScene } from './scenes/MenuScene';
@@ -22,7 +22,7 @@ const game = new Phaser.Game({
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
   audio: { noAudio: true },
   input: { gamepad: true },
-  scene: [BootScene, MenuScene, HeroSelectScene, GameScene, ShopScene, SettingsScene],
+  scene: [BootScene, PreloadScene, MenuScene, HeroSelectScene, GameScene, ShopScene, SettingsScene],
 });
 
 window.addEventListener('keydown', (e) => {

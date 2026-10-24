@@ -1,0 +1,446 @@
+{
+ "_global": [
+  {
+   "target": "buton hover",
+   "prop": "scale",
+   "from": 1,
+   "to": 1.04,
+   "ms": 120,
+   "ease": "Quad.Out"
+  },
+  {
+   "target": "buton basılı",
+   "prop": "scale + y",
+   "to": "0.96, +4px (yüz dudağa iner; *_pressed dokusu)",
+   "ms": 70,
+   "ease": "Quad.Out"
+  },
+  {
+   "target": "buton bırakma",
+   "prop": "scale",
+   "to": 1,
+   "ms": 160,
+   "ease": "Back.Out"
+  },
+  {
+   "target": "ekran geçişi",
+   "prop": "alpha",
+   "from": 0,
+   "to": 1,
+   "ms": 180,
+   "ease": "Linear"
+  },
+  {
+   "target": "toggle düğmesi",
+   "prop": "x",
+   "to": "track içinde 48px",
+   "ms": 140,
+   "ease": "Back.Out"
+  }
+ ],
+ "loading": [
+  {
+   "target": "logo",
+   "prop": "y + alpha",
+   "from": "-24px, 0",
+   "to": "0, 1",
+   "ms": 420,
+   "ease": "Back.Out"
+  },
+  {
+   "target": "logo",
+   "prop": "scale (nefes)",
+   "from": 1,
+   "to": 1.02,
+   "ms": 1600,
+   "ease": "Sine.InOut",
+   "loop": "yoyo"
+  },
+  {
+   "target": "ilerleme dolgusu",
+   "prop": "width",
+   "to": "yüklenen oran",
+   "ms": 150,
+   "ease": "Quad.Out",
+   "note": "her güncellemede"
+  }
+ ],
+ "main_menu": [
+  {
+   "target": "logo",
+   "prop": "y + alpha",
+   "from": "-40px, 0",
+   "to": "0, 1",
+   "ms": 360,
+   "ease": "Back.Out"
+  },
+  {
+   "target": "butonlar",
+   "prop": "x + alpha",
+   "from": "-60px, 0",
+   "to": "0, 1",
+   "ms": 240,
+   "ease": "Back.Out",
+   "stagger": 60,
+   "delay": 120
+  },
+  {
+   "target": "Oyna butonu",
+   "prop": "scale (dikkat)",
+   "from": 1,
+   "to": 1.03,
+   "ms": 900,
+   "ease": "Sine.InOut",
+   "loop": "yoyo",
+   "delay": 800
+  },
+  {
+   "target": "rekor paneli",
+   "prop": "x + alpha",
+   "from": "+80px, 0",
+   "to": "0, 1",
+   "ms": 260,
+   "ease": "Back.Out",
+   "delay": 200
+  },
+  {
+   "target": "rekor satırları",
+   "prop": "alpha",
+   "from": 0,
+   "to": 1,
+   "ms": 160,
+   "ease": "Quad.Out",
+   "stagger": 50,
+   "delay": 360
+  },
+  {
+   "target": "kafile",
+   "prop": "x",
+   "from": "-480px",
+   "to": "1152px",
+   "ms": 14000,
+   "ease": "Linear",
+   "loop": "repeat",
+   "note": "walk karesi 110 ms; kahramanlar arası 96px"
+  }
+ ],
+ "hero_select": [
+  {
+   "target": "kartlar",
+   "prop": "y + alpha",
+   "from": "+60px, 0",
+   "to": "0, 1",
+   "ms": 220,
+   "ease": "Back.Out",
+   "stagger": 50
+  },
+  {
+   "target": "seçili kart",
+   "prop": "y + scale",
+   "to": "-10px, 1.04",
+   "ms": 180,
+   "ease": "Back.Out"
+  },
+  {
+   "target": "seçili kart parlaması",
+   "prop": "alpha",
+   "from": 0.35,
+   "to": 0.7,
+   "ms": 800,
+   "ease": "Sine.InOut",
+   "loop": "yoyo"
+  },
+  {
+   "target": "kilitli karta tıklama",
+   "prop": "x (sallanma)",
+   "to": "±6px ×3",
+   "ms": 240,
+   "ease": "Sine.InOut"
+  }
+ ],
+ "shop_heroes": [
+  {
+   "target": "panel",
+   "prop": "y + alpha",
+   "from": "-30px, 0",
+   "to": "0, 1",
+   "ms": 200,
+   "ease": "Back.Out"
+  },
+  {
+   "target": "sekme değişimi",
+   "prop": "içerik alpha + x",
+   "from": "0, ±24px",
+   "to": "1, 0",
+   "ms": 160,
+   "ease": "Quad.Out"
+  },
+  {
+   "target": "satın alınan pip",
+   "prop": "scale",
+   "from": 0,
+   "to": 1,
+   "ms": 220,
+   "ease": "Back.Out(2)"
+  },
+  {
+   "target": "altın sayacı",
+   "prop": "sayı",
+   "to": "yeni değer",
+   "ms": 400,
+   "ease": "Quad.Out",
+   "note": "azalırken kısa kırmızı yanıp sönme 120 ms"
+  },
+  {
+   "target": "yetersiz altın",
+   "prop": "x (sallanma)",
+   "to": "±6px ×3",
+   "ms": 240,
+   "ease": "Sine.InOut"
+  }
+ ],
+ "shop_general": [
+  {
+   "target": "kartlar",
+   "prop": "y + alpha",
+   "from": "+40px, 0",
+   "to": "0, 1",
+   "ms": 220,
+   "ease": "Back.Out",
+   "stagger": 70
+  }
+ ],
+ "settings": [
+  {
+   "target": "panel",
+   "prop": "y + alpha",
+   "from": "-48px, 0",
+   "to": "0, 1",
+   "ms": 200,
+   "ease": "Back.Out"
+  },
+  {
+   "target": "satırlar",
+   "prop": "alpha",
+   "from": 0,
+   "to": 1,
+   "ms": 140,
+   "ease": "Quad.Out",
+   "stagger": 40,
+   "delay": 80
+  }
+ ],
+ "hud": [
+  {
+   "target": "XP dolgusu",
+   "prop": "width",
+   "to": "yeni oran",
+   "ms": 250,
+   "ease": "Quad.Out"
+  },
+  {
+   "target": "seviye rozeti (level up)",
+   "prop": "scale",
+   "from": 1.6,
+   "to": 1,
+   "ms": 320,
+   "ease": "Back.Out(2)",
+   "note": "+ fx_level_up kafile üstünde"
+  },
+  {
+   "target": "boss çubuğu girişi",
+   "prop": "y + alpha",
+   "from": "-30px, 0",
+   "to": "0, 1",
+   "ms": 300,
+   "ease": "Back.Out"
+  },
+  {
+   "target": "boss HP hasar",
+   "prop": "width",
+   "to": "yeni değer",
+   "ms": 220,
+   "ease": "Quad.Out",
+   "note": "arkada beyaz 'gecikmeli' çubuk 400 ms sonra 300 ms ile iner"
+  },
+  {
+   "target": "güçlendirme ikonu ekleme",
+   "prop": "scale",
+   "from": 0,
+   "to": 1,
+   "ms": 240,
+   "ease": "Back.Out(2)"
+  },
+  {
+   "target": "güçlendirme son 3 sn",
+   "prop": "alpha",
+   "from": 1,
+   "to": 0.4,
+   "ms": 250,
+   "ease": "Linear",
+   "loop": "yoyo"
+  },
+  {
+   "target": "altın/mücevher sayacı",
+   "prop": "scale",
+   "from": 1.2,
+   "to": 1,
+   "ms": 160,
+   "ease": "Back.Out"
+  }
+ ],
+ "pause": [
+  {
+   "target": "karartma",
+   "prop": "alpha",
+   "from": 0,
+   "to": 0.72,
+   "ms": 160,
+   "ease": "Linear"
+  },
+  {
+   "target": "panel",
+   "prop": "y + alpha",
+   "from": "-200px, 0",
+   "to": "0, 1",
+   "ms": 200,
+   "ease": "Back.Out",
+   "note": "brief'teki örnek"
+  },
+  {
+   "target": "kapanış",
+   "prop": "y + alpha",
+   "to": "-120px, 0",
+   "ms": 140,
+   "ease": "Quad.In"
+  }
+ ],
+ "game_over": [
+  {
+   "target": "karartma",
+   "prop": "alpha",
+   "from": 0,
+   "to": 1,
+   "ms": 300,
+   "ease": "Linear"
+  },
+  {
+   "target": "başlık afişi",
+   "prop": "scale + alpha",
+   "from": "0.6, 0",
+   "to": "1, 1",
+   "ms": 360,
+   "ease": "Back.Out",
+   "delay": 150
+  },
+  {
+   "target": "istatistik kartları",
+   "prop": "y + alpha",
+   "from": "+40px, 0",
+   "to": "0, 1",
+   "ms": 220,
+   "ease": "Back.Out",
+   "stagger": 120,
+   "delay": 450
+  },
+  {
+   "target": "istatistik sayıları",
+   "prop": "sayı 0 → değer",
+   "ms": 700,
+   "ease": "Quad.Out",
+   "stagger": 200,
+   "delay": 550,
+   "note": "sayarken her 50 ms'de tık sesi"
+  },
+  {
+   "target": "Yeni rekor rozeti",
+   "prop": "scale + rotation",
+   "from": "0, -12°",
+   "to": "1, -4°",
+   "ms": 420,
+   "ease": "Back.Out(2)",
+   "delay": 1300
+  },
+  {
+   "target": "Yeni rekor parlaması",
+   "prop": "glow alpha",
+   "from": 0.3,
+   "to": 0.8,
+   "ms": 700,
+   "ease": "Sine.InOut",
+   "loop": "yoyo"
+  },
+  {
+   "target": "ödül satırı",
+   "prop": "alpha + y",
+   "from": "0, +12px",
+   "to": "1, 0",
+   "ms": 240,
+   "ease": "Quad.Out",
+   "delay": 1500
+  },
+  {
+   "target": "butonlar",
+   "prop": "alpha",
+   "from": 0,
+   "to": 1,
+   "ms": 200,
+   "ease": "Quad.Out",
+   "delay": 1700
+  }
+ ],
+ "wave_banner_boss": [
+  {
+   "target": "afiş",
+   "prop": "scaleX + alpha",
+   "from": "0.2, 0",
+   "to": "1, 1",
+   "ms": 280,
+   "ease": "Back.Out"
+  },
+  {
+   "target": "afiş",
+   "prop": "bekleme",
+   "ms": 1400
+  },
+  {
+   "target": "afiş",
+   "prop": "y + alpha",
+   "to": "-40px, 0",
+   "ms": 220,
+   "ease": "Quad.In"
+  },
+  {
+   "target": "ekran",
+   "prop": "kamera sarsıntısı",
+   "to": "4px",
+   "ms": 300,
+   "note": "ayarlarda kapalıysa atla"
+  }
+ ],
+ "wave_banner_clear": [
+  {
+   "target": "afiş",
+   "prop": "y + alpha",
+   "from": "+30px, 0",
+   "to": "0, 1",
+   "ms": 240,
+   "ease": "Back.Out"
+  },
+  {
+   "target": "+15 altın",
+   "prop": "scale",
+   "from": 0,
+   "to": 1,
+   "ms": 220,
+   "ease": "Back.Out(2)",
+   "delay": 200
+  },
+  {
+   "target": "afiş",
+   "prop": "bekleme + çıkış",
+   "ms": "1000 + 200",
+   "ease": "Quad.In"
+  }
+ ]
+}

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="icon gem">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M19 13 H45 L55 26 L32 55 L9 26 Z" fill="#7fb3ec"/><path d="M19 13 H45 L55 26 H9 Z" fill="#d6deea" stroke="none"/><path d="M9 26 L32 55 L23 26 Z" fill="#3d74c9" stroke="none"/><path d="M19 13 L23 26 L32 13 L41 26 L45 13 M9 26 H55 M23 26 L32 55 L41 26" stroke-width="2" fill="none"/><path d="M19 13 H45 L55 26 L32 55 L9 26 Z" fill="none"/><path d="M15 23 L19 18" stroke="#f0e6d2" stroke-width="3"/>
+</g>
+</svg>

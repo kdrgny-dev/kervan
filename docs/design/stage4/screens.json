@@ -1,0 +1,140 @@
+{
+ "loading": {
+  "title": "Yükleme",
+  "components": [
+   "logo_kervan",
+   "ui_bar_frame",
+   "ui_bar_fill_xp"
+  ]
+ },
+ "main_menu": {
+  "title": "Ana menü",
+  "components": [
+   "logo_kervan",
+   "ui_button_primary(_hover)",
+   "ui_button_secondary",
+   "ui_panel",
+   "ui_panel_header",
+   "icon_shop",
+   "icon_settings",
+   "icon_exit",
+   "icon_trophy",
+   "icon_coin",
+   "icon_gem",
+   "hero_token + portrait_*",
+   "*_walk_1..4"
+  ]
+ },
+ "hero_select": {
+  "title": "Kahraman seçimi",
+  "components": [
+   "ui_panel_header",
+   "ui_card",
+   "ui_card_selected",
+   "ui_card_locked",
+   "portrait_*",
+   "icon_heart",
+   "icon_sword",
+   "icon_range",
+   "icon_lock",
+   "icon_coin",
+   "ui_button_primary",
+   "ui_button_secondary",
+   "icon_back"
+  ]
+ },
+ "shop_heroes": {
+  "title": "Dükkan — Kahramanlar",
+  "components": [
+   "ui_tab_active",
+   "ui_tab_idle",
+   "ui_panel",
+   "hero_token + portrait_*",
+   "pips (CSS)",
+   "ui_button_primary",
+   "ui_button_disabled",
+   "icon_heart",
+   "icon_sword",
+   "icon_lock",
+   "icon_coin",
+   "icon_back"
+  ]
+ },
+ "shop_general": {
+  "title": "Dükkan — Genel",
+  "components": [
+   "ui_tab_active",
+   "ui_tab_idle",
+   "ui_panel",
+   "ui_card",
+   "pips (CSS)",
+   "ui_button_primary",
+   "ui_button_disabled",
+   "icon_gem"
+  ]
+ },
+ "settings": {
+  "title": "Ayarlar",
+  "components": [
+   "ui_panel",
+   "ui_panel_header",
+   "ui_toggle_on",
+   "ui_toggle_off",
+   "icon_settings",
+   "icon_sound",
+   "icon_music",
+   "icon_fullscreen",
+   "ui_button_secondary",
+   "icon_back"
+  ]
+ },
+ "hud": {
+  "title": "Oyun HUD'u",
+  "components": [
+   "pill (CSS)",
+   "ui_bar_frame",
+   "ui_bar_fill_xp",
+   "ui_bar_fill_boss",
+   "ui_button_secondary",
+   "icon_pause",
+   "icon_coin",
+   "icon_gem",
+   "power_*"
+  ]
+ },
+ "pause": {
+  "title": "Duraklatma",
+  "components": [
+   "overlay",
+   "ui_panel",
+   "ui_button_primary",
+   "ui_button_secondary"
+  ]
+ },
+ "game_over": {
+  "title": "Oyun sonu",
+  "components": [
+   "ui_banner_danger",
+   "rekor rozeti (CSS)",
+   "ui_card",
+   "icon_coin",
+   "icon_gem",
+   "icon_shop",
+   "ui_button_primary",
+   "ui_button_secondary"
+  ]
+ },
+ "wave_banner_boss": {
+  "title": "Dalga afişi — boss",
+  "components": [
+   "ui_banner_danger"
+  ]
+ },
+ "wave_banner_clear": {
+  "title": "Dalga afişi — temizlendi",
+  "components": [
+   "ui_banner",
+   "icon_coin"
+  ]
+ }
+}

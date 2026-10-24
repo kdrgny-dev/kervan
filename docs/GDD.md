@@ -1,7 +1,7 @@
 # Kervan — Oyun Tasarım Dokümanı (GDD) v0.1
 
 > Çalışma adı: **Kervan**. Nimble Quest tarzı snake + otomatik savaş + roguelite meta ilerleme.
-> Platform: Web + Masaüstü (Mac / Windows / Linux). Tarih: 2026-10-18, son güncelleme 2026-10-23 (F5).
+> Platform: Web + Masaüstü (Mac / Windows / Linux). Tarih: 2026-10-18, son güncelleme 2026-10-24 (F6).
 
 ---
 
@@ -224,13 +224,21 @@ kervan/
 | ✅ **F3 Meta** | Menüler, kahraman seçimi, dükkan, kayıt, oyun sonu ekranı, mini boss | Turlar arası ilerleme var |
 | ✅ **F4 His** | Parçacıklar, sarsıntı, hasar sayıları, sesler, gamepad, denge turu | Oynaması keyifli |
 | ✅ **F5 Paketleme** | Tauri, CI derlemeleri, web yayını | 3 işletim sisteminde indirilebilir |
-| **F6 Grafik** | Claude Design asset'lerinin manifest ile entegrasyonu | Nihai görünüm |
+| ✅ **F6 Grafik** | Claude Design asset'lerinin manifest ile entegrasyonu | Nihai görünüm |
 
 F6 paralel yürüyebilir: grafik üretimi F0'dan itibaren başlayabilir.
 
 ---
 
-## 14. Asset Listesi (Claude Design için)
+## 14. Görsel Sistem (F6)
+
+- Çizimler Claude Design ile 4 aşamada üretildi; referanslar `docs/design/` altında (palet, önizleme sayfaları, mockup'lar, `tokens.json`, `motion.json`, `components.json`).
+- `public/assets/`: `characters/` (5 kahraman + 5 düşman, idle/yürüme/saldırı/hasar; boss nefes/çağırma/şişme), `tiles/`, `decor/`, `loot/`, `fx/`, `ui/` (bileşenler, ikonlar, portreler, logo, fontlar).
+- Fontlar: Grandstander (başlık, sayılar) + Nunito (metin), ikisi de OFL; menüden önce yüklenir.
+- Arayüz kiti `src/ui/kit.ts`: 9-slice buton/panel/kart/sekme/çubuk (2x raster, yarı ölçekte), kurdele başlık, hap sayaç, pip, toggle. HUD `src/ui/hud.ts`.
+- Hareketler `docs/design/stage4/motion.json`'daki süre ve easing'lerle uygulandı.
+
+## 15. Asset Listesi (Claude Design için)
 
 **Tarz önerisi:** Düz vektör (flat), kalın koyu kontur (3 px), sınırlı palet (~16 renk), yukarıdan 3/4 bakış, sevimli/chibi oranlar (büyük kafa). Animasyon kodla yapılacağı için **her karakter tek kare** yeterli. Sağa bakan çizilir; sola bakış yatay aynalama ile.
 
@@ -275,7 +283,7 @@ F6 paralel yürüyebilir: grafik üretimi F0'dan itibaren başlayabilir.
 
 ---
 
-## 15. Açık Sorular
+## 16. Açık Sorular
 
 1. Nihai oyun adı?
 2. Steam hedefi var mı? (Varsa Electron'a geçiş ve Steamworks değerlendirilir.)

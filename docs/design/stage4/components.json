@@ -1,0 +1,252 @@
+{
+ "ui_button_primary.svg": {
+  "w": 240,
+  "h": 72,
+  "slice": {
+   "top": 20,
+   "right": 22,
+   "bottom": 26,
+   "left": 22
+  },
+  "text_color": "#14121c",
+  "text_offset_y": -3,
+  "note": "Metin dikey olarak yüz alanına (üst 64 px) ortalanır; basılıyken 4 px aşağı."
+ },
+ "ui_button_primary_hover.svg": {
+  "w": 240,
+  "h": 72,
+  "slice": {
+   "top": 20,
+   "right": 22,
+   "bottom": 26,
+   "left": 22
+  },
+  "text_color": "#14121c",
+  "text_offset_y": -3,
+  "note": "Metin dikey olarak yüz alanına (üst 64 px) ortalanır; basılıyken 4 px aşağı."
+ },
+ "ui_button_primary_pressed.svg": {
+  "w": 240,
+  "h": 72,
+  "slice": {
+   "top": 20,
+   "right": 22,
+   "bottom": 26,
+   "left": 22
+  },
+  "text_color": "#14121c",
+  "text_offset_y": 1,
+  "note": "Metin dikey olarak yüz alanına (üst 64 px) ortalanır; basılıyken 4 px aşağı."
+ },
+ "ui_button_secondary.svg": {
+  "w": 240,
+  "h": 72,
+  "slice": {
+   "top": 20,
+   "right": 22,
+   "bottom": 26,
+   "left": 22
+  },
+  "text_color": "#f4efe6",
+  "text_offset_y": -3,
+  "note": "Metin dikey olarak yüz alanına (üst 64 px) ortalanır; basılıyken 4 px aşağı."
+ },
+ "ui_button_secondary_hover.svg": {
+  "w": 240,
+  "h": 72,
+  "slice": {
+   "top": 20,
+   "right": 22,
+   "bottom": 26,
+   "left": 22
+  },
+  "text_color": "#f4efe6",
+  "text_offset_y": -3,
+  "note": "Metin dikey olarak yüz alanına (üst 64 px) ortalanır; basılıyken 4 px aşağı."
+ },
+ "ui_button_secondary_pressed.svg": {
+  "w": 240,
+  "h": 72,
+  "slice": {
+   "top": 20,
+   "right": 22,
+   "bottom": 26,
+   "left": 22
+  },
+  "text_color": "#f4efe6",
+  "text_offset_y": 1,
+  "note": "Metin dikey olarak yüz alanına (üst 64 px) ortalanır; basılıyken 4 px aşağı."
+ },
+ "ui_button_disabled.svg": {
+  "w": 240,
+  "h": 72,
+  "slice": {
+   "top": 20,
+   "right": 22,
+   "bottom": 26,
+   "left": 22
+  },
+  "text_color": "#6f6879",
+  "text_offset_y": -3,
+  "note": "Metin dikey olarak yüz alanına (üst 64 px) ortalanır; basılıyken 4 px aşağı."
+ },
+ "ui_panel.svg": {
+  "w": 256,
+  "h": 256,
+  "slice": {
+   "top": 32,
+   "right": 32,
+   "bottom": 32,
+   "left": 32
+  },
+  "note": "İçerik dolgusu: 24 px."
+ },
+ "ui_panel_header.svg": {
+  "w": 320,
+  "h": 72,
+  "slice": {
+   "top": 0,
+   "right": 56,
+   "bottom": 0,
+   "left": 56
+  },
+  "mode": "3-slice yatay",
+  "text_color": "#14121c"
+ },
+ "ui_banner.svg": {
+  "w": 640,
+  "h": 128,
+  "slice": {
+   "top": 0,
+   "right": 60,
+   "bottom": 0,
+   "left": 60
+  },
+  "mode": "3-slice yatay",
+  "text_color": "#14121c",
+  "note": "Dalga afişi (temizlendi)."
+ },
+ "ui_banner_danger.svg": {
+  "w": 640,
+  "h": 128,
+  "slice": {
+   "top": 0,
+   "right": 60,
+   "bottom": 0,
+   "left": 60
+  },
+  "mode": "3-slice yatay",
+  "text_color": "#f4efe6",
+  "note": "Boss dalgası afişi."
+ },
+ "ui_card.svg": {
+  "w": 200,
+  "h": 280,
+  "slice": {
+   "top": 34,
+   "right": 34,
+   "bottom": 34,
+   "left": 34
+  },
+  "note": "Alt 82 px istatistik alanı (koyu). Portre üst bölgeye ortalanır."
+ },
+ "ui_card_selected.svg": {
+  "w": 200,
+  "h": 280,
+  "slice": {
+   "top": 34,
+   "right": 34,
+   "bottom": 34,
+   "left": 34
+  },
+  "note": "Alt 82 px istatistik alanı (koyu). Portre üst bölgeye ortalanır."
+ },
+ "ui_card_locked.svg": {
+  "w": 200,
+  "h": 280,
+  "slice": {
+   "top": 34,
+   "right": 34,
+   "bottom": 34,
+   "left": 34
+  },
+  "note": "Alt 82 px istatistik alanı (koyu). Portre üst bölgeye ortalanır."
+ },
+ "ui_tab_active.svg": {
+  "w": 200,
+  "h": 56,
+  "slice": {
+   "top": 20,
+   "right": 20,
+   "bottom": 0,
+   "left": 20
+  },
+  "text_color": "#f4efe6",
+  "note": "Alt kenarı panelle birleşir (çizgisiz)."
+ },
+ "ui_tab_idle.svg": {
+  "w": 200,
+  "h": 56,
+  "slice": {
+   "top": 24,
+   "right": 20,
+   "bottom": 4,
+   "left": 20
+  },
+  "text_color": "#a39c8f"
+ },
+ "ui_bar_frame.svg": {
+  "w": 320,
+  "h": 32,
+  "slice": {
+   "top": 0,
+   "right": 16,
+   "bottom": 0,
+   "left": 16
+  },
+  "mode": "3-slice yatay",
+  "note": "Dolgu 4 px içeriden başlar: fill = (w-8)×24, x=4,y=4."
+ },
+ "ui_bar_fill_hp.svg": {
+  "w": 312,
+  "h": 24,
+  "slice": {
+   "top": 0,
+   "right": 12,
+   "bottom": 0,
+   "left": 12
+  },
+  "mode": "3-slice yatay; genişliği değere göre ölçekle"
+ },
+ "ui_bar_fill_xp.svg": {
+  "w": 312,
+  "h": 24,
+  "slice": {
+   "top": 0,
+   "right": 12,
+   "bottom": 0,
+   "left": 12
+  },
+  "mode": "3-slice yatay"
+ },
+ "ui_bar_fill_boss.svg": {
+  "w": 312,
+  "h": 24,
+  "slice": {
+   "top": 0,
+   "right": 12,
+   "bottom": 0,
+   "left": 12
+  },
+  "mode": "3-slice yatay"
+ },
+ "ui_toggle_on.svg": {
+  "w": 96,
+  "h": 48,
+  "note": "Düğme 140 ms Back.Out ile kayar."
+ },
+ "ui_toggle_off.svg": {
+  "w": 96,
+  "h": 48
+ }
+}

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="icon shop">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M20 22 Q12 30 12 42 Q12 56 32 56 Q52 56 52 42 Q52 30 44 22 Z" fill="#8a5532"/><path d="M22 12 L27 20 H37 L42 12 Q32 8 22 12 Z" fill="#8a5532"/><rect x="20" y="19" width="24" height="6" rx="3" fill="#f0c23b"/><circle cx="32" cy="40" r="8.5" fill="#f0c23b" stroke-width="2.5"/><path d="M32 35 V45" stroke="#f28a3b" stroke-width="2.5"/><path d="M17 36 Q18 30 22 27" stroke="#f0e6d2" stroke-opacity="0.6" stroke-width="3" fill="none"/>
+</g>
+</svg>

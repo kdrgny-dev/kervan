@@ -1,15 +1,17 @@
 import Phaser from 'phaser';
-import { GEM_UPGRADE_KEYS, GEM_UPGRADES, type HeroStat, MAX_UPGRADE, UNLOCK_COST } from '../data/economy';
+import { GEM_UPGRADE_KEYS, GEM_UPGRADES, type GemUpgrade, type HeroStat, MAX_UPGRADE, UNLOCK_COST } from '../data/economy';
 import { HERO_KINDS, HEROES, type HeroKind } from '../data/heroes';
+import { bindPad } from '../input/gamepad';
 import { profile } from '../meta/profile';
 import { buyGemUpgrade, nextGemCost, nextUpgradeCost, unlockHero, upgradeHero } from '../meta/shop';
-import { HERO_SPRITES } from '../render/sprites';
-import { UnitView } from '../render/UnitView';
-import { bindPad } from '../input/gamepad';
-import { Button } from '../ui/Button';
-import { textStyle, UI } from '../ui/theme';
+import { icon } from '../ui/assets';
+import { Button, enter, fmt, panel, pips, shake, slice, tab } from '../ui/kit';
+import { backdrop, fadeIn, heroBadge, wallet } from '../ui/screen';
+import { displayStyle, textStyle, UI } from '../ui/theme';
 
 type Tab = 'heroes' | 'general';
+
+const PANEL = { x: 576, y: 425, w: 990, h: 530 };
 
 export class ShopScene extends Phaser.Scene {
   private tab: Tab = 'heroes';
@@ -23,92 +25,118 @@ export class ShopScene extends Phaser.Scene {
   }
 
   create() {
-    const { width, height } = this.scale;
-    const save = profile.data;
-    this.add.rectangle(width / 2, height / 2, width, height, UI.bg);
-    this.add.text(40, 30, 'Dükkan', textStyle(40, { fontStyle: 'bold' }));
-    this.add
-      .text(width - 40, 40, `Altın ${save.gold}    Mücevher ${save.gems}`, textStyle(24, { fontStyle: 'bold' }))
-      .setOrigin(1, 0);
+    fadeIn(this);
+    backdrop(this);
+    wallet(this);
 
-    const tabBtn = (x: number, label: string, tab: Tab) =>
-      new Button(this, x, 120, label, () => this.scene.restart({ tab }), {
-        width: 220,
-        height: 48,
-        variant: this.tab === tab ? 'primary' : 'secondary',
-      });
-    tabBtn(150, 'Kahramanlar', 'heroes');
-    tabBtn(390, 'Genel', 'general');
+    new Button(this, 78, 60, '', () => this.back(), { width: 64, height: 64, icon: 'back', iconOnly: true });
+    this.add.text(126, 58, 'Dükkan', displayStyle(46)).setOrigin(0, 0.5);
 
-    if (this.tab === 'heroes') this.heroRows();
-    else this.generalRows();
+    const box = this.add.container(PANEL.x, PANEL.y, [panel(this, 0, 0, PANEL.w, PANEL.h)]);
+    enter(this, box, { y: -30 }, 0, 200);
+    // Aktif sekme panelin üst kenarına biner, o yüzden panelden sonra çizilir
+    tab(this, 205, 138, 220, 'Kahramanlar', this.tab === 'heroes', () => this.switchTo('heroes'));
+    tab(this, 432, 138, 220, 'Genel', this.tab === 'general', () => this.switchTo('general'));
+    const content = this.add.container(0, 0);
+    if (this.tab === 'heroes') this.heroRows(content);
+    else this.generalCards(content);
 
-    new Button(this, width / 2, height - 50, 'Geri', () => this.scene.start('menu'), { width: 220, height: 50 });
-    this.input.keyboard?.on('keydown-ESC', () => this.scene.start('menu'));
-    bindPad(this, { back: () => this.scene.start('menu') });
+    this.input.keyboard?.on('keydown-ESC', () => this.back());
+    bindPad(this, { back: () => this.back() });
   }
 
-  private buy(action: () => boolean) {
-    if (!action()) return;
+  private back() {
+    this.scene.start('menu');
+  }
+
+  private switchTo(tab: Tab) {
+    this.scene.restart({ tab });
+  }
+
+  /** Satın alma başarılıysa kaydedip ekranı tazeler, değilse butonu sallar. */
+  private buy(btn: Button, action: () => boolean) {
+    if (!action()) return shake(this, btn);
     profile.save();
     this.scene.restart({ tab: this.tab });
   }
 
-  private heroRows() {
+  private priceButton(x: number, y: number, cost: number | null, currency: 'coin' | 'gem', w: number, h: number, onClick: (b: Button) => void) {
+    const label = cost === null ? (currency === 'gem' ? 'Alındı' : 'Maks') : fmt(cost);
+    const btn: Button = new Button(this, x, y, label, () => onClick(btn), {
+      variant: 'primary',
+      width: w,
+      height: h,
+      fontSize: Math.round(h * 0.42),
+      icon: cost === null ? undefined : currency,
+    });
+    if (cost === null) btn.setEnabled(false);
+    return btn;
+  }
+
+  // ---------- Kahramanlar ----------
+
+  private heroRows(root: Phaser.GameObjects.Container) {
     const save = profile.data;
-    const rowH = 90;
+    const rowH = 100;
+    const top = PANEL.y - PANEL.h / 2 + 62;
     HERO_KINDS.forEach((kind, i) => {
-      const y = 200 + i * rowH;
+      const y = top + i * rowH;
       const def = HEROES[kind];
-      this.add.rectangle(this.scale.width / 2, y, this.scale.width - 80, rowH - 10, UI.panel).setStrokeStyle(2, UI.panelEdge);
-      new UnitView(this, { color: def.color, glyph: def.glyph, size: 46, shape: 'square', sprite: HERO_SPRITES[kind], spriteSize: 70 }).setPosition(90, y);
-      this.add.text(140, y - 22, def.name, textStyle(24, { fontStyle: 'bold' }));
-      this.add.text(140, y + 8, def.role, textStyle(16, { color: UI.muted }));
+      root.add(heroBadge(this, 150, y, kind, 64));
+      root.add(this.add.text(200, y - 12, def.name, displayStyle(25)).setOrigin(0, 0.5));
+      root.add(this.add.text(200, y + 15, def.role, textStyle(14, { color: UI.muted })).setOrigin(0, 0.5));
+      if (i < HERO_KINDS.length - 1) root.add(this.add.rectangle(PANEL.x, y + rowH / 2, PANEL.w - 64, 2, UI.panelEdge));
 
       if (!save.unlocked.includes(kind)) {
+        root.add(this.add.text(368, y, 'Kilidi açınca yükseltmeler burada görünür.', textStyle(16, { color: UI.muted })).setOrigin(0, 0.5));
         const cost = UNLOCK_COST[kind];
-        new Button(this, 900, y, `Kilidi aç · ${cost} altın`, () => this.buy(() => unlockHero(save, kind)), {
-          width: 300,
-          height: 50,
+        const btn: Button = new Button(this, 912, y, `Kilidi aç · ${fmt(cost)}`, () => this.buy(btn, () => unlockHero(save, kind)), {
           variant: 'primary',
-        }).setEnabled(save.gold >= cost);
+          width: 250,
+          height: 54,
+          fontSize: 21,
+          icon: 'lock',
+        });
+        root.add(btn);
         return;
       }
-      this.statButton(kind, 'hp', 'Can', 640, y);
-      this.statButton(kind, 'dmg', 'Hasar', 940, y);
+      this.statRow(root, kind, 'hp', 'Can', 'heart', y - 23);
+      this.statRow(root, kind, 'dmg', 'Hasar', 'sword', y + 23);
     });
   }
 
-  private statButton(kind: HeroKind, stat: HeroStat, label: string, x: number, y: number) {
+  private statRow(root: Phaser.GameObjects.Container, kind: HeroKind, stat: HeroStat, label: string, glyph: 'heart' | 'sword', y: number) {
     const save = profile.data;
     const level = save.upgrades[kind][stat];
+    root.add(this.add.image(380, y, icon(glyph)).setDisplaySize(18, 18));
+    root.add(this.add.text(396, y, label.toLocaleUpperCase('tr-TR'), textStyle(14, { color: UI.muted, fontStyle: '800' })).setOrigin(0, 0.5));
+    root.add(pips(this, 462, y, MAX_UPGRADE, level, 14, 5));
     const cost = nextUpgradeCost(save, kind, stat);
-    this.add.text(x - 130, y, `${label} ${level}/${MAX_UPGRADE}`, textStyle(18)).setOrigin(0, 0.5);
-    const btn = new Button(this, x + 60, y, cost === null ? 'Maks' : `+%10 · ${cost}`, () => this.buy(() => upgradeHero(save, kind, stat)), {
-      width: 150,
-      height: 46,
-      fontSize: 18,
-    });
-    btn.setEnabled(cost !== null && save.gold >= cost);
+    root.add(this.priceButton(720, y, cost, 'coin', 102, 40, (b) => this.buy(b, () => upgradeHero(save, kind, stat))));
   }
 
-  private generalRows() {
+  // ---------- Genel ----------
+
+  private generalCards(root: Phaser.GameObjects.Container) {
     const save = profile.data;
-    const rowH = 110;
-    GEM_UPGRADE_KEYS.forEach((key, i) => {
-      const y = 220 + i * rowH;
+    GEM_UPGRADE_KEYS.forEach((key: GemUpgrade, i) => {
+      const x = PANEL.x + (i - 1) * 316;
+      const y = PANEL.y;
       const u = GEM_UPGRADES[key];
       const level = save.gemUpgrades[key];
-      const cost = nextGemCost(save, key);
-      this.add.rectangle(this.scale.width / 2, y, this.scale.width - 80, rowH - 14, UI.panel).setStrokeStyle(2, UI.panelEdge);
-      this.add.text(80, y - 24, u.name, textStyle(26, { fontStyle: 'bold' }));
-      this.add.text(80, y + 10, u.desc, textStyle(18, { color: UI.muted }));
-      this.add.text(700, y, `${level}/${u.costs.length}`, textStyle(22)).setOrigin(0.5);
-      new Button(this, 920, y, cost === null ? 'Alındı' : `${cost} mücevher`, () => this.buy(() => buyGemUpgrade(save, key)), {
-        width: 240,
-        height: 50,
-        variant: 'primary',
-      }).setEnabled(cost !== null && save.gems >= cost);
+      const card = this.add.container(x, y);
+      card.add(slice(this, 'ui.card', 0, 0, 276, 326));
+      card.add(this.add.text(0, -128, u.name, displayStyle(28)).setOrigin(0.5));
+      card.add(this.add.text(0, -96, u.desc, textStyle(15, { color: UI.muted, align: 'center', wordWrap: { width: 220 } })).setOrigin(0.5, 0));
+      if (u.costs.length > 1) {
+        const p = pips(this, 0, 36, u.costs.length, level);
+        p.x = -(u.costs.length * 22 - 6) / 2;
+        card.add(p);
+      }
+      card.add(this.add.text(0, 64, `${level}/${u.costs.length}`, displayStyle(18, { color: UI.muted })).setOrigin(0.5));
+      card.add(this.priceButton(0, 120, nextGemCost(save, key), 'gem', 236, 52, (b) => this.buy(b, () => buyGemUpgrade(save, key))));
+      root.add(card);
+      enter(this, card, { y: 40 }, 60 + i * 70, 220);
     });
   }
 }

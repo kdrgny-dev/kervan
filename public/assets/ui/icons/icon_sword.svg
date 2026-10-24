@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="icon sword">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<g transform="rotate(45 32 32)"><path d="M28 44 V10 L32 4 L36 10 V44 Z" fill="#d6deea"/><path d="M32 9 V42" stroke="#8d9ab0" stroke-width="2"/><rect x="22" y="43" width="20" height="6" rx="2" fill="#f0c23b"/><rect x="29" y="49" width="6" height="9" rx="1.5" fill="#8a5532"/><circle cx="32" cy="60" r="3.5" fill="#f0c23b"/></g>
+</g>
+</svg>

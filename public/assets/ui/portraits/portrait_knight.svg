@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="knight portrait">
+<g transform="translate(-37.6 -21.6) scale(3.6)">
+<g transform="translate(0 -2)" stroke="#14121c" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+
+<rect x="36.5" y="78" width="10" height="12.5" rx="3" fill="#24447f"/><rect x="50.5" y="78" width="11.5" height="12.5" rx="3" fill="#24447f"/>
+<g transform="translate(0 0)"><g transform="translate(30 68) rotate(-30)"><path d="M-3 0 V-26 L0 -31 L3 -26 V0 Z" fill="#d6deea"/><path d="M0 -27 V-2" stroke="#8d9ab0" stroke-width="0.75" fill="none"/><rect x="-2" y="2" width="4" height="8" rx="1" fill="#8a5532"/><rect x="-7" y="-1.5" width="14" height="4" rx="1.5" fill="#f0c23b"/><circle cx="0" cy="11.5" r="2.5" fill="#f0c23b"/><circle cx="0" cy="5.5" r="4.5" fill="#24447f"/></g><rect x="33" y="57" width="30" height="24" rx="9" fill="#3d74c9"/><path d="M38 62 Q42 59 47 60" stroke="#7fb3ec" stroke-width="1.25" fill="none"/><rect x="34" y="72" width="28" height="4.5" rx="1.5" fill="#8a5532"/><rect x="45" y="71.5" width="6" height="5.5" rx="1.5" fill="#f0c23b"/><circle cx="37" cy="62" r="6.5" fill="#7fb3ec"/><path d="M44 19.5 C40 7.5 25 6.5 20 16.5 C27 14.5 33 17 36 23 Z" fill="#e5533d"/><ellipse cx="47" cy="38" rx="22" ry="21" fill="#3d74c9"/><path d="M30 32 Q33 22 43 19" stroke="#7fb3ec" stroke-width="1.5" fill="none"/><path d="M47 17.5 V27" stroke-width="1.25" fill="none"/><rect x="49" y="29" width="19" height="19" rx="7" fill="#d6deea"/><path d="M51 44 Q58 47 66 43" stroke="#8d9ab0" stroke-width="1" fill="none"/><rect x="53" y="34.5" width="14" height="5" rx="2.5" fill="#14121c"/><circle cx="62.5" cy="37" r="1.2" fill="#f0e6d2" stroke="none"/><g transform="translate(0 0)"><ellipse cx="61" cy="71" rx="11.5" ry="13" fill="#f0c23b"/><ellipse cx="61" cy="71" rx="7.5" ry="9" fill="#24447f" stroke-width="1"/><path d="M57 64.5 Q59 62.5 62 62.5" stroke="#7fb3ec" stroke-width="1" fill="none"/><circle cx="61" cy="71" r="3" fill="#f0c23b" stroke-width="1"/></g></g>
+
+</g>
+
+</g>
+</svg>
