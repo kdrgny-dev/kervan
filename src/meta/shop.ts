@@ -73,5 +73,6 @@ export function loadoutFrom(s: SaveData, leader: HeroKind): Loadout {
     startPower: s.gemUpgrades.startPower > 0,
     powerBonusMs: s.gemUpgrades.powerDuration * POWER_BONUS_STEP_MS,
     secondHero: s.gemUpgrades.secondHero > 0,
+    cards: [...s.cardsUnlocked],
   };
 }

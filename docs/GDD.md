@@ -261,6 +261,16 @@ F6 paralel yürüyebilir: grafik üretimi F0'dan itibaren başlayabilir.
 - Denge (2026-10-24, bot her seçimde ilk kartı alır): yeni oyuncu dalga p25/p50/p75 = 6/10/17, ~2,5 dk; orta 6/11/22; güçlü 19/20/22. Kartlarla oyuncu her dalga güçlendiği için düşman canı ilk dalgadan itibaren dalga başına +%7 büyür.
 - Tur başına altın arttığı için dükkân fiyatları yükseltildi: kilitler 400/700/1000, yükseltme `80 × 1,6^seviye`.
 
+### ✅ F8 — Hesap Seviyesi, Görevler, Başarımlar
+
+- **Hesap XP'si** her turda: `dalga × 15 + öldürme + boss × 60` (+ görev XP'si). Seviye eşiği `150 + 75 × (seviye − 1)`.
+- **Ödül yolu** (`src/data/progression.ts`): 2–22 arası her seviyede kart, altın ya da mücevher; 22'den sonra sonsuza dek altın, her 5 seviyede mücevher. Unvanlar: Çaylak Yolcu → Kervan Çırağı (5) → Deve Fısıldayan (10) → Yol Kurdu (15) → Kervanbaşı Yardımcısı (20) → Kervanbaşı (30) → Efsanevi Kervanbaşı (40) → Yolların Efendisi (50).
+- **Kart koleksiyonu:** 12 başlangıç kartı; kalan 13 kart ödül yolunda. Kart seçiminde yalnızca açılmış kartlar çıkar. Koleksiyon ekranı kilitlileri silüetle ve açılış seviyesiyle gösterir.
+- **Görevler:** her gün 3 günlük (15 görevlik havuz), her hafta 2 haftalık (5'lik havuz). Seçim gün/hafta anahtarından tohumlanır, herkes aynı görevleri görür. "sum" görevleri turlar boyunca birikir, "max" görevleri tek turda yapılmalı. Ödüller tur bitince otomatik verilir.
+- **Başarımlar:** 15 tek seferlik hedef (ilk boss, 10/20/30. dalga, 1.000/10.000 öldürme, tam kadro, tüm kartlar, hesap seviyesi 10/25…). Ömür boyu sayaçlara bakar.
+- Oyun sonu ekranı: hesap XP çubuğu, seviye atlama, yeni kart, görev ve başarım çipleri. Menüde hesap rozeti; yeni "Yolculuk" (Görevler · Ödül Yolu · Başarımlar) ve "Koleksiyon" ekranları.
+- Kayıt şeması v2; v1 kayıtlar altın, kahraman ve rekorları korunarak yükseltilir.
+
 ## 14. Görsel Sistem (F6)
 
 - Çizimler Claude Design ile 4 aşamada üretildi; referanslar `docs/design/` altında (palet, önizleme sayfaları, mockup'lar, `tokens.json`, `motion.json`, `components.json`).

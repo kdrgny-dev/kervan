@@ -7,7 +7,9 @@ import { LOOT_BLINK_MS, POWERS, score } from '../data/loot';
 import { audio } from '../audio/audio';
 import { bindControls } from '../input/controls';
 import { profile } from '../meta/profile';
-import { applyRun, loadoutFrom } from '../meta/shop';
+import { applyRunResults, type RunReport } from '../meta/progression';
+import { loadoutFrom } from '../meta/shop';
+import { xpForLevel, type RunSummary } from '../data/progression';
 import { drawArena } from '../render/arena';
 import { Fx } from '../render/fx';
 import { ENEMY_SPRITES, FX, HERO_SPRITES, LOOT, POWER_ICONS } from '../render/sprites';
@@ -28,7 +30,7 @@ import { CARDS } from '../data/cards';
 import { nextRerollCost, pickCard, rerollDraft } from '../sim/cards';
 import { DraftOverlay } from '../ui/draft';
 import { Hud } from '../ui/hud';
-import { Button, fmt, panel, ribbon, slice } from '../ui/kit';
+import { Bar, Button, fmt, panel, ribbon, slice } from '../ui/kit';
 import { displayStyle, FONT_DISPLAY, textStyle, UI } from '../ui/theme';
 import { icon } from '../ui/assets';
 
@@ -638,26 +640,40 @@ export class GameScene extends Phaser.Scene {
     next();
   }
 
-  private bankRun() {
-    if (this.banked) return -1;
-    this.banked = true;
-    const { stats, wave } = this.world;
+  private summary(): RunSummary {
+    const { stats, wave, tally } = this.world;
     const n = Math.max(wave.n, 1);
-    const rank = applyRun(profile.data, {
+    return {
       hero: this.hero,
       wave: n,
       kills: stats.kills,
       gold: stats.gold,
       gems: stats.gems,
       score: score(n, stats.kills, stats.gold),
-    });
+      bosses: tally.bosses,
+      killsByKind: { ...tally.killsByKind },
+      recruited: tally.recruited,
+      cardsPicked: tally.cardsPicked,
+      cursedPicked: tally.cursedPicked,
+      maxParty: tally.maxParty,
+      maxTier: { ...tally.maxTier },
+    };
+  }
+
+  /** Turu kasaya, görevlere, hesap seviyesine ve başarımlara işler (bir kez). */
+  private bankRun(): RunReport | null {
+    if (this.banked) return null;
+    this.banked = true;
+    const report = applyRunResults(profile.data, this.summary());
     profile.save();
-    return rank;
+    return report;
   }
 
   private showGameOver(reason: GameOverReason) {
     this.shake(180, 0.008);
-    const rank = this.bankRun();
+    const before = { ...profile.data.account };
+    const report = this.bankRun();
+    const rank = report?.rank ?? -1;
     const { width, height } = this.scale;
     const { stats, wave } = this.world;
     const n = Math.max(wave.n, 1);
@@ -741,17 +757,68 @@ export class GameScene extends Phaser.Scene {
     add(this.add.image(0, 0, icon('gem')).setDisplaySize(26, 26), 26, 18);
     const note = this.add.text(0, 0, 'kasaya eklendi', textStyle(18, { color: UI.muted })).setOrigin(0.5);
     add(note, note.width, 0);
-    const reward = this.add.container(cx - x / 2, 436, parts).setAlpha(0);
+    const reward = this.add.container(cx - x / 2, 418, parts).setAlpha(0);
     reward.y += 12;
-    this.tweens.add({ targets: reward, y: 436, alpha: 1, duration: 240, delay: 1500, ease: 'Quad.Out' });
+    this.tweens.add({ targets: reward, y: 418, alpha: 1, duration: 240, delay: 1500, ease: 'Quad.Out' });
     o.add(reward);
 
+    if (report) o.add(this.progressBlock(cx, 478, before, report));
+
     const buttons = this.add.container(0, 0, [
-      new Button(this, cx - 268, 600, 'Dükkan', () => this.scene.start('shop'), { width: 196, height: 60, icon: 'shop' }),
-      new Button(this, cx, 603, 'Tekrar', () => this.restart(), { variant: 'primary', width: 290, height: 76, fontSize: 34 }),
-      new Button(this, cx + 268, 600, 'Menü', () => this.scene.start('menu'), { width: 196, height: 60 }),
+      new Button(this, cx - 268, 622, 'Dükkan', () => this.scene.start('shop'), { width: 196, height: 60, icon: 'shop' }),
+      new Button(this, cx, 625, 'Tekrar', () => this.restart(), { variant: 'primary', width: 290, height: 76, fontSize: 34 }),
+      new Button(this, cx + 268, 622, 'Menü', () => this.scene.start('menu'), { width: 196, height: 60 }),
     ]).setAlpha(0);
     this.tweens.add({ targets: buttons, alpha: 1, duration: 200, delay: 1700 });
     o.add(buttons);
+  }
+
+  /** Oyun sonunda hesap XP çubuğu ve kazanılanların çipleri. */
+  private progressBlock(cx: number, y: number, before: { level: number; xp: number }, report: RunReport) {
+    const c = this.add.container(0, 0).setAlpha(0);
+    const after = profile.data.account;
+    const bar = new Bar(this, cx, y, 360, 'xp').setRatio(before.xp / xpForLevel(before.level), false);
+    const lvl = this.add.text(cx - 196, y, `Sv ${before.level}`, displayStyle(20)).setOrigin(1, 0.5);
+    const gain = this.add.text(cx + 196, y, `+${fmt(report.xpGained)} XP`, displayStyle(18, { color: UI.gem })).setOrigin(0, 0.5);
+    c.add([bar, lvl, gain]);
+
+    const chips: { text: string; color: number }[] = [];
+    for (const l of report.levelUps) chips.push({ text: `Seviye ${l.level}!`, color: UI.xpNum });
+    for (const id of report.newCards) chips.push({ text: `Yeni kart: ${CARDS[id].name}`, color: UI.bossNum });
+    for (const q of report.quests) chips.push({ text: `✓ ${q.desc}`, color: UI.successNum });
+    for (const a of report.achievements) chips.push({ text: `★ ${a.name}`, color: UI.goldNum });
+    const shown = chips.slice(0, 4);
+    if (chips.length > shown.length) shown.push({ text: `+${chips.length - shown.length}`, color: UI.panelEdge });
+
+    const row = this.add.container(0, y + 46);
+    let x = 0;
+    for (const chip of shown) {
+      const t = this.add.text(0, 0, chip.text, textStyle(14, { color: UI.ink, fontStyle: '900' })).setOrigin(0, 0.5);
+      const w = t.width + 24;
+      const bg = this.add.graphics();
+      bg.fillStyle(chip.color).fillRoundedRect(x, -15, w, 30, 15).lineStyle(2, 0x14121c).strokeRoundedRect(x, -15, w, 30, 15);
+      t.x = x + 12;
+      row.add([bg, t]);
+      x += w + 8;
+    }
+    row.x = cx - (x - 8) / 2;
+    c.add(row);
+
+    this.tweens.add({ targets: c, alpha: 1, duration: 240, delay: 1600 });
+    this.time.delayedCall(1800, () => {
+      if (!bar.active) return;
+      if (report.levelUps.length) {
+        bar.setRatio(1);
+        this.time.delayedCall(320, () => {
+          if (!bar.active) return;
+          lvl.setText(`Sv ${after.level}`);
+          this.tweens.add({ targets: lvl, scale: { from: 1.5, to: 1 }, duration: 320, ease: 'Back.Out(2)' });
+          audio.play('levelUp');
+          bar.setRatio(0, false);
+          bar.setRatio(after.xp / xpForLevel(after.level));
+        });
+      } else bar.setRatio(after.xp / xpForLevel(after.level));
+    });
+    return c;
   }
 }

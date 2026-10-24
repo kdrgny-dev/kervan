@@ -5,8 +5,10 @@ import { profile } from '../meta/profile';
 import { isDesktop, quitApp } from '../platform';
 import { HERO_SPRITES } from '../render/sprites';
 import { UnitView } from '../render/UnitView';
+import { titleFor, xpForLevel } from '../data/progression';
+import { ensureQuests } from '../meta/progression';
 import { LOGO } from '../ui/assets';
-import { Button, enter, fmt, panel, ribbon } from '../ui/kit';
+import { Bar, Button, enter, fmt, panel, ribbon } from '../ui/kit';
 import { backdrop, fadeIn, heroBadge, wallet } from '../ui/screen';
 import { displayStyle, textStyle, UI } from '../ui/theme';
 
@@ -21,17 +23,25 @@ export class MenuScene extends Phaser.Scene {
     fadeIn(this);
     backdrop(this);
     wallet(this);
+    ensureQuests(profile.data);
+    profile.save();
+    this.accountBadge(24, 40);
 
-    const logo = this.add.image(285, 165, LOGO).setDisplaySize(420, 210);
+    const logo = this.add.image(285, 178, LOGO).setDisplaySize(400, 200);
     enter(this, logo, { y: -40 }, 0, 360);
 
-    const play = new Button(this, 265, 322, 'Oyna', () => this.play(), { variant: 'primary', width: 336, height: 80, fontSize: 36 });
+    const left = 97;
+    const half = 164;
+    const play = new Button(this, left + 168, 330, 'Oyna', () => this.play(), { variant: 'primary', width: 336, height: 80, fontSize: 36 });
+    const done = profile.data.quests.daily.items.filter((q) => q.done).length;
     const buttons = [
       play,
-      new Button(this, 247, 416, 'Dükkan', () => this.scene.start('shop'), { width: 300, height: 64, icon: 'shop' }),
-      new Button(this, 247, 500, 'Ayarlar', () => this.scene.start('settings'), { width: 300, height: 64, icon: 'settings' }),
+      new Button(this, left + half / 2, 420, `Görevler ${done}/${profile.data.quests.daily.items.length}`, () => this.scene.start('progress'), { width: half, height: 60, icon: 'trophy', fontSize: 19 }),
+      new Button(this, left + 336 - half / 2, 420, 'Koleksiyon', () => this.scene.start('collection'), { width: half, height: 60, icon: 'sword', fontSize: 19 }),
+      new Button(this, left + half / 2, 494, 'Dükkan', () => this.scene.start('shop'), { width: half, height: 60, icon: 'shop', fontSize: 19 }),
+      new Button(this, left + 336 - half / 2, 494, 'Ayarlar', () => this.scene.start('settings'), { width: half, height: 60, icon: 'settings', fontSize: 19 }),
     ];
-    if (isDesktop) buttons.push(new Button(this, 247, 584, 'Çıkış', () => void quitApp(), { width: 300, height: 64, icon: 'exit' }));
+    if (isDesktop) buttons.push(new Button(this, left + 168, 568, 'Çıkış', () => void quitApp(), { width: 336, height: 56, icon: 'exit', fontSize: 19 }));
     buttons.forEach((b, i) => enter(this, b, { x: -60 }, 120 + i * 60, 240));
     this.tweens.add({ targets: play, scale: 1.03, duration: 900, delay: 800, ease: 'Sine.InOut', yoyo: true, repeat: -1 });
 
@@ -41,6 +51,20 @@ export class MenuScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-ENTER', () => this.play());
     this.input.keyboard?.on('keydown-SPACE', () => this.play());
     bindPad(this, { confirm: () => this.play() });
+  }
+
+  /** Sol üstte hesap seviyesi, unvan ve XP çubuğu. */
+  private accountBadge(x: number, y: number) {
+    const { level, xp } = profile.data.account;
+    const disc = this.add.graphics();
+    disc.fillStyle(0x3d74c9).fillCircle(0, 0, 24).lineStyle(3, 0x14121c).strokeCircle(0, 0, 24);
+    disc.lineStyle(2, 0x7fb3ec, 0.8).strokeCircle(0, 0, 19);
+    const num = this.add.text(0, 1, `${level}`, displayStyle(22)).setOrigin(0.5);
+    const title = this.add.text(34, -10, titleFor(level), displayStyle(18)).setOrigin(0, 0.5);
+    const bar = new Bar(this, 34 + 110, 14, 220, 'xp').setRatio(xp / xpForLevel(level), false);
+    const label = this.add.text(34 + 226, 14, `${fmt(xp)}/${fmt(xpForLevel(level))}`, textStyle(12, { color: UI.muted })).setOrigin(0, 0.5);
+    const c = this.add.container(x + 24, y, [disc, num, title, bar, label]).setDepth(40);
+    enter(this, c, { x: -40 }, 100, 240);
   }
 
   private play() {

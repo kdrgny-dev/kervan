@@ -4,6 +4,8 @@ import { audio } from './audio/audio';
 import { profile } from './meta/profile';
 import { toggleFullscreen } from './platform';
 import { BootScene, PreloadScene } from './scenes/BootScene';
+import { CollectionScene } from './scenes/CollectionScene';
+import { ProgressScene } from './scenes/ProgressScene';
 import { GameScene } from './scenes/GameScene';
 import { HeroSelectScene } from './scenes/HeroSelectScene';
 import { MenuScene } from './scenes/MenuScene';
@@ -22,7 +24,7 @@ const game = new Phaser.Game({
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
   audio: { noAudio: true },
   input: { gamepad: true },
-  scene: [BootScene, PreloadScene, MenuScene, HeroSelectScene, GameScene, ShopScene, SettingsScene],
+  scene: [BootScene, PreloadScene, MenuScene, HeroSelectScene, GameScene, ShopScene, SettingsScene, ProgressScene, CollectionScene],
 });
 
 window.addEventListener('keydown', (e) => {

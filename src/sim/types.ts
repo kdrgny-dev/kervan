@@ -3,6 +3,7 @@ import type { EnemyKind } from '../data/enemies';
 import type { HeroKind } from '../data/heroes';
 import type { CardId, Mods } from '../data/cards';
 import type { PowerKind } from '../data/loot';
+import type { HeroClass } from '../data/synergies';
 import type { SynergyTiers } from './synergy';
 import type { Dir, Vec } from './grid';
 import type { InputQueue } from './inputQueue';
@@ -120,6 +121,19 @@ export interface Loadout {
   startPower: boolean;
   powerBonusMs: number;
   secondHero: boolean;
+  /** Kart seçiminde çıkabilecek (açılmış) kartlar. */
+  cards: CardId[];
+}
+
+/** Meta sistemler (görev, başarım) için tur boyunca tutulan sayaçlar. */
+export interface Tally {
+  killsByKind: Partial<Record<EnemyKind, number>>;
+  bosses: number;
+  recruited: number;
+  cardsPicked: number;
+  cursedPicked: number;
+  maxParty: number;
+  maxTier: Partial<Record<HeroClass, number>>;
 }
 
 export interface Draft {
@@ -135,6 +149,7 @@ export interface World {
   draft: Draft | null;
   draftsEnabled: boolean;
   syn: SynergyTiers;
+  tally: Tally;
   party: Hero[];
   enemies: Enemy[];
   projectiles: Projectile[];

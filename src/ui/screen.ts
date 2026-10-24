@@ -3,9 +3,11 @@ import type { HeroKind } from '../data/heroes';
 import { profile } from '../meta/profile';
 import { drawArena } from '../render/arena';
 import { LOOT } from '../render/sprites';
-import { portrait } from './assets';
-import { Pill } from './kit';
-import { UI } from './theme';
+import { CARDS } from '../data/cards';
+import type { Reward } from '../data/progression';
+import { icon, portrait } from './assets';
+import { fmt, Pill } from './kit';
+import { displayStyle, UI } from './theme';
 
 /** Menü ekranlarının arkasındaki bulanık, karartılmış arena. */
 export function backdrop(scene: Phaser.Scene, dim = 0.6) {
@@ -38,4 +40,61 @@ export function heroBadge(scene: Phaser.Scene, x: number, y: number, kind: HeroK
 
 export function fadeIn(scene: Phaser.Scene) {
   scene.cameras.main.fadeIn(180, 20, 18, 28);
+}
+
+/** Ödül çipi: ikon + miktar (altın, mücevher, XP, kart, unvan). */
+export function rewardChip(scene: Phaser.Scene, x: number, y: number, r: Reward) {
+  const c = scene.add.container(x, y);
+  let iconKey: string | null = null;
+  let text = '';
+  let color: string = UI.text;
+  switch (r.type) {
+    case 'gold':
+      iconKey = icon('coin');
+      text = fmt(r.amount);
+      color = UI.gold;
+      break;
+    case 'gems':
+      iconKey = icon('gem');
+      text = fmt(r.amount);
+      color = UI.gem;
+      break;
+    case 'xp':
+      text = `${fmt(r.amount)} XP`;
+      color = UI.gem;
+      break;
+    case 'card': {
+      const def = CARDS[r.card];
+      iconKey = scene.textures.exists(def.icon) ? def.icon : icon('sword');
+      text = def.name;
+      color = '#d6b8ff';
+      break;
+    }
+    case 'title':
+      iconKey = icon('trophy');
+      text = `“${r.title}”`;
+      color = UI.gold;
+      break;
+  }
+  let w = 0;
+  if (iconKey) {
+    c.add(scene.add.image(10, 0, iconKey).setDisplaySize(20, 20));
+    w = 24;
+  }
+  const t = scene.add.text(w, 0, text, displayStyle(15, { color })).setOrigin(0, 0.5);
+  c.add(t);
+  c.setSize(w + t.width, 24);
+  return c;
+}
+
+export function rewardRow(scene: Phaser.Scene, x: number, y: number, rewards: Reward[], align: 'left' | 'right' = 'left') {
+  const row = scene.add.container(x, y);
+  let cx = 0;
+  for (const r of rewards) {
+    const chip = rewardChip(scene, cx, 0, r);
+    row.add(chip);
+    cx += chip.width + 14;
+  }
+  if (align === 'right') row.x -= cx - 14;
+  return row;
 }

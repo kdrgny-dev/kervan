@@ -3,7 +3,7 @@ import { spawnHeroToken } from './loot';
 import { baseTickMs, rescaleParty } from './state';
 import type { World } from './types';
 
-const available = (w: World, id: CardId) => (w.cards[id] ?? 0) < CARDS[id].max;
+const available = (w: World, id: CardId) => w.loadout.cards.includes(id) && (w.cards[id] ?? 0) < CARDS[id].max;
 
 /** Nadirlik ağırlıklı, tekrarsız seçenekler; bir yuva %15 ihtimalle lanetli kart olur. */
 export function rollDraft(w: World): CardId[] {
@@ -59,6 +59,8 @@ export function applyCard(w: World, id: CardId) {
   const def = CARDS[id];
   def.apply(w.mods);
   w.cards[id] = (w.cards[id] ?? 0) + 1;
+  w.tally.cardsPicked++;
+  if ('cursed' in def) w.tally.cursedPicked++;
   rescaleParty(w);
   if (!w.powers.speed) w.tickMs = baseTickMs(w);
   if ('instant' in def && def.instant === 'heroToken') spawnHeroToken(w);

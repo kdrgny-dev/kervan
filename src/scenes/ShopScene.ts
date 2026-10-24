@@ -3,6 +3,7 @@ import { GEM_UPGRADE_KEYS, GEM_UPGRADES, type GemUpgrade, type HeroStat, MAX_UPG
 import { HERO_KINDS, HEROES, type HeroKind } from '../data/heroes';
 import { bindPad } from '../input/gamepad';
 import { profile } from '../meta/profile';
+import { refreshAchievements } from '../meta/progression';
 import { buyGemUpgrade, nextGemCost, nextUpgradeCost, unlockHero, upgradeHero } from '../meta/shop';
 import { icon } from '../ui/assets';
 import { Button, enter, fmt, panel, pips, shake, slice, tab } from '../ui/kit';
@@ -56,6 +57,7 @@ export class ShopScene extends Phaser.Scene {
   /** Satın alma başarılıysa kaydedip ekranı tazeler, değilse butonu sallar. */
   private buy(btn: Button, action: () => boolean) {
     if (!action()) return shake(this, btn);
+    refreshAchievements(profile.data);
     profile.save();
     this.scene.restart({ tab: this.tab });
   }

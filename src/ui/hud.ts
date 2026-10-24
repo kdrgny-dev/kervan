@@ -107,14 +107,14 @@ export class Hud {
     active.forEach((c, i) => {
       const n = counts[c];
       const tier = n >= SYNERGY_TIERS[1] ? 2 : n >= SYNERGY_TIERS[0] ? 1 : 0;
-      const next = tier === 2 ? SYNERGY_TIERS[1] : SYNERGY_TIERS[tier];
+      const next = SYNERGY_TIERS[Math.min(tier, 1)];
       const y = i * 34;
       const bg = this.scene.add.graphics();
       bg.fillStyle(UI.bg, 0.85).fillRoundedRect(0, y - 14, 156, 28, 14);
       bg.lineStyle(2, tier > 0 ? UI.goldNum : UI.panelEdge).strokeRoundedRect(0, y - 14, 156, 28, 14);
       const face = this.scene.add.image(15, y, portrait(SYNERGIES[c].hero)).setDisplaySize(26, 26);
       const label = this.scene.add.text(32, y, SYNERGIES[c].name, textStyle(13, { color: tier > 0 ? UI.gold : UI.muted, fontStyle: '800' })).setOrigin(0, 0.5);
-      const count = this.scene.add.text(146, y, `${n}/${next}`, displayStyle(14, { color: tier > 0 ? UI.gold : UI.text })).setOrigin(1, 0.5);
+      const count = this.scene.add.text(146, y, tier === 2 ? `${n} ★` : `${n}/${next}`, displayStyle(14, { color: tier > 0 ? UI.gold : UI.text })).setOrigin(1, 0.5);
       this.synergies.add([bg, face, label, count]);
     });
   }

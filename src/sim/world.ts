@@ -1,5 +1,5 @@
 import { BASE_TICK_MS, GRID_H, GRID_W } from '../config';
-import { defaultMods } from '../data/cards';
+import { CARD_IDS, defaultMods } from '../data/cards';
 import { BUMP_DMG_RATIO, BUMP_INVULN_MS, FIRST_BREAK_MS, SIM_DT } from '../data/balance';
 import { damageHero, updateHeroes, updateProjectiles } from './combat';
 import { updateEnemies } from './enemies';
@@ -30,6 +30,7 @@ export const DEFAULT_LOADOUT: Loadout = {
   startPower: false,
   powerBonusMs: 0,
   secondHero: false,
+  cards: [...CARD_IDS],
 };
 
 export function createWorld({ seed = Date.now(), waves = true, drafts = true, loadout = {} }: WorldOptions = {}): World {
@@ -40,6 +41,7 @@ export function createWorld({ seed = Date.now(), waves = true, drafts = true, lo
     draft: null,
     draftsEnabled: drafts,
     syn: emptySynergies(),
+    tally: { killsByKind: {}, bosses: 0, recruited: 0, cardsPicked: 0, cursedPicked: 0, maxParty: 1, maxTier: {} },
     party: [],
     enemies: [],
     projectiles: [],
@@ -92,6 +94,7 @@ export const enemyAlpha = (w: World, e: Enemy) => (w.alive ? Math.min((e.moveAcc
 function simStep(w: World, dt: number) {
   w.time += dt;
   w.syn = computeSynergies(w.party);
+  trackTally(w);
   w.bumpInvuln = Math.max(0, w.bumpInvuln - dt);
 
   w.moveAcc += dt;
@@ -140,7 +143,16 @@ function moveTick(w: World) {
   if (token?.type === 'hero') {
     const hero = makeHero(w, token.hero, old[old.length - 1]);
     w.party.push(hero);
+    w.tally.recruited++;
     w.events.push({ type: 'recruited', hero });
+  }
+}
+
+function trackTally(w: World) {
+  const t = w.tally;
+  t.maxParty = Math.max(t.maxParty, w.party.length);
+  for (const [c, tier] of Object.entries(w.syn) as [keyof typeof w.syn, number][]) {
+    if (tier > (t.maxTier[c] ?? 0)) t.maxTier[c] = tier;
   }
 }
 

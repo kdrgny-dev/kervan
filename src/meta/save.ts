@@ -1,5 +1,7 @@
 import { type GemUpgrade, type HeroStat, STARTING_HEROES } from '../data/economy';
+import { CARD_IDS, type CardId } from '../data/cards';
 import { HERO_KINDS, type HeroKind } from '../data/heroes';
+import { ACHIEVEMENT_IDS, type AchievementId, emptyLifetime, type Lifetime, STARTER_CARDS } from '../data/progression';
 
 export interface ScoreEntry {
   score: number;
@@ -17,8 +19,20 @@ export interface Settings {
   music: boolean;
 }
 
+export interface QuestSlot {
+  id: string;
+  progress: number;
+  done: boolean;
+}
+
+/** Bir günün ya da haftanın görev listesi; key değişince yenilenir. */
+export interface QuestBoard {
+  key: string;
+  items: QuestSlot[];
+}
+
 export interface SaveData {
-  version: 1;
+  version: 2;
   gold: number;
   gems: number;
   unlocked: HeroKind[];
@@ -27,6 +41,11 @@ export interface SaveData {
   best: ScoreEntry[];
   settings: Settings;
   lastHero: HeroKind;
+  account: { level: number; xp: number };
+  cardsUnlocked: CardId[];
+  quests: { daily: QuestBoard; weekly: QuestBoard };
+  achievements: AchievementId[];
+  lifetime: Lifetime;
 }
 
 export interface KeyValueStore {
@@ -38,7 +57,7 @@ const KEY = 'kervan.save';
 
 export function defaultSave(): SaveData {
   return {
-    version: 1,
+    version: 2,
     gold: 0,
     gems: 0,
     unlocked: [...STARTING_HEROES],
@@ -47,6 +66,24 @@ export function defaultSave(): SaveData {
     best: [],
     settings: { shake: true, damageNumbers: true, sfx: true, music: true },
     lastHero: 'knight',
+    account: { level: 1, xp: 0 },
+    cardsUnlocked: [...STARTER_CARDS],
+    quests: { daily: { key: '', items: [] }, weekly: { key: '', items: [] } },
+    achievements: [],
+    lifetime: emptyLifetime(),
+  };
+}
+
+const isCard = (v: unknown): v is CardId => typeof v === 'string' && (CARD_IDS as string[]).includes(v);
+
+function parseBoard(v: unknown): QuestBoard {
+  const b = v as Partial<QuestBoard> | undefined;
+  if (!b || typeof b.key !== 'string' || !Array.isArray(b.items)) return { key: '', items: [] };
+  return {
+    key: b.key,
+    items: b.items
+      .filter((i) => i && typeof i.id === 'string')
+      .map((i) => ({ id: i.id, progress: num(i.progress, 0), done: !!i.done })),
   };
 }
 
@@ -77,8 +114,13 @@ export function parseSave(raw: string | null): SaveData {
   const gemUpgrades = base.gemUpgrades;
   for (const k of Object.keys(gemUpgrades) as GemUpgrade[]) gemUpgrades[k] = num(data.gemUpgrades?.[k], 0);
 
+  const cards = Array.isArray(data.cardsUnlocked) ? data.cardsUnlocked.filter(isCard) : [];
+  for (const c of STARTER_CARDS) if (!cards.includes(c)) cards.push(c);
+  const life = base.lifetime;
+  for (const k of Object.keys(life) as (keyof Lifetime)[]) life[k] = num(data.lifetime?.[k], 0);
+
   return {
-    version: 1,
+    version: 2,
     gold: num(data.gold, 0),
     gems: num(data.gems, 0),
     unlocked,
@@ -87,6 +129,13 @@ export function parseSave(raw: string | null): SaveData {
     best: Array.isArray(data.best) ? data.best.filter((e) => e && typeof e.score === 'number' && isHero(e.hero)) : [],
     settings: { ...base.settings, ...(data.settings ?? {}) },
     lastHero: isHero(data.lastHero) && unlocked.includes(data.lastHero) ? data.lastHero : base.lastHero,
+    account: { level: Math.max(1, Math.floor(num(data.account?.level, 1))), xp: num(data.account?.xp, 0) },
+    cardsUnlocked: cards,
+    quests: { daily: parseBoard(data.quests?.daily), weekly: parseBoard(data.quests?.weekly) },
+    achievements: Array.isArray(data.achievements)
+      ? data.achievements.filter((a): a is AchievementId => (ACHIEVEMENT_IDS as string[]).includes(a))
+      : [],
+    lifetime: life,
   };
 }
 

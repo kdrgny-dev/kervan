@@ -119,9 +119,11 @@ export function updateLoot(w: World, dt: number) {
 
 export function onEnemyKilled(w: World, e: Enemy) {
   w.stats.kills++;
+  w.tally.killsByKind[e.kind] = (w.tally.killsByKind[e.kind] ?? 0) + 1;
   const def = ENEMIES[e.kind];
   gainXp(w, Math.round((def.xp ?? def.cost) * w.mods.xpMult));
   if (def.boss) {
+    w.tally.bosses++;
     dropLoot(w, { type: 'coin', value: def.gold }, e.pos);
     const spot = freeCells(w, (p) => chebyshev(p, e.pos) === 1)[0];
     if (spot) dropLoot(w, { type: 'gem' }, spot);
