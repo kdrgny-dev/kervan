@@ -88,6 +88,8 @@ export type WorldEvent =
   | { type: 'heroHealed'; id: number; amount: number }
   | { type: 'heroDied'; id: number; pos: Vec }
   | { type: 'enemySpawned'; id: number }
+  | { type: 'enemyAttack'; id: number }
+  | { type: 'bossSummon'; id: number }
   | { type: 'enemyHit'; id: number; dmg: number; crit?: boolean }
   | { type: 'enemyDied'; id: number; kind: EnemyKind; pos: Vec }
   | { type: 'heroAttack'; id: number }

@@ -5,9 +5,14 @@ import type { PowerKind } from '../data/loot';
 
 export interface SpriteSet {
   idle: string;
+  /** Dururken döngüde oynayan kareler (ör. boss nefesi). */
+  idleLoop?: string[];
   walk?: string[];
+  walkMs?: number;
   attack?: string[];
   hurt?: string;
+  /** Olayla tetiklenen özel hareketler (ör. boss çağırma, şişme). */
+  special?: Record<string, string[]>;
 }
 
 /** Doku anahtarı → public/assets altındaki dosya ve doğal boyutu (px). */
@@ -34,26 +39,41 @@ function anim(key: string, frames: string[], ms: number, repeat = -1) {
 
 const C = 'characters';
 const idle = (name: string, size = 96) => add(`${name}.idle`, `${C}/${name}_idle_1.svg`, size);
+const frames = (name: string, move: string, n: number, size = 96) => seq(C, `${name}_${move}`, n, size);
+
+function unit(name: string, move: 'walk' | 'move', moveFrames = 4, walkMs?: number): SpriteSet {
+  return {
+    idle: idle(name),
+    walk: frames(name, move, moveFrames),
+    walkMs,
+    attack: frames(name, 'attack', 2),
+    hurt: add(`${name}.hurt`, `${C}/${name}_hurt_1.svg`, 96),
+  };
+}
 
 export const HERO_SPRITES: Partial<Record<HeroKind, SpriteSet>> = {
-  knight: {
-    idle: idle('knight'),
-    walk: seq(C, 'knight_walk', 4, 96),
-    attack: seq(C, 'knight_attack', 2, 96),
-    hurt: add('knight.hurt', `${C}/knight_hurt_1.svg`, 96),
-  },
-  archer: { idle: idle('archer') },
-  mage: { idle: idle('mage') },
-  priest: { idle: idle('priest') },
-  rogue: { idle: idle('rogue') },
+  knight: unit('knight', 'walk'),
+  archer: unit('archer', 'walk'),
+  mage: unit('mage', 'walk'),
+  priest: unit('priest', 'walk'),
+  rogue: unit('rogue', 'walk'),
 };
 
 export const ENEMY_SPRITES: Partial<Record<EnemyKind, SpriteSet>> = {
-  slime: { idle: idle('slime') },
-  bat: { idle: idle('bat') },
-  skeleton: { idle: idle('skeleton') },
-  goblin: { idle: idle('goblin') },
-  slimeKing: { idle: idle('slime_king', 128) },
+  slime: unit('slime', 'move', 3, 150),
+  bat: unit('bat', 'move', 4, 80),
+  skeleton: unit('skeleton', 'move', 4),
+  goblin: unit('goblin', 'move', 4, 90),
+  slimeKing: {
+    idle: add('slime_king.idle', `${C}/slime_king_idle_1.svg`, 128),
+    idleLoop: frames('slime_king', 'idle', 2, 128),
+    walkMs: 400,
+    hurt: add('slime_king.hurt', `${C}/slime_king_hurt_1.svg`, 128),
+    special: {
+      summon: frames('slime_king', 'summon', 2, 128),
+      charge: frames('slime_king', 'charge', 2, 128),
+    },
+  },
 };
 
 // ---------- dünya ----------

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="slime king summon 2">
+<g transform="translate(0 -2)" stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<ellipse cx="64" cy="122" rx="44.0" ry="5" fill="#14121c" fill-opacity="0.22" stroke="none"/>
+<g transform="translate(28.0 60.0) rotate(138)"><path d="M-3 0 V-26 L0 -31 L3 -26 V0 Z" fill="#d6deea"/><rect x="-2" y="2" width="4" height="9" rx="1" fill="#8a5532"/><rect x="-8" y="-1.5" width="16" height="4" rx="1.5" fill="#f0c23b"/><circle cx="0" cy="12.5" r="3" fill="#f0c23b"/></g>
+<path d="M18.0 122.5 Q12.0 122.5 13.0 114.0 C15.0 82.0 36.0 58.0 64.0 58.0 C92.0 58.0 113.0 82.0 115.0 114.0 Q116.0 122.5 110.0 122.5 Z" fill="#8e5bc9"/>
+<path d="M14.0 104.0 Q64.0 120.0 114.0 104.0 L115.0 114.0 Q116.0 122.5 110.0 122.5 H18.0 Q12.0 122.5 13.0 114.0 Z" fill="#5a3a8a" stroke="none"/>
+<circle cx="38.0" cy="100.0" r="4" fill="#5a3a8a" stroke="none"/>
+<circle cx="48.0" cy="90.0" r="2.5" fill="#5a3a8a" stroke="none"/>
+<path d="M18.0 122.5 Q12.0 122.5 13.0 114.0 C15.0 82.0 36.0 58.0 64.0 58.0 C92.0 58.0 113.0 82.0 115.0 114.0 Q116.0 122.5 110.0 122.5 Z" fill="none"/>
+<ellipse cx="38.0" cy="76.0" rx="8" ry="4.5" transform="rotate(-35 38.0 76.0)" fill="#f0e6d2" fill-opacity="0.75" stroke="none"/>
+<path d="M75.0 88.0 Q80.0 84.0 85.0 88.0" stroke-width="3" fill="none"/>
+<path d="M93.0 88.0 Q98.0 84.0 103.0 88.0" stroke-width="3" fill="none"/>
+<path d="M70.0 75.0 L85.0 80.0 M92.0 80.0 L106.0 75.0" stroke-width="4" fill="none"/>
+<ellipse cx="91.0" cy="105.0" rx="10" ry="7" fill="#14121c"/><path d="M85.0 99.5 L86.5 103.5 L88.0 98.5 Z M94.0 98.5 L95.5 103.5 L97.0 99.5 Z" fill="#f0e6d2" stroke-width="1.2"/>
+<g transform="translate(101.0 105.0)"><path d="M-9 8 Q-11 8 -10.5 5 C-10 -2 -5 -7 0 -7 C5 -7 10 -2 10.5 5 Q11 8 9 8 Z" fill="#6fbf5a" stroke-width="2.5"/><ellipse cx="2" cy="0" rx="1.6" ry="2.4" fill="#14121c" stroke="none"/><ellipse cx="6" cy="0" rx="1.6" ry="2.4" fill="#14121c" stroke="none"/></g>
+<g transform="translate(0 0.0) rotate(-8 62 50)"><circle cx="61" cy="46" r="30" fill="#f0c23b" fill-opacity="0.44" stroke="none"/><path d="M61 10 V15 M33 30 L37 33 M89 30 L85 33 M28 50 H33 M89 50 H94" stroke="#f0c23b" stroke-width="3" fill="none"/><path d="M44 62 L42 36 L52 46 L61 30 L70 45 L80 35 L80 62 Q62 66 44 62 Z" fill="#f0c23b"/><circle cx="42" cy="34" r="2.5" fill="#f0c23b" stroke-width="2"/><circle cx="61" cy="28" r="2.5" fill="#f0c23b" stroke-width="2"/><circle cx="80" cy="33" r="2.5" fill="#f0c23b" stroke-width="2"/><circle cx="61.5" cy="53" r="4" fill="#e5533d" stroke-width="2"/><circle cx="49" cy="55" r="2.5" fill="#7fb3ec" stroke-width="2"/><circle cx="74" cy="55" r="2.5" fill="#7fb3ec" stroke-width="2"/></g>
+
+</g>
+</svg>

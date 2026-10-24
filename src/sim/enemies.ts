@@ -33,8 +33,10 @@ export function updateEnemies(w: World, dt: number) {
         if (dist <= (def.range ?? 0) + 1) {
           fire(w, 'bone', 'enemy', e.pos, near, def.dmg);
           e.attackCd = def.attackMs;
+          w.events.push({ type: 'enemyAttack', id: e.id });
         }
       } else if (dist <= 1) {
+        w.events.push({ type: 'enemyAttack', id: e.id });
         damageHero(w, near, def.dmg);
         e.attackCd = def.attackMs;
         if (!w.alive) return;
@@ -63,7 +65,10 @@ function bossAbilities(w: World, e: Enemy, b: BossAbilities, dt: number) {
     e.summonCd += b.summonEveryMs;
     const minions = w.enemies.filter((m) => m.kind === b.summon && m.hp > 0).length;
     const spots = neighbors(e.pos).filter((p) => isFree(w, p));
-    if (minions < b.maxMinions && spots.length > 0) spawnEnemy(w, b.summon, pick(w.rng, spots));
+    if (minions < b.maxMinions && spots.length > 0) {
+      w.events.push({ type: 'bossSummon', id: e.id });
+      spawnEnemy(w, b.summon, pick(w.rng, spots));
+    }
   }
 
   e.shockCd = (e.shockCd ?? b.shockEveryMs) - dt;

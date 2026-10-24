@@ -5,6 +5,7 @@ const OUTLINE = 0x14121c;
 const ATTACK_MS = 220;
 const HURT_MS = 160;
 const WALK_FRAME_MS = 110;
+const IDLE_FRAME_MS = 420;
 
 export interface UnitStyle {
   color: number;
@@ -27,6 +28,7 @@ export class UnitView extends Phaser.GameObjects.Container {
   private flashTimer?: Phaser.Time.TimerEvent;
   private attackUntil = 0;
   private hurtUntil = 0;
+  private special: { frames: string[]; start: number; until: number } | null = null;
 
   constructor(scene: Phaser.Scene, private readonly style: UnitStyle) {
     super(scene);
@@ -85,11 +87,17 @@ export class UnitView extends Phaser.GameObjects.Container {
     const s = this.style.sprite;
     if (!this.image || !s) return;
     let key = s.idle;
-    if (s.hurt && now < this.hurtUntil) key = s.hurt;
+    const sp = this.special && now < this.special.until ? this.special : null;
+    // Özel hareketler (boss uyarısı gibi) hasar karesinin önünde: oyuncuya bilgi taşıyor
+    if (sp) {
+      const step = (sp.until - sp.start) / sp.frames.length;
+      key = sp.frames[Math.min(sp.frames.length - 1, Math.floor((now - sp.start) / step))];
+    } else if (s.hurt && now < this.hurtUntil) key = s.hurt;
     else if (s.attack && now < this.attackUntil) {
       const progress = 1 - (this.attackUntil - now) / ATTACK_MS;
       key = s.attack[Math.min(s.attack.length - 1, Math.floor(progress * s.attack.length))];
-    } else if (s.walk && moving) key = s.walk[Math.floor(now / WALK_FRAME_MS) % s.walk.length];
+    } else if (s.walk && moving) key = s.walk[Math.floor(now / (s.walkMs ?? WALK_FRAME_MS)) % s.walk.length];
+    else if (s.idleLoop) key = s.idleLoop[Math.floor(now / IDLE_FRAME_MS) % s.idleLoop.length];
     if (this.image.texture.key !== key) this.image.setTexture(key);
   }
 
@@ -97,6 +105,12 @@ export class UnitView extends Phaser.GameObjects.Container {
     this.attackUntil = now + ATTACK_MS;
     if (this.style.sprite?.attack && this.image) return;
     this.scene.tweens.add({ targets: this.inner, scale: { from: this.baseScale * 1.18, to: this.baseScale }, duration: 140 });
+  }
+
+  /** SpriteSet.special içindeki bir hareketi verilen süre boyunca oynatır. */
+  playSpecial(name: string, now: number, ms: number) {
+    const frames = this.style.sprite?.special?.[name];
+    if (frames) this.special = { frames, start: now, until: now + ms };
   }
 
   playHurt(now: number) {

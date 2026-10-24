@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" role="img" aria-label="rogue attack 1">
+<g transform="translate(0 -2)" stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<ellipse cx="48" cy="90" rx="20" ry="3.5" fill="#14121c" fill-opacity="0.22" stroke="none"/>
+<rect x="37" y="79" width="10" height="11.5" rx="3" fill="#5a3a8a"/><rect x="51" y="79" width="11" height="11.5" rx="3" fill="#5a3a8a"/>
+<g transform="translate(0 0) rotate(-5 48 90)"><path d="M31 34 L16 28 L21 36 L15 43 L31 39 Z" fill="#e5533d"/><rect x="34" y="58" width="28" height="23" rx="8" fill="#24447f"/><path d="M38 60 L58 78" stroke="#8a5532" stroke-width="3" fill="none"/><rect x="35" y="71" width="26" height="4" rx="1.5" fill="#8a5532"/><rect x="44" y="70.5" width="5" height="5" rx="1.5" fill="#f0c23b" stroke-width="2"/><ellipse cx="46" cy="38" rx="21" ry="19" fill="#5a3a8a"/><ellipse cx="54" cy="44" rx="13" ry="13" fill="#f4c9a0"/><path d="M28 34 Q48 22 68 33 L67 38 Q48 28 28 40 Z" fill="#e5533d"/><path d="M44 47 Q56 53 67 46 L66 53 Q56 59 45 54 Z" fill="#5a3a8a"/><path d="M56 38.5 L64 40" stroke-width="2" fill="none"/><rect x="58" y="41" width="5" height="3.5" rx="1.5" fill="#14121c" stroke="none"/><g transform="translate(60 56) rotate(15)"><path d="M-2.5 -2 V-14 L0 -18 L2.5 -14 V-2 Z" fill="#d6deea"/><rect x="-5" y="-3" width="10" height="3" rx="1" fill="#f0c23b" stroke-width="2"/><circle cx="0" cy="2" r="4" fill="#f4c9a0"/></g></g>
+
+</g>
+</svg>

@@ -171,9 +171,16 @@ export class GameScene extends Phaser.Scene {
         audio.play('recruit');
         this.fx.sparkle(px(e.hero.pos.x), px(e.hero.pos.y), COLORS.leader, 10);
         break;
+      case 'enemyAttack':
+        this.enemyViews.get(e.id)?.playAttack(now);
+        break;
+      case 'bossSummon':
+        this.enemyViews.get(e.id)?.playSpecial('summon', now, 500);
+        break;
       case 'enemyHit': {
         const v = this.enemyViews.get(e.id);
         v?.flash();
+        v?.playHurt(now);
         if (v) this.fx.spark(v.x, v.y, e.crit ? 8 : 3);
         this.damageText(v, e.crit ? `${e.dmg}!` : `${e.dmg}`, e.crit ? UI.gold : '#ffffff', e.crit ? 24 : 18);
         audio.play(e.crit ? 'crit' : 'hit');
@@ -205,6 +212,7 @@ export class GameScene extends Phaser.Scene {
       case 'shockwaveWarn': {
         const v = this.enemyViews.get(e.id);
         if (v) this.ring(v.x, v.y, CELL * (e.radius + 0.5), 0xe5533d, 800, true);
+        v?.playSpecial('charge', now, 800);
         audio.play('shockWarn');
         break;
       }
@@ -316,6 +324,7 @@ export class GameScene extends Phaser.Scene {
       view.setDepth(9 + p.y * 0.01);
       const target = w.party[0]?.pos;
       if (target) view.face(target.x - enemy.pos.x);
+      view.animate(this.time.now, w.alive && !this.paused);
       view.setHp(enemy.hp / enemy.maxHp);
     }
   }
