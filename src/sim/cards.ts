@@ -34,14 +34,17 @@ export function openDraft(w: World) {
   w.events.push({ type: 'draftOpen' });
 }
 
-export const nextRerollCost = (w: World) => rerollCost(w.draft?.rerolls ?? 0);
+export const nextRerollCost = (w: World) => (w.freeRerolls > 0 ? 0 : rerollCost(w.draft?.rerolls ?? 0));
 
 export function rerollDraft(w: World): boolean {
   if (!w.draft) return false;
-  const cost = nextRerollCost(w);
-  if (w.stats.gold < cost) return false;
-  w.stats.gold -= cost;
-  w.draft.rerolls++;
+  if (w.freeRerolls > 0) w.freeRerolls--;
+  else {
+    const cost = nextRerollCost(w);
+    if (w.stats.gold < cost) return false;
+    w.stats.gold -= cost;
+    w.draft.rerolls++;
+  }
   w.draft.options = rollDraft(w);
   w.events.push({ type: 'draftRerolled' });
   return true;

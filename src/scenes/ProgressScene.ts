@@ -1,5 +1,9 @@
 import Phaser from 'phaser';
+import { ENEMIES } from '../data/enemies';
 import { ACHIEVEMENT_IDS, ACHIEVEMENTS, rewardsFor, titleFor, xpForLevel } from '../data/progression';
+import { journeyName, REGIONS, ROUTE } from '../data/regions';
+import { STORY, STORY_ORDER } from '../data/story';
+import { StoryDialog } from '../ui/dialog';
 import { bindPad } from '../input/gamepad';
 import { profile } from '../meta/profile';
 import { ensureQuests, questDef } from '../meta/progression';
@@ -9,7 +13,7 @@ import { Bar, Button, enter, fmt, panel, tab } from '../ui/kit';
 import { backdrop, fadeIn, rewardChip, rewardRow, wallet } from '../ui/screen';
 import { displayStyle, textStyle, UI } from '../ui/theme';
 
-type Tab = 'quests' | 'track' | 'achievements';
+type Tab = 'quests' | 'track' | 'achievements' | 'map' | 'journal';
 
 const PANEL = { x: 576, y: 425, w: 990, h: 530 };
 
@@ -29,7 +33,7 @@ export class ProgressScene extends Phaser.Scene {
   }
 
   init(data: { tab?: Tab }) {
-    this.tab = data.tab ?? 'quests';
+    this.tab = data.tab ?? 'map';
   }
 
   create() {
@@ -43,12 +47,14 @@ export class ProgressScene extends Phaser.Scene {
 
     const box = this.add.container(PANEL.x, PANEL.y, [panel(this, 0, 0, PANEL.w, PANEL.h)]);
     enter(this, box, { y: -30 }, 0, 200);
-    const tabs: [Tab, string][] = [['quests', 'Görevler'], ['track', 'Ödül Yolu'], ['achievements', 'Başarımlar']];
-    tabs.forEach(([t, label], i) => tab(this, 205 + i * 227, 138, 220, label, this.tab === t, () => this.scene.restart({ tab: t })));
+    const tabs: [Tab, string][] = [['map', 'Harita'], ['quests', 'Görevler'], ['track', 'Ödül Yolu'], ['achievements', 'Başarımlar'], ['journal', 'Günlük']];
+    tabs.forEach(([t, label], i) => tab(this, 175 + i * 192, 138, 184, label, this.tab === t, () => this.scene.restart({ tab: t })));
 
     if (this.tab === 'quests') this.quests();
     else if (this.tab === 'track') this.track();
-    else this.achievements();
+    else if (this.tab === 'achievements') this.achievements();
+    else if (this.tab === 'map') this.map();
+    else this.journal();
 
     this.input.keyboard?.on('keydown-ESC', () => this.back());
     bindPad(this, { back: () => this.back() });
@@ -56,6 +62,85 @@ export class ProgressScene extends Phaser.Scene {
 
   private back() {
     this.scene.start('menu');
+  }
+
+  // ---------- Harita ----------
+
+  private map() {
+    const { furthest, bosses } = profile.data.journey;
+    const journey = Math.floor(furthest / ROUTE.length) + 1;
+    const current = furthest % ROUTE.length;
+    const top = PANEL.y - PANEL.h / 2;
+    this.add.text(PANEL.x, top + 50, `Kervan Yolu · ${journeyName(journey)}`, displayStyle(28)).setOrigin(0.5);
+    this.add
+      .text(PANEL.x, top + 84, `En iyi dalga: ${profile.data.lifetime.bestWave} · her bölge 10 dalga, her 5 dalgada bir boss`, textStyle(15, { color: UI.muted }))
+      .setOrigin(0.5);
+
+    const gap = 210;
+    const x0 = PANEL.x - (gap * ROUTE.length) / 2 + gap / 2 - 50;
+    const ny = top + 210;
+    const road = this.add.graphics();
+    road.lineStyle(10, UI.panelEdge).lineBetween(x0, ny, x0 + gap * ROUTE.length, ny);
+    road.lineStyle(10, 0x8a5532).lineBetween(x0, ny, x0 + gap * Math.min(furthest, ROUTE.length), ny);
+
+    ROUTE.forEach((id, i) => {
+      const r = REGIONS[id];
+      const x = x0 + i * gap;
+      const reached = journey > 1 || i <= current;
+      const here = journey === 1 ? i === current : false;
+      const disc = this.add.graphics();
+      disc.fillStyle(reached ? r.floorTint : UI.bgRaised).fillCircle(x, ny, 46);
+      disc.fillStyle(0x2f4032, reached ? 0.55 : 0).fillCircle(x, ny, 46);
+      disc.lineStyle(4, here ? UI.goldNum : 0x14121c).strokeCircle(x, ny, 46);
+      if (here) disc.lineStyle(3, UI.goldNum, 0.45).strokeCircle(x, ny, 56);
+      this.add.text(x, ny, reached ? `${i + 1}` : '?', displayStyle(30, { color: reached ? UI.text : UI.dim })).setOrigin(0.5);
+      this.add.text(x, ny + 70, reached ? r.name : '???', displayStyle(19, { color: reached ? UI.text : UI.dim })).setOrigin(0.5);
+      const bossDown = bosses.includes(r.boss);
+      this.add
+        .text(x, ny + 96, reached ? `${bossDown ? '✓' : '·'} ${ENEMIES[r.boss].name}` : 'Keşfedilmedi', textStyle(13, { color: bossDown ? UI.gold : UI.muted }))
+        .setOrigin(0.5);
+    });
+    const endX = x0 + gap * ROUTE.length;
+    this.add.text(endX, ny, '∞', displayStyle(40, { color: furthest >= ROUTE.length ? UI.gold : UI.dim })).setOrigin(0.5);
+    this.add.text(endX, ny + 70, journeyName(journey + 1), displayStyle(17, { color: UI.muted })).setOrigin(0.5);
+
+    const r = REGIONS[ROUTE[current]];
+    const card = this.add.container(PANEL.x, top + 420);
+    const bg = this.add.graphics();
+    bg.fillStyle(UI.bgRaised).fillRoundedRect(-420, -60, 840, 120, 16).lineStyle(2, UI.panelEdge).strokeRoundedRect(-420, -60, 840, 120, 16);
+    card.add(bg);
+    card.add(this.add.text(-390, -30, `Şu an: ${r.name}`, displayStyle(22, { color: UI.gold })).setOrigin(0, 0.5));
+    card.add(this.add.text(-390, 4, r.desc, textStyle(16, { color: UI.muted, wordWrap: { width: 780 } })).setOrigin(0, 0));
+  }
+
+  // ---------- Günlük ----------
+
+  private journal() {
+    const seen = STORY_ORDER.filter((id) => profile.data.story.seen.includes(id));
+    const dialog = new StoryDialog(this);
+    const top = PANEL.y - PANEL.h / 2;
+    this.add.text(PANEL.x, top + 44, 'Kervanbaşının anlattıkları · okumak için tıkla', textStyle(15, { color: UI.muted })).setOrigin(0.5);
+    if (seen.length === 0) {
+      this.add.text(PANEL.x, PANEL.y, 'Henüz bir şey anlatılmadı.\nYola çık, Hüsnü konuşmayı sever.', textStyle(20, { color: UI.muted, align: 'center' })).setOrigin(0.5);
+      return;
+    }
+    const cols = 2;
+    const w = 440;
+    const h = 64;
+    seen.forEach((id, i) => {
+      const x = PANEL.x - w / 2 - 10 + (i % cols) * (w + 20);
+      const y = top + 100 + Math.floor(i / cols) * (h + 10);
+      const c = this.add.container(x, y);
+      const bg = this.add.graphics();
+      bg.fillStyle(UI.panel2).fillRoundedRect(-w / 2, -h / 2, w, h, 12).lineStyle(2, UI.panelEdge).strokeRoundedRect(-w / 2, -h / 2, w, h, 12);
+      c.add(bg);
+      c.add(this.add.text(-w / 2 + 18, -12, STORY[id].title, displayStyle(18, { color: UI.gold })).setOrigin(0, 0.5));
+      const preview = STORY[id].lines[0];
+      c.add(this.add.text(-w / 2 + 18, 12, preview.length > 58 ? `${preview.slice(0, 56)}…` : preview, textStyle(13, { color: UI.muted })).setOrigin(0, 0.5));
+      const zone = this.add.zone(0, 0, w, h).setInteractive({ useHandCursor: true });
+      zone.on('pointerup', () => !dialog.open && dialog.play([id], () => undefined));
+      c.add(zone);
+    });
   }
 
   // ---------- Görevler ----------

@@ -2,6 +2,9 @@ import {
   BEST_LIST_SIZE,
   GEM_UPGRADES,
   type GemUpgrade,
+  MARKET_STEP,
+  MARKET_UPGRADES,
+  type MarketUpgrade,
   type HeroStat,
   MAX_UPGRADE,
   POWER_BONUS_STEP_MS,
@@ -30,6 +33,18 @@ export function upgradeHero(s: SaveData, kind: HeroKind, stat: HeroStat): boolea
   if (cost === null || !s.unlocked.includes(kind) || s.gold < cost) return false;
   s.gold -= cost;
   s.upgrades[kind][stat]++;
+  return true;
+}
+
+export function nextMarketCost(s: SaveData, key: MarketUpgrade): number | null {
+  return MARKET_UPGRADES[key].costs[s.market[key]] ?? null;
+}
+
+export function buyMarket(s: SaveData, key: MarketUpgrade): boolean {
+  const cost = nextMarketCost(s, key);
+  if (cost === null || s.gold < cost) return false;
+  s.gold -= cost;
+  s.market[key]++;
   return true;
 }
 
@@ -73,6 +88,8 @@ export function loadoutFrom(s: SaveData, leader: HeroKind): Loadout {
     startPower: s.gemUpgrades.startPower > 0,
     powerBonusMs: s.gemUpgrades.powerDuration * POWER_BONUS_STEP_MS,
     secondHero: s.gemUpgrades.secondHero > 0,
+    goldMult: 1 + MARKET_STEP * s.market.goldGain,
+    freeRerolls: s.market.freeRerolls,
     cards: [...s.cardsUnlocked],
   };
 }

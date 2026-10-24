@@ -1,16 +1,17 @@
 import Phaser from 'phaser';
-import { GEM_UPGRADE_KEYS, GEM_UPGRADES, type GemUpgrade, type HeroStat, MAX_UPGRADE, UNLOCK_COST } from '../data/economy';
+import { GEM_UPGRADE_KEYS, GEM_UPGRADES, type GemUpgrade, type HeroStat, MARKET_KEYS, MARKET_UPGRADES, MAX_UPGRADE, UNLOCK_COST } from '../data/economy';
 import { HERO_KINDS, HEROES, type HeroKind } from '../data/heroes';
 import { bindPad } from '../input/gamepad';
 import { profile } from '../meta/profile';
 import { refreshAchievements } from '../meta/progression';
+import { buyMarket, nextMarketCost } from '../meta/shop';
 import { buyGemUpgrade, nextGemCost, nextUpgradeCost, unlockHero, upgradeHero } from '../meta/shop';
 import { icon } from '../ui/assets';
 import { Button, enter, fmt, panel, pips, shake, slice, tab } from '../ui/kit';
 import { backdrop, fadeIn, heroBadge, wallet } from '../ui/screen';
 import { displayStyle, textStyle, UI } from '../ui/theme';
 
-type Tab = 'heroes' | 'general';
+type Tab = 'heroes' | 'general' | 'market';
 
 const PANEL = { x: 576, y: 425, w: 990, h: 530 };
 
@@ -31,16 +32,18 @@ export class ShopScene extends Phaser.Scene {
     wallet(this);
 
     new Button(this, 78, 60, '', () => this.back(), { width: 64, height: 64, icon: 'back', iconOnly: true });
-    this.add.text(126, 58, 'Dükkan', displayStyle(46)).setOrigin(0, 0.5);
+    this.add.text(126, 58, 'Kamp', displayStyle(46)).setOrigin(0, 0.5);
 
     const box = this.add.container(PANEL.x, PANEL.y, [panel(this, 0, 0, PANEL.w, PANEL.h)]);
     enter(this, box, { y: -30 }, 0, 200);
     // Aktif sekme panelin üst kenarına biner, o yüzden panelden sonra çizilir
-    tab(this, 205, 138, 220, 'Kahramanlar', this.tab === 'heroes', () => this.switchTo('heroes'));
-    tab(this, 432, 138, 220, 'Genel', this.tab === 'general', () => this.switchTo('general'));
+    tab(this, 205, 138, 220, 'Kışla', this.tab === 'heroes', () => this.switchTo('heroes'));
+    tab(this, 432, 138, 220, 'Tapınak', this.tab === 'general', () => this.switchTo('general'));
+    tab(this, 659, 138, 220, 'Pazar', this.tab === 'market', () => this.switchTo('market'));
     const content = this.add.container(0, 0);
     if (this.tab === 'heroes') this.heroRows(content);
-    else this.generalCards(content);
+    else if (this.tab === 'general') this.generalCards(content);
+    else this.marketCards(content);
 
     this.input.keyboard?.on('keydown-ESC', () => this.back());
     bindPad(this, { back: () => this.back() });
@@ -118,6 +121,26 @@ export class ShopScene extends Phaser.Scene {
   }
 
   // ---------- Genel ----------
+
+  private marketCards(root: Phaser.GameObjects.Container) {
+    const save = profile.data;
+    MARKET_KEYS.forEach((key, i) => {
+      const x = PANEL.x + (i - 1) * 316;
+      const u = MARKET_UPGRADES[key];
+      const level = save.market[key];
+      const card = this.add.container(x, PANEL.y);
+      card.add(slice(this, 'ui.card', 0, 0, 276, 326));
+      card.add(this.add.text(0, -128, u.name, displayStyle(28)).setOrigin(0.5));
+      card.add(this.add.text(0, -96, u.desc, textStyle(15, { color: UI.muted, align: 'center', wordWrap: { width: 220 } })).setOrigin(0.5, 0));
+      const p = pips(this, 0, 36, u.costs.length, level);
+      p.x = -(u.costs.length * 22 - 6) / 2;
+      card.add(p);
+      card.add(this.add.text(0, 64, `${level}/${u.costs.length}`, displayStyle(18, { color: UI.muted })).setOrigin(0.5));
+      card.add(this.priceButton(0, 120, nextMarketCost(save, key), 'coin', 236, 52, (b) => this.buy(b, () => buyMarket(save, key))));
+      root.add(card);
+      enter(this, card, { y: 40 }, 60 + i * 70, 220);
+    });
+  }
 
   private generalCards(root: Phaser.GameObjects.Container) {
     const save = profile.data;

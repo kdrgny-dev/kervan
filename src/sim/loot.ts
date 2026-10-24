@@ -12,9 +12,10 @@ import {
   xpToNext,
 } from '../data/loot';
 import { damageEnemy } from './combat';
-import { chebyshev, eq, type Vec } from './grid';
+import { chebyshev, eq, neighbors, type Vec } from './grid';
+import { spawnEnemy } from './enemies';
 import { pick, type Rng } from './rng';
-import { baseTickMs, freeCells, rescaleParty } from './state';
+import { baseTickMs, freeCells, isFree, rescaleParty } from './state';
 import type { Enemy, Loot, LootDrop, World } from './types';
 
 export interface DropMults {
@@ -122,8 +123,10 @@ export function onEnemyKilled(w: World, e: Enemy) {
   w.tally.killsByKind[e.kind] = (w.tally.killsByKind[e.kind] ?? 0) + 1;
   const def = ENEMIES[e.kind];
   gainXp(w, Math.round((def.xp ?? def.cost) * w.mods.xpMult));
+  if (def.splitInto) splitEnemy(w, e, def.splitInto.kind, def.splitInto.count);
   if (def.boss) {
     w.tally.bosses++;
+    w.tally.bossKinds[e.kind] = (w.tally.bossKinds[e.kind] ?? 0) + 1;
     dropLoot(w, { type: 'coin', value: def.gold }, e.pos);
     const spot = freeCells(w, (p) => chebyshev(p, e.pos) === 1)[0];
     if (spot) dropLoot(w, { type: 'gem' }, spot);
@@ -131,6 +134,12 @@ export function onEnemyKilled(w: World, e: Enemy) {
   }
   const drop = rollDrop(w.rng, e.kind, w.loadout.unlocked, { hero: w.mods.heroDropMult, gem: w.mods.gemMult });
   if (drop) dropLoot(w, drop, e.pos);
+}
+
+/** Ölen düşmanın yerinde ve komşu boş hücrelerde yavru doğurur. */
+function splitEnemy(w: World, e: Enemy, kind: EnemyKind, count: number) {
+  const spots = [e.pos, ...neighbors(e.pos)].filter((p) => isFree(w, p) || eq(p, e.pos));
+  for (const p of spots.slice(0, count)) spawnEnemy(w, kind, p);
 }
 
 export function gainXp(w: World, amount: number) {

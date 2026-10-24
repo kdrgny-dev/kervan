@@ -15,6 +15,9 @@ export interface UnitStyle {
   outline?: number;
   sprite?: SpriteSet;
   spriteSize?: number;
+  /** Çizimi ödünç alınan türler için kalıcı renk. */
+  tint?: number;
+  alpha?: number;
 }
 
 export class UnitView extends Phaser.GameObjects.Container {
@@ -39,6 +42,8 @@ export class UnitView extends Phaser.GameObjects.Container {
 
     if (style.sprite && scene.textures.exists(style.sprite.idle)) {
       this.image = scene.add.image(0, 0, style.sprite.idle).setDisplaySize(visual, visual);
+      if (style.tint !== undefined) this.image.setTint(style.tint);
+      if (style.alpha !== undefined) this.image.setAlpha(style.alpha);
       this.inner = this.image;
       this.baseScale = this.image.scaleX;
       children.push(this.image);
@@ -63,6 +68,22 @@ export class UnitView extends Phaser.GameObjects.Container {
 
     this.add(children);
     scene.add.existing(this);
+  }
+
+  private frosted = false;
+
+  private restoreTint() {
+    if (!this.image) return;
+    if (this.frosted) this.image.setTint(0xbfe0ff);
+    else if (this.style.tint !== undefined) this.image.setTint(this.style.tint);
+    else this.image.clearTint();
+  }
+
+  /** Buzla yavaşlayınca mavimsi görünüm. */
+  setFrost(on: boolean) {
+    if (on === this.frosted) return;
+    this.frosted = on;
+    this.restoreTint();
   }
 
   setHp(ratio: number) {
@@ -122,7 +143,7 @@ export class UnitView extends Phaser.GameObjects.Container {
     if (this.image) {
       if (mode === 'fill') this.image.setTintFill(color);
       else this.image.setTint(color);
-      this.flashTimer = this.scene.time.delayedCall(ms, () => this.image?.clearTint());
+      this.flashTimer = this.scene.time.delayedCall(ms, () => this.restoreTint());
     } else if (this.shape) {
       this.shape.setFillStyle(color);
       this.flashTimer = this.scene.time.delayedCall(ms, () => this.shape?.setFillStyle(this.style.color));

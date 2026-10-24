@@ -7,6 +7,8 @@ import { HERO_SPRITES } from '../render/sprites';
 import { UnitView } from '../render/UnitView';
 import { titleFor, xpForLevel } from '../data/progression';
 import { ensureQuests } from '../meta/progression';
+import { ensureIntro, markSeen } from '../meta/story';
+import { StoryDialog } from '../ui/dialog';
 import { LOGO } from '../ui/assets';
 import { Bar, Button, enter, fmt, panel, ribbon } from '../ui/kit';
 import { backdrop, fadeIn, heroBadge, wallet } from '../ui/screen';
@@ -24,6 +26,7 @@ export class MenuScene extends Phaser.Scene {
     backdrop(this);
     wallet(this);
     ensureQuests(profile.data);
+    ensureIntro(profile.data);
     profile.save();
     this.accountBadge(24, 40);
 
@@ -36,9 +39,9 @@ export class MenuScene extends Phaser.Scene {
     const done = profile.data.quests.daily.items.filter((q) => q.done).length;
     const buttons = [
       play,
-      new Button(this, left + half / 2, 420, `Görevler ${done}/${profile.data.quests.daily.items.length}`, () => this.scene.start('progress'), { width: half, height: 60, icon: 'trophy', fontSize: 19 }),
+      new Button(this, left + half / 2, 420, `Görevler ${done}/${profile.data.quests.daily.items.length}`, () => this.scene.start('progress', { tab: 'quests' }), { width: half, height: 60, icon: 'trophy', fontSize: 19 }),
       new Button(this, left + 336 - half / 2, 420, 'Koleksiyon', () => this.scene.start('collection'), { width: half, height: 60, icon: 'sword', fontSize: 19 }),
-      new Button(this, left + half / 2, 494, 'Dükkan', () => this.scene.start('shop'), { width: half, height: 60, icon: 'shop', fontSize: 19 }),
+      new Button(this, left + half / 2, 494, 'Kamp', () => this.scene.start('shop'), { width: half, height: 60, icon: 'shop', fontSize: 19 }),
       new Button(this, left + 336 - half / 2, 494, 'Ayarlar', () => this.scene.start('settings'), { width: half, height: 60, icon: 'settings', fontSize: 19 }),
     ];
     if (isDesktop) buttons.push(new Button(this, left + 168, 568, 'Çıkış', () => void quitApp(), { width: 336, height: 56, icon: 'exit', fontSize: 19 }));
@@ -48,9 +51,20 @@ export class MenuScene extends Phaser.Scene {
     this.records(905, 325);
     this.parade(this.scale.height - 62);
 
-    this.input.keyboard?.on('keydown-ENTER', () => this.play());
-    this.input.keyboard?.on('keydown-SPACE', () => this.play());
-    bindPad(this, { confirm: () => this.play() });
+    const story = new StoryDialog(this);
+    this.input.keyboard?.on('keydown-ENTER', () => !story.open && this.play());
+    this.input.keyboard?.on('keydown-SPACE', () => !story.open && this.play());
+    bindPad(this, { confirm: () => (story.open ? story.advance() : this.play()) });
+
+    // Bekleyen hikaye anları menü açılınca kervanbaşı tarafından anlatılır
+    const pending = [...profile.data.story.pending];
+    if (pending.length)
+      this.time.delayedCall(700, () =>
+        story.play(pending, (id) => {
+          markSeen(profile.data, id);
+          profile.save();
+        }),
+      );
   }
 
   /** Sol üstte hesap seviyesi, unvan ve XP çubuğu. */

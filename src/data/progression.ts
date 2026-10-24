@@ -18,6 +18,8 @@ export interface RunSummary {
   cursedPicked: number;
   maxParty: number;
   maxTier: Partial<Record<HeroClass, number>>;
+  furthestRegion: number;
+  bossKinds: Partial<Record<EnemyKind, number>>;
 }
 
 export type Reward =

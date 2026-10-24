@@ -11,6 +11,7 @@ import { applyRunResults, type RunReport } from '../meta/progression';
 import { loadoutFrom } from '../meta/shop';
 import { xpForLevel, type RunSummary } from '../data/progression';
 import { drawArena } from '../render/arena';
+import { journeyName, REGIONS, regionAt } from '../data/regions';
 import { Fx } from '../render/fx';
 import { ENEMY_SPRITES, FX, HERO_SPRITES, LOOT, POWER_ICONS } from '../render/sprites';
 import { UnitView } from '../render/UnitView';
@@ -61,6 +62,8 @@ export class GameScene extends Phaser.Scene {
   private lootViews = new Map<number, Phaser.GameObjects.Container>();
   private markers = new Map<string, Phaser.GameObjects.Sprite>();
   private fx!: Fx;
+  private arena?: Phaser.GameObjects.GameObject;
+  private slowToastAt = 0;
   private hud!: Hud;
   private draftUi!: DraftOverlay;
   private pauseMenu!: Phaser.GameObjects.Container;
@@ -81,7 +84,7 @@ export class GameScene extends Phaser.Scene {
     this.lootViews = new Map();
     this.liveTexts = 0;
 
-    drawArena(this);
+    this.arena = drawArena(this).setDepth(-10);
     this.markers = new Map();
     this.fx = new Fx(this);
     this.hud = new Hud(this, () => this.togglePause());
@@ -109,6 +112,18 @@ export class GameScene extends Phaser.Scene {
     ['ONE', 'TWO', 'THREE'].forEach((k, i) => this.input.keyboard?.on(`keydown-${k}`, () => this.draftUi.confirm(i)));
 
     this.restart();
+  }
+
+  private paintedRegion = '';
+
+  /** Bölge değişince arenayı o bölgenin renkleri ve süsleriyle yeniden çizer. */
+  private paintRegion(region: keyof typeof REGIONS) {
+    if (this.paintedRegion === region && this.arena?.active) return;
+    const first = !this.paintedRegion;
+    this.paintedRegion = region;
+    this.arena?.destroy();
+    this.arena = drawArena(this, region).setDepth(-10);
+    if (!first) this.cameras.main.flash(250, 255, 255, 255);
   }
 
   private showDraft() {
@@ -146,6 +161,7 @@ export class GameScene extends Phaser.Scene {
       map.clear();
     }
     this.world = createWorld({ loadout: loadoutFrom(profile.data, this.hero) });
+    this.paintRegion('vale');
     this.banked = false;
     this.paused = false;
     this.pauseMenu.setVisible(false);
@@ -281,10 +297,23 @@ export class GameScene extends Phaser.Scene {
       }
       case 'waveStart':
         if (e.n % 5 === 0) {
-          this.hud.banner('boss', `Dalga ${e.n} · Balçık Kralı!`);
+          this.hud.banner('boss', `Dalga ${e.n} · ${ENEMIES[REGIONS[regionAt(e.n).id].boss].name}!`);
           this.shake(300, 0.006);
         } else this.hud.banner('wave', `Dalga ${e.n}`);
         audio.play('waveStart');
+        break;
+      case 'regionEnter': {
+        const r = REGIONS[e.region];
+        this.time.delayedCall(400, () => this.paintRegion(e.region));
+        this.hud.banner('region', r.name, undefined, e.journey > 1 ? journeyName(e.journey) : 'Kervan yola devam ediyor');
+        audio.play('levelUp');
+        break;
+      }
+      case 'slowed':
+        if (this.time.now - this.slowToastAt > 4000) {
+          this.slowToastAt = this.time.now;
+          this.hud.toast('Donuyorsun!', UI.gem);
+        }
         break;
       case 'draftOpen':
         this.time.delayedCall(1300, () => this.showDraft());
@@ -337,6 +366,7 @@ export class GameScene extends Phaser.Scene {
       view.setMarker(w.powers.shield ? COLORS.shield : i === 0 ? COLORS.leader : null);
       view.setAlpha(i === 0 && w.bumpInvuln > 0 && Math.floor(t / 60) % 2 ? 0.5 : 1);
       view.setHp(hero.hp / hero.maxHp);
+      view.setFrost(w.time < w.slowUntil);
     });
   }
 
@@ -347,14 +377,18 @@ export class GameScene extends Phaser.Scene {
       if (!view) {
         const def = ENEMIES[enemy.kind];
         const boss = !!def.boss;
+        const look = def.look;
+        const base = ENEMIES[look?.as ?? enemy.kind].boss ? 1.8 : 1.05;
         view = new UnitView(this, {
           color: def.color,
           glyph: def.glyph,
           size: boss ? CELL : CELL - 12,
           shape: 'circle',
           outline: COLORS.enemyOutline,
-          sprite: ENEMY_SPRITES[enemy.kind],
-          spriteSize: boss ? CELL * 1.8 : CELL * 1.05,
+          sprite: ENEMY_SPRITES[look?.as ?? enemy.kind],
+          spriteSize: CELL * (look?.scale ?? base),
+          tint: look?.tint,
+          alpha: look?.alpha,
         });
         this.enemyViews.set(enemy.id, view);
         this.tweens.add({ targets: view, scale: { from: 0, to: 1 }, duration: 200, ease: 'Back.Out' });
@@ -657,6 +691,8 @@ export class GameScene extends Phaser.Scene {
       cursedPicked: tally.cursedPicked,
       maxParty: tally.maxParty,
       maxTier: { ...tally.maxTier },
+      furthestRegion: tally.furthestRegion,
+      bossKinds: { ...tally.bossKinds },
     };
   }
 

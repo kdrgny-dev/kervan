@@ -3,6 +3,7 @@ import type { EnemyKind } from '../data/enemies';
 import type { HeroKind } from '../data/heroes';
 import type { CardId, Mods } from '../data/cards';
 import type { PowerKind } from '../data/loot';
+import type { RegionId } from '../data/regions';
 import type { HeroClass } from '../data/synergies';
 import type { SynergyTiers } from './synergy';
 import type { Dir, Vec } from './grid';
@@ -33,6 +34,7 @@ export interface Enemy {
   summonCd?: number;
   shockCd?: number;
   shockWarned?: boolean;
+  volleyCd?: number;
 }
 
 export interface Projectile {
@@ -47,6 +49,8 @@ export interface Projectile {
   dmg: number;
   splash: number;
   speed: number;
+  /** Vurduğu kahramanı yavaşlatır (ms). */
+  slowMs?: number;
   done?: boolean;
 }
 
@@ -111,6 +115,8 @@ export type WorldEvent =
   | { type: 'draftOpen' }
   | { type: 'draftRerolled' }
   | { type: 'cardPicked'; id: CardId }
+  | { type: 'regionEnter'; region: RegionId; journey: number }
+  | { type: 'slowed'; until: number }
   | { type: 'waveStart'; n: number }
   | { type: 'waveCleared'; n: number; bonus: number };
 
@@ -121,6 +127,9 @@ export interface Loadout {
   startPower: boolean;
   powerBonusMs: number;
   secondHero: boolean;
+  /** Pazar yükseltmeleri. */
+  goldMult: number;
+  freeRerolls: number;
   /** Kart seçiminde çıkabilecek (açılmış) kartlar. */
   cards: CardId[];
 }
@@ -134,6 +143,9 @@ export interface Tally {
   cursedPicked: number;
   maxParty: number;
   maxTier: Partial<Record<HeroClass, number>>;
+  /** Ulaşılan en uzak bölge sırası (0 = Yeşil Vadi, 4 = ikinci yolculuğun vadisi). */
+  furthestRegion: number;
+  bossKinds: Partial<Record<EnemyKind, number>>;
 }
 
 export interface Draft {
@@ -163,6 +175,10 @@ export interface World {
   simAcc: number;
   time: number;
   bumpInvuln: number;
+  /** Bu zamana kadar kafile yavaş ilerler (buz). */
+  slowUntil: number;
+  /** Pazar'dan gelen ücretsiz yeniden çekmeler. */
+  freeRerolls: number;
   alive: boolean;
   rng: Rng;
   nextId: number;

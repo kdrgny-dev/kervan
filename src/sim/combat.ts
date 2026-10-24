@@ -37,6 +37,12 @@ export function damageHero(w: World, h: Hero, raw: number, source?: Enemy) {
   if (w.party.length === 0) endGame(w, 'wiped');
 }
 
+export function slowParty(w: World, ms: number) {
+  if (w.powers.shield) return;
+  w.slowUntil = Math.max(w.slowUntil, w.time + ms);
+  w.events.push({ type: 'slowed', until: w.slowUntil });
+}
+
 export function heroDamage(w: World, kind: HeroKind) {
   const def = HEROES[kind];
   let mult = levelMult(w) * upgradeMult(w, kind, 'dmg') * w.mods.dmgMult * (w.powers.rage ? RAGE_MULT : 1);
@@ -106,6 +112,7 @@ export function fire(
   target: { id: number; pos: Vec },
   dmg: number,
   splash = 0,
+  slowMs = 0,
 ) {
   w.projectiles.push({
     id: w.nextId++,
@@ -119,6 +126,7 @@ export function fire(
     dmg,
     splash,
     speed: PROJECTILE_SPEED[kind],
+    slowMs: slowMs || undefined,
   });
 }
 
@@ -210,5 +218,8 @@ function impact(w: World, p: Projectile, target: Enemy | Hero | undefined) {
   }
   if (!target) return;
   if (p.owner === 'hero') damageEnemy(w, target as Enemy, p.dmg);
-  else damageHero(w, target as Hero, p.dmg);
+  else {
+    damageHero(w, target as Hero, p.dmg);
+    if (p.slowMs) slowParty(w, p.slowMs);
+  }
 }

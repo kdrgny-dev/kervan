@@ -1,6 +1,6 @@
 import { BASE_TICK_MS, GRID_H, GRID_W } from '../config';
 import { CARD_IDS, defaultMods } from '../data/cards';
-import { BUMP_DMG_RATIO, BUMP_INVULN_MS, FIRST_BREAK_MS, SIM_DT } from '../data/balance';
+import { BUMP_DMG_RATIO, BUMP_INVULN_MS, FIRST_BREAK_MS, SIM_DT, SLOW_FACTOR } from '../data/balance';
 import { damageHero, updateHeroes, updateProjectiles } from './combat';
 import { updateEnemies } from './enemies';
 import { add, DIR_VEC, type Dir, eq, isWall } from './grid';
@@ -30,6 +30,8 @@ export const DEFAULT_LOADOUT: Loadout = {
   startPower: false,
   powerBonusMs: 0,
   secondHero: false,
+  goldMult: 1,
+  freeRerolls: 0,
   cards: [...CARD_IDS],
 };
 
@@ -41,7 +43,7 @@ export function createWorld({ seed = Date.now(), waves = true, drafts = true, lo
     draft: null,
     draftsEnabled: drafts,
     syn: emptySynergies(),
-    tally: { killsByKind: {}, bosses: 0, recruited: 0, cardsPicked: 0, cursedPicked: 0, maxParty: 1, maxTier: {} },
+    tally: { killsByKind: {}, bosses: 0, recruited: 0, cardsPicked: 0, cursedPicked: 0, maxParty: 1, maxTier: {}, furthestRegion: 0, bossKinds: {} },
     party: [],
     enemies: [],
     projectiles: [],
@@ -55,6 +57,8 @@ export function createWorld({ seed = Date.now(), waves = true, drafts = true, lo
     simAcc: 0,
     time: 0,
     bumpInvuln: 0,
+    slowUntil: 0,
+    freeRerolls: 0,
     alive: true,
     rng: createRng(seed),
     nextId: 1,
@@ -63,6 +67,8 @@ export function createWorld({ seed = Date.now(), waves = true, drafts = true, lo
     wavesEnabled: waves,
     events: [],
   };
+  w.mods.goldMult = w.loadout.goldMult;
+  w.freeRerolls = w.loadout.freeRerolls;
   const start = { x: Math.floor(GRID_W / 2) - 4, y: Math.floor(GRID_H / 2) };
   w.party.push(makeHero(w, w.loadout.leader, start));
   if (w.loadout.secondHero) w.party.push(makeHero(w, pick(w.rng, w.loadout.unlocked), { x: start.x - 1, y: start.y }));
@@ -87,7 +93,10 @@ export function stepWorld(w: World, dtMs: number): WorldEvent[] {
 }
 
 /** Son lider adımından bu yana geçen oran (0..1), çizim interpolasyonu için. */
-export const tickAlpha = (w: World) => (w.alive ? Math.min((w.moveAcc + w.simAcc) / w.tickMs, 1) : 1);
+/** Buz yavaşlatması dahil gerçek adım süresi. */
+export const effectiveTick = (w: World) => w.tickMs * (w.time < w.slowUntil ? SLOW_FACTOR : 1);
+
+export const tickAlpha = (w: World) => (w.alive ? Math.min((w.moveAcc + w.simAcc) / effectiveTick(w), 1) : 1);
 
 export const enemyAlpha = (w: World, e: Enemy) => (w.alive ? Math.min((e.moveAcc + w.simAcc) / e.moveMs, 1) : 1);
 
@@ -98,8 +107,9 @@ function simStep(w: World, dt: number) {
   w.bumpInvuln = Math.max(0, w.bumpInvuln - dt);
 
   w.moveAcc += dt;
-  if (w.moveAcc >= w.tickMs) {
-    w.moveAcc -= w.tickMs;
+  const tickMs = effectiveTick(w);
+  if (w.moveAcc >= tickMs) {
+    w.moveAcc -= tickMs;
     moveTick(w);
   }
   if (!w.alive) return;
