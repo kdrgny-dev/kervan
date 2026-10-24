@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" role="img" aria-label="gem 1">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<ellipse cx="24" cy="43" rx="11" ry="2.5" fill="#14121c" fill-opacity="0.22" stroke="none"/><path d="M15 15 H33 L40 23 L24 42 L8 23 Z" fill="#7fb3ec"/><path d="M15 15 H33 L40 23 H8 Z" fill="#d6deea" stroke="none"/><path d="M8 23 L24 42 L18 23 Z" fill="#3d74c9" stroke="none"/><path d="M15 15 L18 23 L24 15 L30 23 L33 15 M8 23 H40 M18 23 L24 42 L30 23" stroke-width="1.5" fill="none"/><path d="M15 15 H33 L40 23 L24 42 L8 23 Z" fill="none"/><path d="M12 21 L15 17" stroke="#f0e6d2" stroke-width="2.5" fill="none"/><path d="M36 5 Q37.08 9.92 42 11 Q37.08 12.08 36 17 Q34.92 12.08 30 11 Q34.92 9.92 36 5 Z" fill="#f0e6d2" stroke-width="1.5"/>
+</g>
+</svg>

@@ -10,7 +10,7 @@ import { profile } from '../meta/profile';
 import { applyRun, loadoutFrom } from '../meta/shop';
 import { drawArena } from '../render/arena';
 import { Fx } from '../render/fx';
-import { ENEMY_SPRITES, HERO_SPRITES } from '../render/sprites';
+import { ENEMY_SPRITES, FX, HERO_SPRITES, LOOT, POWER_ICONS } from '../render/sprites';
 import { UnitView } from '../render/UnitView';
 import type { Vec } from '../sim/grid';
 import {
@@ -18,7 +18,6 @@ import {
   enemyAlpha,
   type GameOverReason,
   type Loot,
-  type Projectile,
   stepWorld,
   tickAlpha,
   turn,
@@ -36,13 +35,6 @@ const COLORS = {
   gem: 0x5ef0e0,
 };
 
-const PROJECTILE_COLORS: Record<Projectile['kind'], number> = {
-  arrow: 0xe8e0c8,
-  fireball: 0xff8a2b,
-  holy: 0xfff07a,
-  bone: 0xd9d4c5,
-};
-
 const MAX_DAMAGE_TEXTS = 24;
 
 const px = (v: number) => v * CELL + CELL / 2;
@@ -56,9 +48,9 @@ export class GameScene extends Phaser.Scene {
   private banked = false;
   private heroViews = new Map<number, UnitView>();
   private enemyViews = new Map<number, UnitView>();
-  private projectileViews = new Map<number, Phaser.GameObjects.Shape>();
+  private projectileViews = new Map<number, Phaser.GameObjects.Image>();
   private lootViews = new Map<number, Phaser.GameObjects.Container>();
-  private markers!: Phaser.GameObjects.Graphics;
+  private markers = new Map<string, Phaser.GameObjects.Sprite>();
   private fx!: Fx;
   private hud!: Phaser.GameObjects.Text;
   private wallet!: Phaser.GameObjects.Text;
@@ -85,7 +77,7 @@ export class GameScene extends Phaser.Scene {
     this.liveTexts = 0;
 
     drawArena(this);
-    this.markers = this.add.graphics().setDepth(2);
+    this.markers = new Map();
     this.fx = new Fx(this);
     this.buildHud();
     this.overlay = this.add.container(0, 0).setDepth(60).setVisible(false);
@@ -124,7 +116,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private restart() {
-    for (const map of [this.heroViews, this.enemyViews, this.projectileViews, this.lootViews]) {
+    for (const map of [this.heroViews, this.enemyViews, this.projectileViews, this.lootViews, this.markers]) {
       for (const v of map.values()) v.destroy();
       map.clear();
     }
@@ -206,7 +198,7 @@ export class GameScene extends Phaser.Scene {
         audio.play('slash');
         break;
       case 'explosion':
-        this.ring(px(e.x), px(e.y), CELL * (e.radius + 0.5), 0xff8a2b, 260);
+        this.oneShot(FX.explosion, px(e.x), px(e.y), CELL * (e.radius * 2 + 1) * 0.9);
         this.fx.puff(px(e.x), px(e.y), 0xff8a2b, 18);
         audio.play('explosion');
         break;
@@ -217,7 +209,7 @@ export class GameScene extends Phaser.Scene {
         break;
       }
       case 'shockwave':
-        this.ring(px(e.pos.x), px(e.pos.y), CELL * (e.radius + 0.5), 0xc77dff, 320);
+        this.shockwave(px(e.pos.x), px(e.pos.y), CELL * (e.radius * 2 + 1));
         this.fx.puff(px(e.pos.x), px(e.pos.y), 0xc77dff, 30);
         this.shake(260, 0.012);
         audio.play('shockwave');
@@ -248,6 +240,7 @@ export class GameScene extends Phaser.Scene {
         for (const v of this.heroViews.values()) v.flash(0xfff3c4, 160, 'tint');
         const leader = this.heroViews.get(this.world.party[0]?.id ?? -1);
         if (leader) this.fx.confetti(leader.x, leader.y, 30);
+        for (const v of this.heroViews.values()) this.popImage(FX.levelUp, v.x, v.y, CELL * 1.2);
         audio.play('levelUp');
         break;
       }
@@ -333,16 +326,11 @@ export class GameScene extends Phaser.Scene {
       live.add(p.id);
       let view = this.projectileViews.get(p.id);
       if (!view) {
-        const color = PROJECTILE_COLORS[p.kind];
-        view =
-          p.kind === 'arrow' || p.kind === 'bone'
-            ? this.add.rectangle(0, 0, 18, 4, color)
-            : this.add.circle(0, 0, p.kind === 'fireball' ? 8 : 5, color);
-        view.setDepth(15);
+        view = this.makeProjectile(p.kind);
         this.projectileViews.set(p.id, view);
       }
       view.setPosition(px(p.x), px(p.y));
-      view.setRotation(Math.atan2(p.ty - p.y, p.tx - p.x));
+      if (p.kind !== 'holy') view.setRotation(Math.atan2(p.ty - p.y, p.tx - p.x));
     }
     for (const [id, view] of this.projectileViews) {
       if (!live.has(id)) {
@@ -352,19 +340,39 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
+  private makeProjectile(kind: 'arrow' | 'bone' | 'fireball' | 'holy') {
+    switch (kind) {
+      case 'arrow':
+        return this.add.image(0, 0, FX.arrow).setDisplaySize(36, 12).setDepth(15);
+      case 'bone':
+        return this.add.image(0, 0, FX.bone).setDisplaySize(36, 12).setDepth(15);
+      case 'holy':
+        return this.add.image(0, 0, FX.holy).setDisplaySize(26, 26).setDepth(15);
+      case 'fireball':
+        return this.add.sprite(0, 0, this.firstFrame(FX.fireball)).setDisplaySize(32, 32).setDepth(15).play(FX.fireball);
+    }
+  }
+
+  /** Uyarı süresine girmiş doğma noktalarında yanıp sönen işaret. */
   private renderMarkers() {
-    const g = this.markers.clear();
     const w = this.world;
-    if (w.wave.phase !== 'active') return;
-    const pulse = 0.5 + Math.sin(this.time.now / 80) * 0.3;
-    for (const s of w.wave.pending) {
-      if (s.at - w.time > SPAWN_WARN_MS) continue;
-      const x = px(s.pos.x);
-      const y = px(s.pos.y);
-      const r = CELL * (ENEMIES[s.kind].boss ? 0.5 : 0.3);
-      g.lineStyle(4, 0xe5533d, pulse);
-      g.lineBetween(x - r, y - r, x + r, y + r);
-      g.lineBetween(x - r, y + r, x + r, y - r);
+    const wanted = new Map<string, boolean>();
+    if (w.wave.phase === 'active') {
+      for (const s of w.wave.pending) {
+        if (s.at - w.time <= SPAWN_WARN_MS) wanted.set(`${s.pos.x},${s.pos.y}`, !!ENEMIES[s.kind].boss);
+      }
+    }
+    for (const [key, sprite] of this.markers) {
+      if (!wanted.has(key)) {
+        sprite.destroy();
+        this.markers.delete(key);
+      }
+    }
+    for (const [key, boss] of wanted) {
+      if (this.markers.has(key)) continue;
+      const [x, y] = key.split(',').map(Number);
+      const size = boss ? CELL * 1.4 : CELL * 0.85;
+      this.markers.set(key, this.add.sprite(px(x), px(y), this.firstFrame(FX.spawnMarker)).setDisplaySize(size, size).setDepth(2).play(FX.spawnMarker));
     }
   }
 
@@ -372,26 +380,27 @@ export class GameScene extends Phaser.Scene {
 
   private makeLootView(loot: Loot) {
     const c = this.add.container(0, 0).setDepth(5);
+    const size = CELL * 0.75;
     switch (loot.type) {
       case 'coin':
-        c.add([this.add.circle(0, 0, loot.value > 5 ? 14 : 9, COLORS.gold).setStrokeStyle(3, 0x8a6a10), this.add.circle(-3, -3, 3, 0xfff3c4)]);
+        c.add(
+          loot.value > 5
+            ? this.add.image(0, 0, LOOT.coinBig).setDisplaySize(CELL, CELL)
+            : this.add.sprite(0, 0, this.firstFrame(LOOT.coin)).setDisplaySize(size, size).play({ key: LOOT.coin, startFrame: loot.id % 4 }),
+        );
         break;
       case 'gem':
-        c.add(this.add.rectangle(0, 0, 15, 15, COLORS.gem).setStrokeStyle(3, 0x1d6b66).setRotation(Math.PI / 4));
+        c.add(this.add.sprite(0, 0, this.firstFrame(LOOT.gem)).setDisplaySize(size, size).play(LOOT.gem));
         break;
-      case 'power': {
-        const def = POWERS[loot.power];
-        c.add([
-          this.add.circle(0, 0, 15, def.color).setStrokeStyle(3, 0xf4efe6),
-          this.add.text(0, 0, def.glyph, textStyle(16, { color: '#ffffff', fontStyle: 'bold' })).setOrigin(0.5),
-        ]);
+      case 'power':
+        c.add(this.add.image(0, 0, POWER_ICONS[loot.power]).setDisplaySize(CELL * 0.85, CELL * 0.85));
         break;
-      }
       case 'hero': {
         const def = HEROES[loot.hero];
         c.add([
-          this.add.circle(0, 0, CELL * 0.45, COLORS.leader, 0.25).setStrokeStyle(2, COLORS.leader, 0.6),
-          new UnitView(this, { color: def.color, glyph: def.glyph, size: CELL - 20, shape: 'square', sprite: HERO_SPRITES[loot.hero], spriteSize: CELL * 0.95 }),
+          this.add.circle(0, 0, CELL * 0.42, COLORS.leader, 0.18),
+          new UnitView(this, { color: def.color, glyph: def.glyph, size: CELL - 20, shape: 'square', sprite: HERO_SPRITES[loot.hero], spriteSize: CELL * 0.8 }),
+          this.add.image(0, 0, LOOT.heroToken).setDisplaySize(CELL, CELL),
         ]);
         break;
       }
@@ -528,9 +537,32 @@ export class GameScene extends Phaser.Scene {
   }
 
   private slash(pos: Vec) {
-    const line = this.add.rectangle(px(pos.x), px(pos.y), CELL * 0.9, 5, 0xffffff).setRotation(-0.8).setDepth(16);
-    this.tweens.add({ targets: line, alpha: 0, scaleX: 1.3, duration: 140, onComplete: () => line.destroy() });
+    this.oneShot(FX.slash, px(pos.x), px(pos.y), CELL * 1.1).setAngle(Phaser.Math.Between(-40, 40));
   }
+
+  private firstFrame(animKey: string) {
+    return this.anims.get(animKey)?.frames[0]?.textureKey ?? '__MISSING';
+  }
+
+  /** Bir kez oynayıp kendini yok eden efekt animasyonu. */
+  private oneShot(animKey: string, x: number, y: number, size: number) {
+    const s = this.add.sprite(x, y, this.firstFrame(animKey)).setDisplaySize(size, size).setDepth(16).play(animKey);
+    s.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => s.destroy());
+    return s;
+  }
+
+  private shockwave(x: number, y: number, size: number) {
+    const img = this.add.image(x, y, FX.shockwave).setDisplaySize(size * 0.3, size * 0.3).setDepth(14);
+    const scale = size / img.width;
+    this.tweens.add({ targets: img, scale, alpha: { from: 1, to: 0 }, duration: 380, ease: 'Cubic.Out', onComplete: () => img.destroy() });
+  }
+
+  private popImage(key: string, x: number, y: number, size: number) {
+    const img = this.add.image(x, y, key).setDisplaySize(size, size).setDepth(34);
+    const base = img.scale;
+    this.tweens.add({ targets: img, scale: { from: base * 0.3, to: base * 1.2 }, alpha: { from: 1, to: 0 }, y: y - 20, duration: 600, ease: 'Cubic.Out', onComplete: () => img.destroy() });
+  }
+
 
   private ring(x: number, y: number, radius: number, color: number, ms: number, warning = false) {
     const ring = this.add.circle(x, y, radius, color, warning ? 0.15 : 0.45).setDepth(14);

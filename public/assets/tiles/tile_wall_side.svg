@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" role="img" aria-label="tile wall side">
+<g>
+<rect x="-2" y="-2" width="100" height="100" fill="#8f88a0"/>
+<rect x="-2" y="-2" width="100" height="100" fill="#14121c" fill-opacity="0.16"/>
+<g stroke="#14121c" fill="none" stroke-linecap="butt"><path d="M1.5 -2 V98" stroke-width="3"/><path d="M94.5 -2 V98" stroke-width="3"/><path d="M-2 0 H98 M-2 48 H98 M-2 96 H98" stroke-width="2"/><path d="M40 0 V48 M64 48 V96" stroke-width="2"/></g>
+<path d="M8 6 H30 M48 54 H58" stroke="#f0e6d2" stroke-opacity="0.15" stroke-width="2" stroke-linecap="round" fill="none"/>
+<path d="M20 22 L24 27 L22 31 M78 70 L74 75" stroke="#14121c" stroke-opacity="0.45" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+<g transform="translate(26 40)"><path d="M44 30 Q46 25 52 26 Q58 24 60 30 L59 37 Q57 41 55 37 Q52 40 49 36 Q46 40 45 35 Z" fill="#3f7f3a" stroke="#14121c" stroke-width="2" stroke-linejoin="round"/><path d="M48 29 Q51 27 54 28" stroke="#6fbf5a" stroke-width="2" fill="none" stroke-linecap="round"/></g>
+</g>
+</svg>

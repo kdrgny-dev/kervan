@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" role="img" aria-label="coin big">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<ellipse cx="24" cy="44" rx="14" ry="2.5" fill="#14121c" fill-opacity="0.22" stroke="none"/><circle cx="24" cy="24" r="19" fill="#f28a3b"/><circle cx="22.5" cy="23" r="17" fill="#f0c23b" stroke="none"/><circle cx="24" cy="24" r="13" fill="none" stroke="#f28a3b" stroke-width="2"/><path d="M24 14.5 L26.6 20.8 L33.3 21.2 L28.1 25.4 L29.8 31.9 L24 28.3 L18.2 31.9 L19.9 25.4 L14.7 21.2 L21.4 20.8 Z" fill="#f0e6d2" stroke="#f28a3b" stroke-width="2"/><path d="M12 15 Q15 9 21 7.5" stroke="#f0e6d2" stroke-width="2.5" fill="none"/><circle cx="24" cy="24" r="19" fill="none"/><path d="M41 3 Q41.9 7.1 46 8 Q41.9 8.9 41 13 Q40.1 8.9 36 8 Q40.1 7.1 41 3 Z" fill="#f0e6d2" stroke-width="1.5"/><path d="M7 34.5 Q7.63 37.37 10.5 38 Q7.63 38.63 7 41.5 Q6.37 38.63 3.5 38 Q6.37 37.37 7 34.5 Z" fill="#f0e6d2" stroke-width="1.5"/>
+</g>
+</svg>

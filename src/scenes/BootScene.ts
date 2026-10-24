@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { makeFxTextures } from '../render/fx';
-import { preloadSprites } from '../render/sprites';
+import { createAnims, preloadSprites } from '../render/sprites';
 import { textStyle, UI } from '../ui/theme';
 
 export class BootScene extends Phaser.Scene {
@@ -20,6 +20,7 @@ export class BootScene extends Phaser.Scene {
 
   create() {
     makeFxTextures(this);
+    createAnims(this);
     this.scene.start('menu');
   }
 }

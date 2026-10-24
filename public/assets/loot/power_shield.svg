@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" role="img" aria-label="power shield">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<circle cx="24" cy="24" r="20" fill="#7fb3ec"/><circle cx="24" cy="24" r="16" fill="none" stroke="#f0e6d2" stroke-opacity="0.45" stroke-width="2"/><path d="M10 17 Q14 9 22 7" stroke="#f0e6d2" stroke-opacity="0.7" stroke-width="2.5" fill="none"/><path d="M24 12 L34 16 V24 C34 30 29.5 34.5 24 37 C18.5 34.5 14 30 14 24 V16 Z" fill="#d6deea"/><path d="M24 12 V37 C29.5 34.5 34 30 34 24 V16 Z" fill="#24447f" stroke-width="2"/><circle cx="24" cy="23" r="2.6" fill="#f0c23b" stroke-width="1.5"/>
+</g>
+</svg>

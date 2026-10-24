@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" role="img" aria-label="coin 4">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<ellipse cx="24" cy="41" rx="10.928571428571429" ry="2.5" fill="#14121c" fill-opacity="0.22" stroke="none"/><ellipse cx="24" cy="24" rx="9" ry="14" fill="#f28a3b"/><ellipse cx="24.964285714285715" cy="24" rx="7.5" ry="12.5" fill="#f0c23b" stroke="none"/><ellipse cx="24" cy="24" rx="5.9" ry="9" fill="none" stroke="#f28a3b" stroke-width="2"/><path d="M24 18 L26.2 24 L24 30 L21.8 24 Z" fill="#f28a3b" stroke="none"/><path d="M28.9 15 Q31.2 19 31.2 24" stroke="#f0e6d2" stroke-width="2" fill="none"/><ellipse cx="24" cy="24" rx="9" ry="14" fill="none"/>
+</g>
+</svg>

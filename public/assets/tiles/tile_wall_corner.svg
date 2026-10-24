@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" role="img" aria-label="tile wall corner">
+<g>
+<rect x="-2" y="-2" width="100" height="100" fill="#8f88a0"/>
+<rect x="-2" y="-2" width="100" height="100" fill="#14121c" fill-opacity="0.16"/>
+<g stroke="#14121c" fill="none" stroke-linecap="butt"><path d="M-2 1.5 H98" stroke-width="3"/><path d="M1.5 -2 V98" stroke-width="3"/><path d="M94.5 34 V98" stroke-width="3"/><path d="M1.5 48 H96 M40 1.5 V48 M64 48 V98 M1.5 96 H96" stroke-width="2"/></g>
+<path d="M8 8 H30 M48 54 H58" stroke="#f0e6d2" stroke-opacity="0.15" stroke-width="2" stroke-linecap="round" fill="none"/>
+<path d="M76 18 L80 23 L78 27" stroke="#14121c" stroke-opacity="0.45" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+</g>
+</svg>

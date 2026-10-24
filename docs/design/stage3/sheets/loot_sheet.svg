@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="432" height="48" viewBox="0 0 432 48">
+<svg x="0" y="0.0" width="48" height="48" viewBox="0 0 48 48" overflow="hidden">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<ellipse cx="24" cy="41" rx="12.0" ry="2.5" fill="#14121c" fill-opacity="0.22" stroke="none"/><ellipse cx="24" cy="24" rx="14" ry="14" fill="#f28a3b"/><ellipse cx="22.5" cy="24" rx="12.5" ry="12.5" fill="#f0c23b" stroke="none"/><ellipse cx="24" cy="24" rx="9.2" ry="9" fill="none" stroke="#f28a3b" stroke-width="2"/><path d="M24 18 L27.5 24 L24 30 L20.5 24 Z" fill="#f28a3b" stroke="none"/><path d="M16.3 15 Q12.8 19 12.8 24" stroke="#f0e6d2" stroke-width="2" fill="none"/><ellipse cx="24" cy="24" rx="14" ry="14" fill="none"/>
+</g>
+
+</svg>
+<svg x="48" y="0.0" width="48" height="48" viewBox="0 0 48 48" overflow="hidden">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<ellipse cx="24" cy="41" rx="10.928571428571429" ry="2.5" fill="#14121c" fill-opacity="0.22" stroke="none"/><ellipse cx="24" cy="24" rx="9" ry="14" fill="#f28a3b"/><ellipse cx="23.035714285714285" cy="24" rx="7.5" ry="12.5" fill="#f0c23b" stroke="none"/><ellipse cx="24" cy="24" rx="5.9" ry="9" fill="none" stroke="#f28a3b" stroke-width="2"/><path d="M24 18 L26.2 24 L24 30 L21.8 24 Z" fill="#f28a3b" stroke="none"/><path d="M19.1 15 Q16.8 19 16.8 24" stroke="#f0e6d2" stroke-width="2" fill="none"/><ellipse cx="24" cy="24" rx="9" ry="14" fill="none"/>
+</g>
+
+</svg>
+<svg x="96" y="0.0" width="48" height="48" viewBox="0 0 48 48" overflow="hidden">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<ellipse cx="24" cy="41" rx="9" ry="2.5" fill="#14121c" fill-opacity="0.22" stroke="none"/><rect x="21" y="10" width="6" height="28" rx="3" fill="#f28a3b"/><path d="M24 13 V22" stroke="#f0e6d2" stroke-width="1.5" fill="none"/>
+</g>
+
+</svg>
+<svg x="144" y="0.0" width="48" height="48" viewBox="0 0 48 48" overflow="hidden">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<ellipse cx="24" cy="41" rx="10.928571428571429" ry="2.5" fill="#14121c" fill-opacity="0.22" stroke="none"/><ellipse cx="24" cy="24" rx="9" ry="14" fill="#f28a3b"/><ellipse cx="24.964285714285715" cy="24" rx="7.5" ry="12.5" fill="#f0c23b" stroke="none"/><ellipse cx="24" cy="24" rx="5.9" ry="9" fill="none" stroke="#f28a3b" stroke-width="2"/><path d="M24 18 L26.2 24 L24 30 L21.8 24 Z" fill="#f28a3b" stroke="none"/><path d="M28.9 15 Q31.2 19 31.2 24" stroke="#f0e6d2" stroke-width="2" fill="none"/><ellipse cx="24" cy="24" rx="9" ry="14" fill="none"/>
+</g>
+
+</svg>
+<svg x="192" y="0.0" width="48" height="48" viewBox="0 0 48 48" overflow="hidden">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<ellipse cx="24" cy="44" rx="14" ry="2.5" fill="#14121c" fill-opacity="0.22" stroke="none"/><circle cx="24" cy="24" r="19" fill="#f28a3b"/><circle cx="22.5" cy="23" r="17" fill="#f0c23b" stroke="none"/><circle cx="24" cy="24" r="13" fill="none" stroke="#f28a3b" stroke-width="2"/><path d="M24 14.5 L26.6 20.8 L33.3 21.2 L28.1 25.4 L29.8 31.9 L24 28.3 L18.2 31.9 L19.9 25.4 L14.7 21.2 L21.4 20.8 Z" fill="#f0e6d2" stroke="#f28a3b" stroke-width="2"/><path d="M12 15 Q15 9 21 7.5" stroke="#f0e6d2" stroke-width="2.5" fill="none"/><circle cx="24" cy="24" r="19" fill="none"/><path d="M41 3 Q41.9 7.1 46 8 Q41.9 8.9 41 13 Q40.1 8.9 36 8 Q40.1 7.1 41 3 Z" fill="#f0e6d2" stroke-width="1.5"/><path d="M7 34.5 Q7.63 37.37 10.5 38 Q7.63 38.63 7 41.5 Q6.37 38.63 3.5 38 Q6.37 37.37 7 34.5 Z" fill="#f0e6d2" stroke-width="1.5"/>
+</g>
+
+</svg>
+<svg x="240" y="0.0" width="48" height="48" viewBox="0 0 48 48" overflow="hidden">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<ellipse cx="24" cy="43" rx="11" ry="2.5" fill="#14121c" fill-opacity="0.22" stroke="none"/><path d="M15 15 H33 L40 23 L24 42 L8 23 Z" fill="#7fb3ec"/><path d="M15 15 H33 L40 23 H8 Z" fill="#d6deea" stroke="none"/><path d="M8 23 L24 42 L18 23 Z" fill="#3d74c9" stroke="none"/><path d="M15 15 L18 23 L24 15 L30 23 L33 15 M8 23 H40 M18 23 L24 42 L30 23" stroke-width="1.5" fill="none"/><path d="M15 15 H33 L40 23 L24 42 L8 23 Z" fill="none"/><path d="M12 21 L15 17" stroke="#f0e6d2" stroke-width="2.5" fill="none"/><path d="M36 5 Q37.08 9.92 42 11 Q37.08 12.08 36 17 Q34.92 12.08 30 11 Q34.92 9.92 36 5 Z" fill="#f0e6d2" stroke-width="1.5"/>
+</g>
+
+</svg>
+<svg x="288" y="0.0" width="48" height="48" viewBox="0 0 48 48" overflow="hidden">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<ellipse cx="24" cy="43" rx="11" ry="2.5" fill="#14121c" fill-opacity="0.22" stroke="none"/><path d="M15 15 H33 L40 23 L24 42 L8 23 Z" fill="#7fb3ec"/><path d="M15 15 H33 L40 23 H8 Z" fill="#d6deea" stroke="none"/><path d="M8 23 L24 42 L18 23 Z" fill="#3d74c9" stroke="none"/><path d="M15 15 L18 23 L24 15 L30 23 L33 15 M8 23 H40 M18 23 L24 42 L30 23" stroke-width="1.5" fill="none"/><path d="M15 15 H33 L40 23 L24 42 L8 23 Z" fill="none"/><path d="M20 20 L23 17" stroke="#f0e6d2" stroke-width="2.5" fill="none"/><path d="M38 10 Q38.54 12.46 41 13 Q38.54 13.54 38 16 Q37.46 13.54 35 13 Q37.46 12.46 38 10 Z" fill="#f0e6d2" stroke-width="1.5"/>
+</g>
+
+</svg>
+<svg x="336" y="0.0" width="48" height="48" viewBox="0 0 48 48" overflow="hidden">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<ellipse cx="24" cy="43" rx="11" ry="2.5" fill="#14121c" fill-opacity="0.22" stroke="none"/><path d="M15 15 H33 L40 23 L24 42 L8 23 Z" fill="#7fb3ec"/><path d="M15 15 H33 L40 23 H8 Z" fill="#d6deea" stroke="none"/><path d="M8 23 L24 42 L18 23 Z" fill="#3d74c9" stroke="none"/><path d="M15 15 L18 23 L24 15 L30 23 L33 15 M8 23 H40 M18 23 L24 42 L30 23" stroke-width="1.5" fill="none"/><path d="M15 15 H33 L40 23 L24 42 L8 23 Z" fill="none"/><path d="M30 21 L33 18" stroke="#f0e6d2" stroke-width="2.5" fill="none"/><path d="M12 30.5 Q12.81 34.19 16.5 35 Q12.81 35.81 12 39.5 Q11.19 35.81 7.5 35 Q11.19 34.19 12 30.5 Z" fill="#f0e6d2" stroke-width="1.5"/>
+</g>
+
+</svg>
+<svg x="384" y="0.0" width="48" height="48" viewBox="0 0 48 48" overflow="hidden">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M24 3 A21 21 0 1 1 23.99 3 Z M24 9 A15 15 0 1 0 24.01 9 Z" fill="#f0c23b" fill-rule="evenodd"/><path d="M8.5 16 Q12 9 19 6" stroke="#f0e6d2" stroke-width="2.5" fill="none"/><circle cx="24" cy="6" r="3" fill="#e5533d" stroke-width="2"/><circle cx="24" cy="42" r="2.4" fill="#f28a3b" stroke-width="2"/><circle cx="6" cy="24" r="2.4" fill="#f28a3b" stroke-width="2"/><circle cx="42" cy="24" r="2.4" fill="#f28a3b" stroke-width="2"/>
+</g>
+
+</svg>
+</svg>

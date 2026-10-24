@@ -1,0 +1,338 @@
+{
+ "tile_floor_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "tile_floor_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "tile_floor_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "tile_wall_side.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "tile_wall_corner.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "decor_1.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "decor_2.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "decor_3.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "decor_4.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "decor_5.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "decor_6.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "coin_1.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "coin",
+  "frame": 1,
+  "frames": 4,
+  "ms": 100
+ },
+ "coin_2.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "coin",
+  "frame": 2,
+  "frames": 4,
+  "ms": 100
+ },
+ "coin_3.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "coin",
+  "frame": 3,
+  "frames": 4,
+  "ms": 100
+ },
+ "coin_4.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "coin",
+  "frame": 4,
+  "frames": 4,
+  "ms": 100
+ },
+ "coin_big.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "gem_1.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "gem",
+  "frame": 1,
+  "frames": 3,
+  "ms": 150
+ },
+ "gem_2.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "gem",
+  "frame": 2,
+  "frames": 3,
+  "ms": 150
+ },
+ "gem_3.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "gem",
+  "frame": 3,
+  "frames": 3,
+  "ms": 150
+ },
+ "hero_token.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "power_rage.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "power_shield.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "power_speed.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "power_magnet.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "power_bomb.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "fx_arrow.svg": {
+  "w": 48,
+  "h": 16,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "fx_bone_arrow.svg": {
+  "w": 48,
+  "h": 16,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "fx_fireball_1.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "fx_fireball",
+  "frame": 1,
+  "frames": 3,
+  "ms": 90
+ },
+ "fx_fireball_2.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "fx_fireball",
+  "frame": 2,
+  "frames": 3,
+  "ms": 90
+ },
+ "fx_fireball_3.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "fx_fireball",
+  "frame": 3,
+  "frames": 3,
+  "ms": 90
+ },
+ "fx_holy.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "fx_slash_1.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "fx_slash",
+  "frame": 1,
+  "frames": 3,
+  "ms": 60
+ },
+ "fx_slash_2.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "fx_slash",
+  "frame": 2,
+  "frames": 3,
+  "ms": 60
+ },
+ "fx_slash_3.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "fx_slash",
+  "frame": 3,
+  "frames": 3,
+  "ms": 60
+ },
+ "fx_explosion_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "fx_explosion",
+  "frame": 1,
+  "frames": 4,
+  "ms": 80
+ },
+ "fx_explosion_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "fx_explosion",
+  "frame": 2,
+  "frames": 4,
+  "ms": 80
+ },
+ "fx_explosion_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "fx_explosion",
+  "frame": 3,
+  "frames": 4,
+  "ms": 80
+ },
+ "fx_explosion_4.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "fx_explosion",
+  "frame": 4,
+  "frames": 4,
+  "ms": 80
+ },
+ "fx_shockwave.svg": {
+  "w": 192,
+  "h": 192,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "fx_spawn_marker_1.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "fx_spawn_marker",
+  "frame": 1,
+  "frames": 2,
+  "ms": 250
+ },
+ "fx_spawn_marker_2.svg": {
+  "w": 48,
+  "h": 48,
+  "anim": "fx_spawn_marker",
+  "frame": 2,
+  "frames": 2,
+  "ms": 250
+ },
+ "fx_level_up.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": null,
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ }
+}

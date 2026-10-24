@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" role="img" aria-label="power bomb">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<circle cx="24" cy="24" r="20" fill="#6b6478"/><circle cx="24" cy="24" r="16" fill="none" stroke="#f0e6d2" stroke-opacity="0.45" stroke-width="2"/><path d="M10 17 Q14 9 22 7" stroke="#f0e6d2" stroke-opacity="0.7" stroke-width="2.5" fill="none"/><circle cx="22" cy="28" r="9.5" fill="#14121c"/><path d="M16 24 Q18 20 22 19.5" stroke="#8d9ab0" stroke-width="2" fill="none"/><rect x="25" y="15.5" width="6" height="5" rx="1" transform="rotate(40 28 18)" fill="#8d9ab0" stroke-width="2"/><path d="M30 15 Q32 11 35 12" stroke="#8a5532" stroke-width="2.5" fill="none"/><path d="M36 6.5 Q36.81 10.19 40.5 11 Q36.81 11.81 36 15.5 Q35.19 11.81 31.5 11 Q35.19 10.19 36 6.5 Z" fill="#f0c23b" stroke-width="1.2"/><circle cx="36" cy="11" r="1.4" fill="#f28a3b" stroke="none"/>
+</g>
+</svg>
