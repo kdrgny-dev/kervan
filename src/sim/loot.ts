@@ -1,4 +1,3 @@
-import { BASE_TICK_MS } from '../config';
 import { ENEMIES, type EnemyKind } from '../data/enemies';
 import { HERO_KINDS, type HeroKind } from '../data/heroes';
 import {
@@ -15,14 +14,24 @@ import {
 import { damageEnemy } from './combat';
 import { chebyshev, eq, type Vec } from './grid';
 import { pick, type Rng } from './rng';
-import { freeCells, scaledMaxHp } from './state';
+import { baseTickMs, freeCells, rescaleParty } from './state';
 import type { Enemy, Loot, LootDrop, World } from './types';
 
-export function rollDrop(rng: Rng, enemy: EnemyKind, heroes: readonly HeroKind[] = HERO_KINDS): LootDrop | null {
+export interface DropMults {
+  hero: number;
+  gem: number;
+}
+
+export function rollDrop(
+  rng: Rng,
+  enemy: EnemyKind,
+  heroes: readonly HeroKind[] = HERO_KINDS,
+  mult: DropMults = { hero: 1, gem: 1 },
+): LootDrop | null {
   const r = rng();
   let acc = 0;
   for (const row of DROP_TABLE) {
-    acc += row.chance;
+    acc += row.chance * (row.kind === 'hero' ? mult.hero : row.kind === 'gem' ? mult.gem : 1);
     if (r >= acc) continue;
     switch (row.kind) {
       case 'hero':
@@ -60,7 +69,7 @@ export function collect(w: World, loot: Loot) {
   w.events.push({ type: 'lootCollected', id: loot.id, loot });
   switch (loot.type) {
     case 'coin':
-      w.stats.gold += loot.value;
+      w.stats.gold += Math.round(loot.value * w.mods.goldMult);
       break;
     case 'gem':
       w.stats.gems++;
@@ -77,8 +86,8 @@ export function activatePower(w: World, power: PowerKind) {
     for (const e of w.enemies) damageEnemy(w, e, BOMB_DMG);
     return;
   }
-  w.powers[power] = POWERS[power].durationMs + w.loadout.powerBonusMs;
-  if (power === 'speed') w.tickMs = SPEED_TICK_MS;
+  w.powers[power] = (POWERS[power].durationMs + w.loadout.powerBonusMs) * w.mods.powerMult;
+  if (power === 'speed') w.tickMs = SPEED_TICK_MS * w.mods.speedMult;
   w.events.push({ type: 'powerStart', power });
 }
 
@@ -90,7 +99,7 @@ export function updateLoot(w: World, dt: number) {
       continue;
     }
     delete w.powers[power];
-    if (power === 'speed') w.tickMs = BASE_TICK_MS;
+    if (power === 'speed') w.tickMs = baseTickMs(w);
     w.events.push({ type: 'powerEnd', power });
   }
 
@@ -100,9 +109,10 @@ export function updateLoot(w: World, dt: number) {
   w.loot = w.loot.filter((l) => l.expiresAt > w.time);
 
   const leader = w.party[0];
-  if (w.powers.magnet && leader) {
+  const radius = Math.max(w.powers.magnet ? MAGNET_RADIUS : 0, w.mods.magnetRadius);
+  if (radius > 0 && leader) {
     for (const l of [...w.loot]) {
-      if (l.type !== 'hero' && chebyshev(l.pos, leader.pos) <= MAGNET_RADIUS) collect(w, l);
+      if (l.type !== 'hero' && chebyshev(l.pos, leader.pos) <= radius) collect(w, l);
     }
   }
 }
@@ -110,14 +120,14 @@ export function updateLoot(w: World, dt: number) {
 export function onEnemyKilled(w: World, e: Enemy) {
   w.stats.kills++;
   const def = ENEMIES[e.kind];
-  gainXp(w, def.xp ?? def.cost);
+  gainXp(w, Math.round((def.xp ?? def.cost) * w.mods.xpMult));
   if (def.boss) {
     dropLoot(w, { type: 'coin', value: def.gold }, e.pos);
     const spot = freeCells(w, (p) => chebyshev(p, e.pos) === 1)[0];
     if (spot) dropLoot(w, { type: 'gem' }, spot);
     return;
   }
-  const drop = rollDrop(w.rng, e.kind, w.loadout.unlocked);
+  const drop = rollDrop(w.rng, e.kind, w.loadout.unlocked, { hero: w.mods.heroDropMult, gem: w.mods.gemMult });
   if (drop) dropLoot(w, drop, e.pos);
 }
 
@@ -127,11 +137,7 @@ export function gainXp(w: World, amount: number) {
   while (s.xp >= xpToNext(s.level)) {
     s.xp -= xpToNext(s.level);
     s.level++;
-    for (const h of w.party) {
-      const max = scaledMaxHp(w, h.kind);
-      h.hp += max - h.maxHp;
-      h.maxHp = max;
-    }
+    rescaleParty(w);
     w.events.push({ type: 'levelUp', level: s.level });
   }
 }

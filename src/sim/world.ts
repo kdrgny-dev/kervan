@@ -1,4 +1,5 @@
 import { BASE_TICK_MS, GRID_H, GRID_W } from '../config';
+import { defaultMods } from '../data/cards';
 import { BUMP_DMG_RATIO, BUMP_INVULN_MS, FIRST_BREAK_MS, SIM_DT } from '../data/balance';
 import { damageHero, updateHeroes, updateProjectiles } from './combat';
 import { updateEnemies } from './enemies';
@@ -7,6 +8,7 @@ import { InputQueue } from './inputQueue';
 import { createRng, pick } from './rng';
 import { collect, spawnHeroToken, updateLoot } from './loot';
 import { endGame, enemyAt, isFree, makeHero } from './state';
+import { computeSynergies, emptySynergies } from './synergy';
 import type { Enemy, Loadout, World, WorldEvent } from './types';
 import { updateWaves } from './waves';
 
@@ -16,6 +18,8 @@ export { makeHero } from './state';
 export interface WorldOptions {
   seed?: number;
   waves?: boolean;
+  /** Dalga sonu kart seçimi; testlerde kapatılabilir. */
+  drafts?: boolean;
   loadout?: Partial<Loadout>;
 }
 
@@ -28,9 +32,14 @@ export const DEFAULT_LOADOUT: Loadout = {
   secondHero: false,
 };
 
-export function createWorld({ seed = Date.now(), waves = true, loadout = {} }: WorldOptions = {}): World {
+export function createWorld({ seed = Date.now(), waves = true, drafts = true, loadout = {} }: WorldOptions = {}): World {
   const w: World = {
     loadout: { ...DEFAULT_LOADOUT, ...loadout },
+    mods: defaultMods(),
+    cards: {},
+    draft: null,
+    draftsEnabled: drafts,
+    syn: emptySynergies(),
     party: [],
     enemies: [],
     projectiles: [],
@@ -65,9 +74,9 @@ export function turn(w: World, dir: Dir) {
 }
 
 export function stepWorld(w: World, dtMs: number): WorldEvent[] {
-  if (w.alive) {
+  if (w.alive && !w.draft) {
     w.simAcc += dtMs;
-    while (w.alive && w.simAcc >= SIM_DT) {
+    while (w.alive && !w.draft && w.simAcc >= SIM_DT) {
       w.simAcc -= SIM_DT;
       simStep(w, SIM_DT);
     }
@@ -82,6 +91,7 @@ export const enemyAlpha = (w: World, e: Enemy) => (w.alive ? Math.min((e.moveAcc
 
 function simStep(w: World, dt: number) {
   w.time += dt;
+  w.syn = computeSynergies(w.party);
   w.bumpInvuln = Math.max(0, w.bumpInvuln - dt);
 
   w.moveAcc += dt;
@@ -140,7 +150,7 @@ function bump(w: World, enemy: Enemy): boolean {
   w.events.push({ type: 'bump', pos: enemy.pos });
   if (w.bumpInvuln === 0) {
     w.bumpInvuln = BUMP_INVULN_MS;
-    damageHero(w, leader, Math.ceil(leader.maxHp * BUMP_DMG_RATIO));
+    damageHero(w, leader, Math.ceil(leader.maxHp * BUMP_DMG_RATIO * w.mods.bumpMult));
     if (!w.alive || w.party[0] !== leader) return false;
   }
   const dest = add(enemy.pos, DIR_VEC[w.dir]);

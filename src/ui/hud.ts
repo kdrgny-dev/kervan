@@ -1,11 +1,13 @@
 import Phaser from 'phaser';
 import { ENEMIES } from '../data/enemies';
 import { type PowerKind, xpToNext } from '../data/loot';
+import { HERO_CLASSES, SYNERGIES, SYNERGY_TIERS } from '../data/synergies';
 import { POWER_ICONS } from '../render/sprites';
+import { classCounts } from '../sim/synergy';
 import type { World } from '../sim/world';
-import { icon } from './assets';
+import { icon, portrait } from './assets';
 import { Bar, Button, fmt, Pill, slice } from './kit';
-import { displayStyle, UI } from './theme';
+import { displayStyle, textStyle, UI } from './theme';
 
 const DEPTH = 40;
 
@@ -23,6 +25,8 @@ export class Hud {
   private readonly bossBar: Bar;
   private readonly powers: Phaser.GameObjects.Container;
   private readonly toastText: Phaser.GameObjects.Text;
+  private readonly synergies: Phaser.GameObjects.Container;
+  private synergyKey = '';
   private powerKeys = '';
   private last = { gold: -1, gems: -1, level: -1 };
 
@@ -49,6 +53,7 @@ export class Hud {
     this.boss = scene.add.container(width / 2, 104, [bossName, this.bossBar]).setDepth(DEPTH).setVisible(false);
 
     this.powers = scene.add.container(width / 2, height - 40).setDepth(DEPTH);
+    this.synergies = scene.add.container(16, 78).setDepth(DEPTH);
     this.toastText = scene.add.text(width / 2, 200, '', displayStyle(42)).setOrigin(0.5).setDepth(DEPTH + 2).setStroke(UI.ink, 8).setAlpha(0);
   }
 
@@ -88,6 +93,30 @@ export class Hud {
     if (boss) this.bossBar.setRatio(boss.hp / boss.maxHp);
 
     this.renderPowers(w, now);
+    this.renderSynergies(w);
+  }
+
+  /** Sol üstte sınıf sayaçları; eşiğe ulaşan sınıf altın renkte. */
+  private renderSynergies(w: World) {
+    const counts = classCounts(w.party);
+    const active = HERO_CLASSES.filter((c) => counts[c] > 0).sort((a, b) => counts[b] - counts[a]);
+    const key = active.map((c) => `${c}${counts[c]}`).join();
+    if (key === this.synergyKey) return;
+    this.synergyKey = key;
+    this.synergies.removeAll(true);
+    active.forEach((c, i) => {
+      const n = counts[c];
+      const tier = n >= SYNERGY_TIERS[1] ? 2 : n >= SYNERGY_TIERS[0] ? 1 : 0;
+      const next = tier === 2 ? SYNERGY_TIERS[1] : SYNERGY_TIERS[tier];
+      const y = i * 34;
+      const bg = this.scene.add.graphics();
+      bg.fillStyle(UI.bg, 0.85).fillRoundedRect(0, y - 14, 156, 28, 14);
+      bg.lineStyle(2, tier > 0 ? UI.goldNum : UI.panelEdge).strokeRoundedRect(0, y - 14, 156, 28, 14);
+      const face = this.scene.add.image(15, y, portrait(SYNERGIES[c].hero)).setDisplaySize(26, 26);
+      const label = this.scene.add.text(32, y, SYNERGIES[c].name, textStyle(13, { color: tier > 0 ? UI.gold : UI.muted, fontStyle: '800' })).setOrigin(0, 0.5);
+      const count = this.scene.add.text(146, y, `${n}/${next}`, displayStyle(14, { color: tier > 0 ? UI.gold : UI.text })).setOrigin(1, 0.5);
+      this.synergies.add([bg, face, label, count]);
+    });
   }
 
   private renderPowers(w: World, now: number) {

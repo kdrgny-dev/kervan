@@ -14,7 +14,8 @@ export const BOSS_EVERY = 5;
 
 export const waveBudget = (n: number) => 4 + 4 * n + Math.floor((n * n) / 4);
 export const waveGoldBonus = (n: number) => 5 + 2 * n;
-export const enemyHpScale = (n: number) => (n > 10 ? 1.06 ** (n - 10) : 1);
+// Kartlar oyuncuyu her dalga güçlendirdiği için düşman canı da ilk dalgadan büyür
+export const enemyHpScale = (n: number) => 1.07 ** Math.max(0, n - 1);
 /** Her sonraki boss +%50 can (5. dalga x1, 10. dalga x1.5 …). */
 export const bossHpScale = (n: number) => 1 + 0.5 * Math.max(0, Math.floor(n / BOSS_EVERY) - 1);
 

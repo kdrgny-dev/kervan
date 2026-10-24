@@ -6,6 +6,8 @@ import { onEnemyKilled } from './loot';
 import { endGame, levelMult, upgradeMult } from './state';
 import type { Enemy, Hero, Projectile, World } from './types';
 
+const MIN_HIT = 1;
+
 export function damageEnemy(w: World, e: Enemy, dmg: number, crit = false) {
   if (e.hp <= 0) return;
   e.hp -= dmg;
@@ -15,19 +17,52 @@ export function damageEnemy(w: World, e: Enemy, dmg: number, crit = false) {
   onEnemyKilled(w, e);
 }
 
-export function damageHero(w: World, h: Hero, dmg: number) {
+const WARRIOR_GUARD = [1, 0.85, 0.7];
+
+/** source: vuran düşman (diken zırhı için). */
+export function damageHero(w: World, h: Hero, raw: number, source?: Enemy) {
   if (h.hp <= 0 || w.powers.shield) return;
+  const dmg = Math.max(MIN_HIT, Math.round(raw * w.mods.dmgTakenMult * WARRIOR_GUARD[w.syn.warrior]));
   h.hp -= dmg;
   w.events.push({ type: 'heroHit', id: h.id, dmg });
+  if (source && w.mods.thorns > 0) damageEnemy(w, source, w.mods.thorns);
   if (h.hp > 0) return;
   const i = w.party.indexOf(h);
   if (i >= 0) w.party.splice(i, 1);
   w.events.push({ type: 'heroDied', id: h.id, pos: h.pos });
+  if (w.mods.martyr > 0) {
+    for (const e of w.enemies) if (e.hp > 0 && chebyshev(e.pos, h.pos) <= 1) damageEnemy(w, e, w.mods.martyr);
+    w.events.push({ type: 'explosion', x: h.pos.x, y: h.pos.y, radius: 1 });
+  }
   if (w.party.length === 0) endGame(w, 'wiped');
 }
 
-export const heroDamage = (w: World, kind: HeroKind) =>
-  Math.round(HEROES[kind].dmg * levelMult(w) * upgradeMult(w, kind, 'dmg') * (w.powers.rage ? RAGE_MULT : 1));
+export function heroDamage(w: World, kind: HeroKind) {
+  const def = HEROES[kind];
+  let mult = levelMult(w) * upgradeMult(w, kind, 'dmg') * w.mods.dmgMult * (w.powers.rage ? RAGE_MULT : 1);
+  if (def.attack === 'melee') mult *= w.mods.meleeDmgMult;
+  if (kind === 'mage' && w.syn.arcane === 2) mult *= 1.5;
+  return Math.max(MIN_HIT, Math.round(def.dmg * mult));
+}
+
+export function heroRange(w: World, kind: HeroKind) {
+  const def = HEROES[kind];
+  if (def.range <= 1) return def.range;
+  return def.range + w.mods.rangeBonus + (kind === 'archer' && w.syn.marksman >= 1 ? 1 : 0);
+}
+
+export function heroSplash(w: World, kind: HeroKind) {
+  const base = HEROES[kind].splash ?? 0;
+  return base > 0 ? base + w.mods.splashBonus + (w.syn.arcane >= 1 ? 1 : 0) : 0;
+}
+
+/** Kritik: [şans, çarpan]; Gölge sinerjisi ve kartlar ekler. */
+export function heroCrit(w: World, kind: HeroKind): [number, number] {
+  const c = HEROES[kind].crit;
+  const chance = (c?.chance ?? 0) + w.mods.critBonus + (w.syn.shadow >= 1 ? 0.2 : 0);
+  const mult = w.syn.shadow === 2 ? 3 : (c?.mult ?? 2);
+  return [Math.min(chance, 0.95), mult];
+}
 
 export function nearestEnemy(w: World, from: Vec, range: number): Enemy | undefined {
   let best: Enemy | undefined;
@@ -41,6 +76,13 @@ export function nearestEnemy(w: World, from: Vec, range: number): Enemy | undefi
     }
   }
   return best;
+}
+
+function nearestEnemies(w: World, from: Vec, range: number, n: number): Enemy[] {
+  return w.enemies
+    .filter((e) => e.hp > 0 && chebyshev(from, e.pos) <= range)
+    .sort((a, b) => (a.pos.x - from.x) ** 2 + (a.pos.y - from.y) ** 2 - ((b.pos.x - from.x) ** 2 + (b.pos.y - from.y) ** 2))
+    .slice(0, n);
 }
 
 export function nearestHero(w: World, from: Vec): Hero | undefined {
@@ -95,23 +137,34 @@ export function updateHeroes(w: World, dt: number) {
 
     h.cooldown = Math.max(0, h.cooldown - dt);
     if (h.cooldown > 0) continue;
-    const target = nearestEnemy(w, h.pos, def.range);
+    const range = heroRange(w, h.kind);
+    const target = nearestEnemy(w, h.pos, range);
     if (!target) continue;
-    h.cooldown = def.cooldownMs;
+    h.cooldown = def.cooldownMs * w.mods.cooldownMult;
     const dmg = heroDamage(w, h.kind);
     w.events.push({ type: 'heroAttack', id: h.id });
 
     if (def.attack === 'melee') {
-      const crit = !!def.crit && w.rng() < def.crit.chance;
-      damageEnemy(w, target, crit && def.crit ? Math.round(dmg * def.crit.mult) : dmg, crit);
+      const [chance, mult] = heroCrit(w, h.kind);
+      const crit = chance > 0 && w.rng() < chance;
+      damageEnemy(w, target, crit ? Math.round(dmg * mult) : dmg, crit);
       w.events.push({ type: 'slash', pos: target.pos });
-    } else {
-      fire(w, def.attack, 'hero', h.pos, target, dmg, def.splash);
+      continue;
+    }
+    fire(w, def.attack, 'hero', h.pos, target, dmg, heroSplash(w, h.kind));
+    if (h.kind === 'archer') {
+      const extra = w.mods.extraTargets + (w.syn.marksman === 2 ? 1 : 0);
+      for (const t of nearestEnemies(w, h.pos, range, extra + 1).filter((e) => e !== target).slice(0, extra)) {
+        fire(w, def.attack, 'hero', h.pos, t, dmg);
+      }
     }
   }
 }
 
-function healParty(w: World, amount: number) {
+const HOLY_HEAL = [1, 2, 3];
+
+function healParty(w: World, base: number) {
+  const amount = Math.round(base * w.mods.healMult * HOLY_HEAL[w.syn.holy]);
   for (const h of w.party) {
     if (h.hp >= h.maxHp) continue;
     const healed = Math.min(amount, h.maxHp - h.hp);

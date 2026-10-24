@@ -14,7 +14,8 @@ it('upgrades meaningfully extend runs', () => {
     unlocked: ['knight', 'archer', 'mage'] as const,
     upgrades: { knight: { hp: 3, dmg: 3 }, archer: { hp: 3, dmg: 3 }, mage: { hp: 3, dmg: 3 } },
   };
-  const base = Array.from({ length: 20 }, (_, i) => playRun(700 + i, {}, 300).wave);
-  const strong = Array.from({ length: 20 }, (_, i) => playRun(700 + i, { ...upgraded, unlocked: [...upgraded.unlocked] }, 300).wave);
+  // Kartlar kapalı: yalnızca kalıcı yükseltmelerin etkisini ölçmek için
+  const base = Array.from({ length: 20 }, (_, i) => playRun(700 + i, {}, 300, false).wave);
+  const strong = Array.from({ length: 20 }, (_, i) => playRun(700 + i, { ...upgraded, unlocked: [...upgraded.unlocked] }, 300, false).wave);
   expect(median(strong)).toBeGreaterThan(median(base));
 });

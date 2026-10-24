@@ -3,9 +3,9 @@ import type { HeroKind } from './heroes';
 export const UNLOCK_COST: Record<HeroKind, number> = {
   knight: 0,
   archer: 0,
-  mage: 200,
-  priest: 350,
-  rogue: 500,
+  mage: 400,
+  priest: 700,
+  rogue: 1000,
 };
 
 export const STARTING_HEROES: HeroKind[] = ['knight', 'archer'];
@@ -13,7 +13,7 @@ export const STARTING_HEROES: HeroKind[] = ['knight', 'archer'];
 export type HeroStat = 'hp' | 'dmg';
 export const MAX_UPGRADE = 10;
 export const UPGRADE_STEP = 0.1;
-export const upgradeCost = (level: number) => Math.round(50 * 1.5 ** level);
+export const upgradeCost = (level: number) => Math.round(80 * 1.6 ** level);
 
 export type GemUpgrade = 'startPower' | 'powerDuration' | 'secondHero';
 

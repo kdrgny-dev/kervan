@@ -230,6 +230,37 @@ F6 paralel yürüyebilir: grafik üretimi F0'dan itibaren başlayabilir.
 
 ---
 
+## 13b. Uzun Ömür Tasarımı (F7–F10)
+
+**Hedef:** Oyuncu her tur bir şey kazansın, her gün geri dönmek için bir sebebi olsun, yol hiç bitmesin. Ton: sıcak ve esprili masal. Gelir: tek seferlik ücret; tüm ödüller oynayarak kazanılır, para karşılığı güç yok.
+
+| Katman | Sistem | Faz |
+|---|---|---|
+| Tur içi derinlik | Dalga arası 3 kartlık seçim, lanetli kartlar, yeniden çekme; sınıf sinerjileri | F7 |
+| Havuçlar | Hesap seviyesi + ödül yolu, kart koleksiyonu (açılmamışlar silüet), günlük/haftalık görevler, başarımlar, kahraman ustalığı | F8 |
+| Sonsuz hikaye | Kervan Yolu haritası: bölgeler (Yeşil Vadi → Kemik Ovası → Kül Dağları → Buz Çölü …), her bölgenin düşmanları/boss'u/hikaye anı; Kamp (Demirci, Tapınak, Pazar… dükkânın yerini alır), kervanbaşı anlatıcı | F9 |
+| Geri dönüş | Yolculuk II, III… (artan zorluk + kurallar), günlük sefer (aynı tohum, ileride çevrimiçi skor) | F10 |
+
+### ✅ F7 — Kartlar ve Sinerjiler
+
+- Her dalga temizlenince oyun durur, **3 kart** sunulur; biri seçilince 3 sn'lik mola başlar.
+- Nadirlik: Yaygın %60 · Nadir %30 · Efsane %10. Her seçimde %15 ihtimalle bir **lanetli** kart (güçlü + bedelli) yer alır.
+- **Yeniden çek:** tur altınıyla, her kullanımda pahalanır (`15 × 2^k`).
+- Kartların çoğu birden fazla kez alınabilir (her kartın üst sınırı var).
+- **Sınıflar ve sinerjiler** (aynı sınıftan kahraman sayısı):
+
+| Sınıf | Kahraman | 2 | 4 |
+|---|---|---|---|
+| Savaşçı | Şövalye | Alınan hasar −%15 | −%30 |
+| Nişancı | Okçu | Okçulara +1 menzil | Okçular 2 hedefe atar |
+| Büyücü | Büyücü | Patlama alanı +1 | Büyücü hasarı +%50 |
+| Kutsal | Rahip | Şifa ×2 | Şifa ×3 |
+| Gölge | Haydut | Kritik şansı +%20 | Kritik ×3 |
+
+- 25 kart (21 normal + 4 lanetli) `src/data/cards.ts`; etkiler tur içi `Mods` çarpanları ve birkaç özel kancadır (şehit patlaması, diken zırh, dalga başı güçlendirme, anlık jeton).
+- Denge (2026-10-24, bot her seçimde ilk kartı alır): yeni oyuncu dalga p25/p50/p75 = 6/10/17, ~2,5 dk; orta 6/11/22; güçlü 19/20/22. Kartlarla oyuncu her dalga güçlendiği için düşman canı ilk dalgadan itibaren dalga başına +%7 büyür.
+- Tur başına altın arttığı için dükkân fiyatları yükseltildi: kilitler 400/700/1000, yükseltme `80 × 1,6^seviye`.
+
 ## 14. Görsel Sistem (F6)
 
 - Çizimler Claude Design ile 4 aşamada üretildi; referanslar `docs/design/` altında (palet, önizleme sayfaları, mockup'lar, `tokens.json`, `motion.json`, `components.json`).

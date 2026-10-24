@@ -1,7 +1,9 @@
 import type { ProjectileKind } from '../data/balance';
 import type { EnemyKind } from '../data/enemies';
 import type { HeroKind } from '../data/heroes';
+import type { CardId, Mods } from '../data/cards';
 import type { PowerKind } from '../data/loot';
+import type { SynergyTiers } from './synergy';
 import type { Dir, Vec } from './grid';
 import type { InputQueue } from './inputQueue';
 import type { Rng } from './rng';
@@ -105,6 +107,9 @@ export type WorldEvent =
   | { type: 'powerEnd'; power: PowerKind }
   | { type: 'bomb' }
   | { type: 'levelUp'; level: number }
+  | { type: 'draftOpen' }
+  | { type: 'draftRerolled' }
+  | { type: 'cardPicked'; id: CardId }
   | { type: 'waveStart'; n: number }
   | { type: 'waveCleared'; n: number; bonus: number };
 
@@ -117,8 +122,19 @@ export interface Loadout {
   secondHero: boolean;
 }
 
+export interface Draft {
+  options: CardId[];
+  rerolls: number;
+}
+
 export interface World {
   loadout: Loadout;
+  mods: Mods;
+  cards: Partial<Record<CardId, number>>;
+  /** Açıkken simülasyon durur; oyuncu kart seçer. */
+  draft: Draft | null;
+  draftsEnabled: boolean;
+  syn: SynergyTiers;
   party: Hero[];
   enemies: Enemy[];
   projectiles: Projectile[];

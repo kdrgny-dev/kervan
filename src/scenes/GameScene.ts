@@ -24,6 +24,9 @@ import {
   type World,
   type WorldEvent,
 } from '../sim/world';
+import { CARDS } from '../data/cards';
+import { nextRerollCost, pickCard, rerollDraft } from '../sim/cards';
+import { DraftOverlay } from '../ui/draft';
 import { Hud } from '../ui/hud';
 import { Button, fmt, panel, ribbon, slice } from '../ui/kit';
 import { displayStyle, FONT_DISPLAY, textStyle, UI } from '../ui/theme';
@@ -57,6 +60,7 @@ export class GameScene extends Phaser.Scene {
   private markers = new Map<string, Phaser.GameObjects.Sprite>();
   private fx!: Fx;
   private hud!: Hud;
+  private draftUi!: DraftOverlay;
   private pauseMenu!: Phaser.GameObjects.Container;
   private overlay!: Phaser.GameObjects.Container;
 
@@ -79,18 +83,36 @@ export class GameScene extends Phaser.Scene {
     this.markers = new Map();
     this.fx = new Fx(this);
     this.hud = new Hud(this, () => this.togglePause());
+    this.draftUi = new DraftOverlay(this, {
+      pick: (id) => pickCard(this.world, id),
+      reroll: () => {
+        if (rerollDraft(this.world)) this.showDraft();
+      },
+    });
     this.overlay = this.add.container(0, 0).setDepth(60).setVisible(false);
     this.pauseMenu = this.buildPauseMenu();
 
     bindControls(this, {
-      onDir: (d) => !this.paused && turn(this.world, d),
+      onDir: (d) => {
+        if (this.draftUi.open) return this.draftUi.move(d === 'left' ? -1 : d === 'right' ? 1 : 0);
+        if (!this.paused) turn(this.world, d);
+      },
       onConfirm: () => {
+        if (this.draftUi.open) return this.draftUi.confirm();
         if (!this.world.alive) this.restart();
       },
       onPause: () => this.togglePause(),
     });
 
+    ['ONE', 'TWO', 'THREE'].forEach((k, i) => this.input.keyboard?.on(`keydown-${k}`, () => this.draftUi.confirm(i)));
+
     this.restart();
+  }
+
+  private showDraft() {
+    const w = this.world;
+    if (!w.draft) return;
+    this.draftUi.show(w.draft.options, w.cards, nextRerollCost(w), w.stats.gold);
   }
 
   update(_time: number, delta: number) {
@@ -115,6 +137,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   private restart() {
+    this.tweens.killAll();
+    this.frozen = [];
     for (const map of [this.heroViews, this.enemyViews, this.projectileViews, this.lootViews, this.markers]) {
       for (const v of map.values()) v.destroy();
       map.clear();
@@ -124,6 +148,7 @@ export class GameScene extends Phaser.Scene {
     this.paused = false;
     this.pauseMenu.setVisible(false);
     this.overlay.removeAll(true).setVisible(false);
+    this.draftUi.hide();
     this.hud.toast('Hazırlan!');
   }
 
@@ -258,6 +283,16 @@ export class GameScene extends Phaser.Scene {
           this.shake(300, 0.006);
         } else this.hud.banner('wave', `Dalga ${e.n}`);
         audio.play('waveStart');
+        break;
+      case 'draftOpen':
+        this.time.delayedCall(1300, () => this.showDraft());
+        break;
+      case 'draftRerolled':
+        audio.play('click');
+        break;
+      case 'cardPicked':
+        audio.play('power');
+        this.hud.toast(CARDS[e.id].name, UI.gold);
         break;
       case 'waveCleared':
         this.hud.banner('clear', 'Dalga temizlendi!', e.bonus);
@@ -559,7 +594,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private togglePause() {
-    if (!this.world?.alive) return;
+    if (!this.world?.alive || this.world.draft) return;
     this.paused = !this.paused;
     const shade = this.pauseMenu.getByName('shade') as Phaser.GameObjects.Rectangle;
     const box = this.pauseMenu.getByName('box') as Phaser.GameObjects.Container;
@@ -661,6 +696,8 @@ export class GameScene extends Phaser.Scene {
         delay: 550 + i * 200,
         ease: 'Quad.Out',
         onUpdate: () => {
+          // Sayım bitmeden "Tekrar" basılırsa metin yok edilmiş olur
+          if (!valueText.active) return;
           valueText.setText(fmt(counter.v));
           if (this.time.now - lastTick > 50) {
             lastTick = this.time.now;

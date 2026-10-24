@@ -8,7 +8,7 @@ import type { Enemy, World } from './types';
 
 export function spawnEnemy(w: World, kind: EnemyKind, pos: Vec): Enemy {
   const def = ENEMIES[kind];
-  const hp = Math.round(def.hp * enemyHpScale(w.wave.n) * (def.boss ? bossHpScale(w.wave.n) : 1));
+  const hp = Math.round(def.hp * enemyHpScale(w.wave.n) * (def.boss ? bossHpScale(w.wave.n) : 1) * w.mods.enemyHpMult);
   const e: Enemy = { id: w.nextId++, kind, pos, prev: pos, hp, maxHp: hp, moveAcc: 0, moveMs: def.moveMs, attackCd: def.attackMs / 2 };
   if (def.boss) {
     e.summonCd = def.boss.summonEveryMs / 2;
@@ -37,7 +37,7 @@ export function updateEnemies(w: World, dt: number) {
         }
       } else if (dist <= 1) {
         w.events.push({ type: 'enemyAttack', id: e.id });
-        damageHero(w, near, def.dmg);
+        damageHero(w, near, def.dmg, e);
         e.attackCd = def.attackMs;
         if (!w.alive) return;
       }

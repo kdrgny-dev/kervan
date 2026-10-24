@@ -53,24 +53,24 @@ describe('save', () => {
 describe('shop', () => {
   it('unlocks a hero when affordable', () => {
     const s = defaultSave();
-    s.gold = 350;
+    s.gold = 450;
     expect(unlockHero(s, 'mage')).toBe(true);
-    expect(s.gold).toBe(150);
+    expect(s.gold).toBe(50);
     expect(s.unlocked).toContain('mage');
     expect(unlockHero(s, 'mage')).toBe(false);
   });
 
   it('refuses unaffordable unlocks', () => {
     const s = defaultSave();
-    s.gold = 100;
+    s.gold = 900;
     expect(unlockHero(s, 'rogue')).toBe(false);
-    expect(s.gold).toBe(100);
+    expect(s.gold).toBe(900);
   });
 
   it('upgrade cost scales and caps at max level', () => {
     const s = defaultSave();
     s.gold = 1e9;
-    expect(nextUpgradeCost(s, 'knight', 'hp')).toBe(50);
+    expect(nextUpgradeCost(s, 'knight', 'hp')).toBe(80);
     upgradeHero(s, 'knight', 'hp');
     expect(nextUpgradeCost(s, 'knight', 'hp')).toBe(upgradeCost(1));
     for (let i = 0; i < 20; i++) upgradeHero(s, 'knight', 'hp');
