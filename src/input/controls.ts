@@ -35,17 +35,31 @@ export function bindControls(scene: Phaser.Scene, h: ControlHandlers) {
     }
   });
 
-  let start: { x: number; y: number } | null = null;
-  scene.input.on('pointerdown', (p: Phaser.Input.Pointer) => {
-    start = { x: p.x, y: p.y };
-  });
-  scene.input.on('pointerup', (p: Phaser.Input.Pointer) => {
-    if (!start) return;
-    const dx = p.x - start.x;
-    const dy = p.y - start.y;
-    start = null;
-    if (Math.max(Math.abs(dx), Math.abs(dy)) < SWIPE_MIN_PX) return;
+  // Kaydırma parmak kalkmadan algılanır: eşik aşılınca dönülür ve çapa oraya taşınır,
+  // böylece tek hamlede art arda dönüş yapılabilir
+  let anchor: { x: number; y: number } | null = null;
+  let turned = false;
+  const threshold = () => SWIPE_MIN_PX / (scene.scale.displaySize.width / scene.scale.width);
+  const swipe = (p: Phaser.Input.Pointer, min: number) => {
+    if (!anchor) return;
+    const dx = p.x - anchor.x;
+    const dy = p.y - anchor.y;
+    if (Math.max(Math.abs(dx), Math.abs(dy)) < min) return;
     if (Math.abs(dx) > Math.abs(dy)) h.onDir(dx > 0 ? 'right' : 'left');
     else h.onDir(dy > 0 ? 'down' : 'up');
+    anchor = { x: p.x, y: p.y };
+    turned = true;
+  };
+  scene.input.on('pointerdown', (p: Phaser.Input.Pointer) => {
+    anchor = { x: p.x, y: p.y };
+    turned = false;
+  });
+  scene.input.on('pointermove', (p: Phaser.Input.Pointer) => {
+    if (p.isDown) swipe(p, threshold());
+  });
+  scene.input.on('pointerup', (p: Phaser.Input.Pointer) => {
+    // Hızlı fiske hareket olayı yetişmeden bitebilir
+    if (!turned) swipe(p, threshold() * 0.6);
+    anchor = null;
   });
 }

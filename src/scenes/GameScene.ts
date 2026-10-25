@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
-import { CELL } from '../config';
+import { CELL, GRID_H, GRID_W } from '../config';
+import { isPhone } from '../platform';
 import { SPAWN_WARN_MS } from '../data/balance';
 import { ENEMIES } from '../data/enemies';
 import { HEROES, type HeroKind } from '../data/heroes';
@@ -46,6 +47,10 @@ const COLORS = {
 };
 
 const MAX_DAMAGE_TEXTS = 24;
+/** Bu derinlik ve üstü arayüzdür; telefonda yakınlaşmayan ayrı kamerada çizilir. */
+const UI_DEPTH = 40;
+/** Telefonda bir karenin ekranda hedeflenen boyu (pt). */
+const PHONE_CELL_PT = 34;
 const COUNTDOWN_STEPS = 3;
 const COUNTDOWN_STEP_MS = 600;
 
@@ -58,6 +63,7 @@ export class GameScene extends Phaser.Scene {
   private world!: World;
   private paused = false;
   private countdownLeft = 0;
+  private phone = false;
   private countdownText!: Phaser.GameObjects.Text;
   /** Duraklatınca dondurulan tween'ler; menü animasyonları serbest kalsın diye pauseAll kullanılmıyor. */
   private frozen: Phaser.Tweens.Tween[] = [];
@@ -86,6 +92,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   create() {
+    this.phone = isPhone();
+    if (this.phone) this.fitPhone();
     this.heroViews = new Map();
     this.enemyViews = new Map();
     this.projectileViews = new Map();
@@ -122,7 +130,53 @@ export class GameScene extends Phaser.Scene {
 
     ['ONE', 'TWO', 'THREE'].forEach((k, i) => this.input.keyboard?.on(`keydown-${k}`, () => this.draftUi.confirm(i)));
 
+    if (this.phone) this.phoneCameras();
     this.restart();
+  }
+
+  // ---------- telefon görünümü ----------
+
+  /** Sahneyi ekranın oranına genişletir; menüler 1152×720'de kalır. */
+  private fitPhone() {
+    const { width, height } = this.scale.parentSize;
+    const base = GRID_W * CELL;
+    const w = Math.round(Phaser.Math.Clamp(GRID_H * CELL * (width / height), base, base * 1.6));
+    this.scale.setGameSize(w, GRID_H * CELL);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.scale.setGameSize(base, GRID_H * CELL));
+  }
+
+  /** Dünya yakınlaşır ve kafileyi izler; arayüz ayrı kamerada sabit kalır. */
+  private phoneCameras() {
+    const world = this.cameras.main;
+    const ui = this.cameras.add(0, 0, this.scale.width, this.scale.height);
+    const ptPerPx = this.scale.displaySize.height / this.scale.height;
+    world.setZoom(Phaser.Math.Clamp(PHONE_CELL_PT / (CELL * ptPerPx), 1, 1.6));
+    this.events.on(Phaser.Scenes.Events.PRE_RENDER, () => {
+      for (const o of this.children.list) {
+        const depth = (o as Phaser.GameObjects.GameObject & { depth: number }).depth;
+        o.cameraFilter = depth >= UI_DEPTH ? world.id : ui.id;
+      }
+    });
+  }
+
+  private followLeader(snap = false) {
+    const cam = this.cameras.main;
+    const leader = this.world.party[0];
+    if (cam.zoom === 1 || !leader) return;
+    const view = this.heroViews.get(leader.id);
+    const tx = view?.x ?? px(leader.pos.x);
+    const ty = view?.y ?? px(leader.pos.y);
+    const vw = cam.width / cam.zoom;
+    const vh = cam.height / cam.zoom;
+    // Üstteki HUD şeridi arenanın ilk sırasını örtmesin diye dikeyde biraz pay
+    const hud = 70 / cam.zoom;
+    const along = (t: number, view: number, size: number, top = 0) =>
+      view >= size + top ? (size - top) / 2 : Phaser.Math.Clamp(t, view / 2 - top, size - view / 2);
+    const cx = along(tx, vw, GRID_W * CELL);
+    const cy = along(ty, vh, GRID_H * CELL, hud);
+    const m = cam.midPoint;
+    const k = snap ? 1 : 0.12;
+    cam.centerOn(m.x + (cx - m.x) * k, m.y + (cy - m.y) * k);
   }
 
   private paintedRegion = '';
@@ -150,6 +204,7 @@ export class GameScene extends Phaser.Scene {
       for (const e of stepWorld(this.world, Math.min(delta, 100))) this.handle(e);
     }
     this.renderParty();
+    this.followLeader();
     this.renderEnemies();
     this.renderProjectiles();
     this.renderLoot();
@@ -180,6 +235,8 @@ export class GameScene extends Phaser.Scene {
     this.overlay.removeAll(true).setVisible(false);
     this.draftUi.hide();
     this.countdown();
+    this.renderParty();
+    this.followLeader(true);
   }
 
   private get halted() {
@@ -368,7 +425,7 @@ export class GameScene extends Phaser.Scene {
         break;
       case 'campaignCleared':
         this.time.delayedCall(600, () => this.hud.banner('region', 'Destan tamamlandı!', undefined, 'Kervan şehre giriyor', this.world.route.at(-1)));
-        this.fx.confetti(this.scale.width / 2, this.scale.height / 2, 80);
+        this.fx.confetti(px(this.world.party[0]?.pos.x ?? GRID_W / 2), px(this.world.party[0]?.pos.y ?? GRID_H / 2), 80);
         audio.play('levelUp');
         break;
       case 'waveCleared':

@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { isTouch } from '../platform';
 import { CARDS, type CardId, RARITY_NAME, type Rarity } from '../data/cards';
 import { Button, fmt, ribbon, slice } from './kit';
 import { displayStyle, textStyle, UI } from './theme';
@@ -39,7 +40,7 @@ export class DraftOverlay {
     this.root.add(this.cardsLayer);
     this.rerollBtn = new Button(scene, width / 2, height - 92, 'Yeniden çek', () => this.h.reroll(), { width: 280, height: 60, icon: 'coin' });
     this.root.add(this.rerollBtn);
-    this.root.add(scene.add.text(width / 2, height - 44, '1 · 2 · 3  ya da  ← → + Enter', textStyle(15, { color: UI.dim })).setOrigin(0.5));
+    this.root.add(scene.add.text(width / 2, height - 44, isTouch ? 'Bir karta dokun' : '1 · 2 · 3  ya da  ← → + Enter', textStyle(15, { color: UI.dim })).setOrigin(0.5));
   }
 
   get open() {
