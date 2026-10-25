@@ -287,6 +287,16 @@ F6 paralel yürüyebilir: grafik üretimi F0'dan itibaren başlayabilir.
 - Oyun duraksadıktan sonra (tur başı, kart seçimi, duraklatma) 3-2-1 geri sayım; sayım sırasında yön seçilebilir, kafile durur.
 - Kafile adımı 170 → 200 ms (saniyede ~5 kare); hız gücü 120 → 140 ms.
 
+### Destanlar (iskelet)
+
+- Ayrıntılı tasarım: `docs/destanlar.md`. Çizim istemi: `docs/claude-design-prompt-stage6.md`.
+- **Yolculuk seçimi:** en az bir destan açıksa "Oyna" önce yolculuk seçim ekranını açar (Hüsnü'nün Yolu / destanlar / yakında). Seçim kayıtta hatırlanır.
+- **Destan I · Fetih** (hesap Sv 6): Rumeli Hisarı → Haliç Kıyısı → Galata Sırtları → Kara Surlar. Yeni düşmanlar: Sur Gargoylesi, Zincir Yılanı, Sis Perisi, Mancınık Golemi. Boss'lar: Taş Nöbetçi, Liman Ahtapotu, Yağ Küpü Devi; 40. dalgada final boss Sur Bekçisi Dev.
+- **Gemiler karadan:** destanda her boss dalgasında 10 sn boyunca kafile duvardan girip karşı kenardan çıkar.
+- 40. dalga temizlenince destan biter, efsanevi kahraman **Fatih** (Şahi topu: menzil 5, alan hasarı) açılır; yol Destan+ olarak sürer. Efsanevi kahramanlar altınla açılmaz.
+- Hikaye: `destans`, `fetih_intro`, bölge/boss anları, `fetih_done`. Kayıt şeması v4 (`campaigns`, `lastCampaign`).
+- Çizimler gelene kadar yeni bölgeler mevcut karo setlerini, yeni düşmanlar/boss'lar ve Fatih mevcut sprite'ları renklendirerek kullanır.
+
 ## 14. Görsel Sistem (F6)
 
 - Çizimler Claude Design ile 4 aşamada üretildi; referanslar `docs/design/` altında (palet, önizleme sayfaları, mockup'lar, `tokens.json`, `motion.json`, `components.json`).

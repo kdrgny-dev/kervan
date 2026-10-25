@@ -2,6 +2,7 @@ import { type GemUpgrade, type HeroStat, MARKET_KEYS, type MarketUpgrade, STARTI
 import { ENEMY_KINDS, type EnemyKind } from '../data/enemies';
 import { STORY_ORDER, type StoryId } from '../data/story';
 import { CARD_IDS, type CardId } from '../data/cards';
+import { DESTAN_IDS, type CampaignId } from '../data/campaigns';
 import { HERO_KINDS, type HeroKind } from '../data/heroes';
 import { ACHIEVEMENT_IDS, type AchievementId, emptyLifetime, type Lifetime, STARTER_CARDS } from '../data/progression';
 
@@ -34,7 +35,7 @@ export interface QuestBoard {
 }
 
 export interface SaveData {
-  version: 3;
+  version: 4;
   gold: number;
   gems: number;
   unlocked: HeroKind[];
@@ -53,6 +54,15 @@ export interface SaveData {
   journey: { furthest: number; bosses: EnemyKind[] };
   /** Hikaye: okunanlar günlükte, bekleyenler menüde gösterilir. */
   story: { seen: StoryId[]; pending: StoryId[] };
+  /** Destanlar: en uzak bölge sırası, en iyi dalga, bitirildi mi. */
+  campaigns: Partial<Record<CampaignId, CampaignProgress>>;
+  lastCampaign: CampaignId;
+}
+
+export interface CampaignProgress {
+  furthest: number;
+  best: number;
+  done: boolean;
 }
 
 export interface KeyValueStore {
@@ -64,7 +74,7 @@ const KEY = 'kervan.save';
 
 export function defaultSave(): SaveData {
   return {
-    version: 3,
+    version: 4,
     gold: 0,
     gems: 0,
     unlocked: [...STARTING_HEROES],
@@ -81,6 +91,8 @@ export function defaultSave(): SaveData {
     market: { goldGain: 0, freeRerolls: 0, xpGain: 0 },
     journey: { furthest: 0, bosses: [] },
     story: { seen: [], pending: [] },
+    campaigns: {},
+    lastCampaign: 'road',
   };
 }
 
@@ -133,7 +145,7 @@ export function parseSave(raw: string | null): SaveData {
   for (const k of Object.keys(life) as (keyof Lifetime)[]) life[k] = num(data.lifetime?.[k], 0);
 
   return {
-    version: 3,
+    version: 4,
     gold: num(data.gold, 0),
     gems: num(data.gems, 0),
     unlocked,
@@ -158,6 +170,13 @@ export function parseSave(raw: string | null): SaveData {
       seen: Array.isArray(data.story?.seen) ? data.story.seen.filter(isStory) : [],
       pending: Array.isArray(data.story?.pending) ? data.story.pending.filter(isStory) : [],
     },
+    campaigns: Object.fromEntries(
+      DESTAN_IDS.filter((c) => data.campaigns?.[c]).map((c) => {
+        const v = data.campaigns![c]!;
+        return [c, { furthest: num(v.furthest, 0), best: num(v.best, 0), done: !!v.done }];
+      }),
+    ),
+    lastCampaign: data.lastCampaign === 'road' || (DESTAN_IDS as string[]).includes(data.lastCampaign ?? '') ? data.lastCampaign! : 'road',
   };
 }
 

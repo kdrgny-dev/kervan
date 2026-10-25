@@ -1,6 +1,9 @@
 import Phaser from 'phaser';
 import { UNLOCK_COST, UPGRADE_STEP } from '../data/economy';
 import { HERO_KINDS, HEROES, type HeroKind } from '../data/heroes';
+import { CAMPAIGNS, type CampaignId, DESTAN_IDS } from '../data/campaigns';
+import { campaignUnlocked } from '../meta/progression';
+import { HERO_TINT } from '../render/sprites';
 import { bindPad } from '../input/gamepad';
 import { profile } from '../meta/profile';
 import { icon, type IconName, portrait } from '../ui/assets';
@@ -8,9 +11,9 @@ import { Button, enter, fmt, ribbon, shake, slice } from '../ui/kit';
 import { backdrop, fadeIn, wallet } from '../ui/screen';
 import { displayStyle, textStyle, UI } from '../ui/theme';
 
-const CARD_W = 190;
+const CARD_W = 168;
 const CARD_H = 280;
-const GAP = 25;
+const GAP = 14;
 
 interface Card {
   root: Phaser.GameObjects.Container;
@@ -24,9 +27,14 @@ interface Card {
 export class HeroSelectScene extends Phaser.Scene {
   private selected: HeroKind = 'knight';
   private cards = new Map<HeroKind, Card>();
+  private campaign: CampaignId = 'road';
 
   constructor() {
     super('heroSelect');
+  }
+
+  init(data: { campaign?: CampaignId }) {
+    this.campaign = data.campaign ?? 'road';
   }
 
   create() {
@@ -39,23 +47,27 @@ export class HeroSelectScene extends Phaser.Scene {
     backdrop(this);
     wallet(this);
     ribbon(this, width / 2, 68, 'Kahramanını seç', { width: 440 });
+    if (this.campaign !== 'road') {
+      const c = CAMPAIGNS[this.campaign];
+      this.add.text(width / 2, 122, `${c.name} · ${c.era}`, displayStyle(20, { color: UI.gold })).setOrigin(0.5);
+    }
 
     const total = HERO_KINDS.length * CARD_W + (HERO_KINDS.length - 1) * GAP;
     HERO_KINDS.forEach((kind, i) => this.card(kind, width / 2 - total / 2 + CARD_W / 2 + i * (CARD_W + GAP), 320, i));
 
-    new Button(this, 145, height - 90, 'Geri', () => this.scene.start('menu'), { width: 196, height: 64, icon: 'back' });
+    new Button(this, 145, height - 90, 'Geri', () => this.back(), { width: 196, height: 64, icon: 'back' });
     new Button(this, width - 195, height - 86, 'Yola çık', () => this.start(), { variant: 'primary', width: 296, height: 76, fontSize: 34 });
 
     this.input.keyboard?.on('keydown', (e: KeyboardEvent) => {
       if (e.code === 'ArrowLeft' || e.code === 'KeyA') this.step(-1);
       else if (e.code === 'ArrowRight' || e.code === 'KeyD') this.step(1);
       else if (e.code === 'Enter' || e.code === 'Space') this.start();
-      else if (e.code === 'Escape') this.scene.start('menu');
+      else if (e.code === 'Escape') this.back();
     });
     bindPad(this, {
       dir: (d) => (d === 'left' ? this.step(-1) : d === 'right' ? this.step(1) : undefined),
       confirm: () => this.start(),
-      back: () => this.scene.start('menu'),
+      back: () => this.back(),
     });
     this.time.delayedCall(420, () => this.refresh());
   }
@@ -78,22 +90,18 @@ export class HeroSelectScene extends Phaser.Scene {
     const selectedFrame = locked ? undefined : slice(this, 'ui.card_selected', 0, 0, CARD_W, CARD_H).setVisible(false);
     if (selectedFrame) root.add(selectedFrame);
 
-    const face = this.add.image(0, -58, portrait(kind)).setDisplaySize(158, 158);
+    const face = this.add.image(0, -58, portrait(kind)).setDisplaySize(148, 148);
+    if (!locked && HERO_TINT[kind]) face.setTint(HERO_TINT[kind]);
     root.add(face);
     const name = this.add.text(0, 30, def.name, displayStyle(26)).setOrigin(0.5);
-    const role = this.add.text(0, 54, def.role, textStyle(14, { color: UI.muted })).setOrigin(0.5);
+    const role = this.add.text(0, 54, def.role, textStyle(13, { color: UI.muted })).setOrigin(0.5);
     root.add([name, role]);
 
     if (locked) {
       face.setTint(0x55505f);
       name.setColor(UI.dim);
       root.add(this.add.image(0, -50, icon('lock')).setDisplaySize(52, 52));
-      const coin = this.add.image(0, 0, icon('coin')).setDisplaySize(26, 26);
-      const amount = this.add.text(0, 0, fmt(UNLOCK_COST[kind]), displayStyle(24, { color: UI.gold })).setOrigin(0, 0.5);
-      const w = 26 + 8 + amount.width;
-      coin.x = -w / 2 + 13;
-      amount.x = coin.x + 21;
-      root.add(this.add.container(0, 110, [coin, amount]));
+      root.add(def.legendary ? this.add.text(0, 110, 'Destan ödülü', displayStyle(20, { color: UI.gold })).setOrigin(0.5) : this.price(kind));
     } else {
       const hp = Math.round(def.hp * (1 + UPGRADE_STEP * up.hp));
       const dmg = Math.round(def.dmg * (1 + UPGRADE_STEP * up.dmg));
@@ -123,16 +131,25 @@ export class HeroSelectScene extends Phaser.Scene {
     enter(this, root, { y: 60 }, 80 + index * 50, 220);
   }
 
+  private price(kind: HeroKind) {
+    const coin = this.add.image(0, 0, icon('coin')).setDisplaySize(26, 26);
+    const amount = this.add.text(0, 0, fmt(UNLOCK_COST[kind]), displayStyle(24, { color: UI.gold })).setOrigin(0, 0.5);
+    const w = 26 + 8 + amount.width;
+    coin.x = -w / 2 + 13;
+    amount.x = coin.x + 21;
+    return this.add.container(0, 110, [coin, amount]);
+  }
+
   private stats(x: number, y: number, items: [IconName, number][]) {
     const parts: Phaser.GameObjects.GameObject[] = [];
     let cx = 0;
     for (const [name, value] of items) {
       const img = this.add.image(cx + 10, 0, icon(name)).setDisplaySize(20, 20);
-      const txt = this.add.text(cx + 24, 0, `${value}`, displayStyle(18)).setOrigin(0, 0.5);
+      const txt = this.add.text(cx + 24, 0, `${value}`, displayStyle(17)).setOrigin(0, 0.5);
       parts.push(img, txt);
-      cx += 24 + txt.width + 14;
+      cx += 24 + txt.width + 9;
     }
-    return this.add.container(x - (cx - 14) / 2, y, parts);
+    return this.add.container(x - (cx - 9) / 2, y, parts);
   }
 
   private step(dir: number) {
@@ -161,6 +178,10 @@ export class HeroSelectScene extends Phaser.Scene {
   private start() {
     profile.data.lastHero = this.selected;
     profile.save();
-    this.scene.start('game', { hero: this.selected });
+    this.scene.start('game', { hero: this.selected, campaign: this.campaign });
+  }
+
+  private back() {
+    this.scene.start(DESTAN_IDS.some((c) => campaignUnlocked(profile.data, c)) ? 'campaigns' : 'menu');
   }
 }

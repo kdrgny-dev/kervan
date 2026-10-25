@@ -1,3 +1,4 @@
+import type { CampaignId } from '../data/campaigns';
 import type { ProjectileKind } from '../data/balance';
 import type { EnemyKind } from '../data/enemies';
 import type { HeroKind } from '../data/heroes';
@@ -118,7 +119,9 @@ export type WorldEvent =
   | { type: 'regionEnter'; region: RegionId; journey: number }
   | { type: 'slowed'; until: number }
   | { type: 'waveStart'; n: number }
-  | { type: 'waveCleared'; n: number; bonus: number };
+  | { type: 'waveCleared'; n: number; bonus: number }
+  | { type: 'shipsStart'; until: number }
+  | { type: 'campaignCleared' };
 
 export interface Loadout {
   leader: HeroKind;
@@ -146,6 +149,8 @@ export interface Tally {
   /** Ulaşılan en uzak bölge sırası (0 = Yeşil Vadi, 4 = ikinci yolculuğun vadisi). */
   furthestRegion: number;
   bossKinds: Partial<Record<EnemyKind, number>>;
+  /** Destanın son dalgası temizlendi. */
+  campaignCleared: boolean;
 }
 
 export interface Draft {
@@ -154,6 +159,10 @@ export interface Draft {
 }
 
 export interface World {
+  campaign: CampaignId;
+  route: readonly RegionId[];
+  /** Gemiler karadan: bu zamana kadar lider duvardan karşı tarafa geçer. */
+  wallPassUntil: number;
   loadout: Loadout;
   mods: Mods;
   cards: Partial<Record<CardId, number>>;

@@ -1,3 +1,4 @@
+import type { CampaignId } from './campaigns';
 import type { CardId } from './cards';
 import type { EnemyKind } from './enemies';
 import type { HeroKind } from './heroes';
@@ -20,6 +21,9 @@ export interface RunSummary {
   maxTier: Partial<Record<HeroClass, number>>;
   furthestRegion: number;
   bossKinds: Partial<Record<EnemyKind, number>>;
+  /** Yoksa Hüsnü'nün Yolu. */
+  campaign?: CampaignId;
+  campaignCleared?: boolean;
 }
 
 export type Reward =

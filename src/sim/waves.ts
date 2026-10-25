@@ -10,7 +10,8 @@ import {
   BOSS_EVERY,
 } from '../data/balance';
 import { ENEMIES, type EnemyKind } from '../data/enemies';
-import { regionAt, REGIONS as REGION_DEFS } from '../data/regions';
+import { bossAt, regionAt, REGIONS as REGION_DEFS } from '../data/regions';
+import { CAMPAIGNS, finalWave, SHIP_MS } from '../data/campaigns';
 import { POWER_KINDS } from '../data/loot';
 import { chebyshev, eq, type Vec } from './grid';
 import { spawnEnemy } from './enemies';
@@ -45,6 +46,10 @@ export function updateWaves(w: World, dt: number) {
     const bonus = Math.round(waveGoldBonus(s.n) * w.mods.waveGoldMult);
     w.stats.gold += bonus;
     w.events.push({ type: 'waveCleared', n: s.n, bonus });
+    if (w.campaign !== 'road' && s.n === finalWave(w.campaign) && !w.tally.campaignCleared) {
+      w.tally.campaignCleared = true;
+      w.events.push({ type: 'campaignCleared' });
+    }
     s.phase = 'break';
     s.timer = WAVE_BREAK_MS;
     if (!hasHeroToken(w)) spawnHeroToken(w);
@@ -57,20 +62,24 @@ export function startWave(w: World) {
   s.n++;
   s.phase = 'active';
   s.pending = rollWave(w, s.n);
-  const region = regionAt(s.n);
+  const region = regionAt(s.n, w.route);
   if (region.local === 1 && s.n > 1) w.events.push({ type: 'regionEnter', region: region.id, journey: region.journey });
   w.tally.furthestRegion = Math.max(w.tally.furthestRegion, Math.floor((s.n - 1) / 10));
   w.events.push({ type: 'waveStart', n: s.n });
+  if (CAMPAIGNS[w.campaign].ships && s.n % BOSS_EVERY === 0) {
+    w.wallPassUntil = w.time + SHIP_MS;
+    w.events.push({ type: 'shipsStart', until: w.wallPassUntil });
+  }
   if ((s.n === 1 && w.loadout.startPower) || w.mods.wavePower) activatePower(w, pick(w.rng, POWER_KINDS.filter((k) => k !== 'bomb')));
 }
 
 function rollWave(w: World, n: number): PendingSpawn[] {
-  const region = regionAt(n);
+  const region = regionAt(n, w.route);
   const def = REGION_DEFS[region.id];
   const kinds = def.roster.filter((r) => r.from <= region.local).map((r) => r.kind);
   const minCost = Math.min(...kinds.map((k) => ENEMIES[k].cost));
   const bossWave = n % BOSS_EVERY === 0;
-  const roster: EnemyKind[] = bossWave ? [def.boss] : [];
+  const roster: EnemyKind[] = bossWave ? [bossAt(n, w.route)] : [];
   const scaled = waveBudget(n) * w.mods.enemyCountMult;
   let budget = Math.floor(bossWave ? scaled / 2 : scaled);
   while (budget >= minCost) {

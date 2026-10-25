@@ -1,5 +1,6 @@
 import { CARD_IDS, type CardId } from '../data/cards';
-import { HERO_KINDS } from '../data/heroes';
+import { HERO_KINDS, type HeroKind } from '../data/heroes';
+import { CAMPAIGNS, type CampaignId } from '../data/campaigns';
 import {
   accountXpForRun,
   ACHIEVEMENT_IDS,
@@ -165,6 +166,8 @@ export function refreshAchievements(s: SaveData) {
 
 export interface RunReport extends Progress {
   rank: number;
+  /** Destan bitince açılan efsanevi kahraman. */
+  heroUnlocked?: HeroKind;
 }
 
 /** Tur bitince: kasaya ekle, ömür boyu sayaçlar, görevler, hesap XP'si, başarımlar. */
@@ -192,8 +195,25 @@ export function applyRunResults(s: SaveData, run: RunSummary, now = new Date()):
     if (!more) break;
     addAccountXp(s, more, p);
   }
+  const heroUnlocked = applyCampaign(s, run);
   storyAfterRun(s, run, levelBefore);
-  return { ...p, rank };
+  return { ...p, rank, heroUnlocked };
 }
+
+/** Destan ilerlemesini yazar; ilk kez bitince ödül kahramanını açar. */
+function applyCampaign(s: SaveData, run: RunSummary): HeroKind | undefined {
+  const c = run.campaign;
+  if (!c || c === 'road') return;
+  const prog = (s.campaigns[c] ??= { furthest: 0, best: 0, done: false });
+  prog.best = Math.max(prog.best, run.wave);
+  if (!run.campaignCleared || prog.done) return;
+  prog.done = true;
+  const hero = CAMPAIGNS[c].reward;
+  if (!hero || s.unlocked.includes(hero)) return;
+  s.unlocked.push(hero);
+  return hero;
+}
+
+export const campaignUnlocked = (s: SaveData, c: CampaignId) => s.account.level >= CAMPAIGNS[c].unlockLevel;
 
 export const allHeroesCount = HERO_KINDS.length;
