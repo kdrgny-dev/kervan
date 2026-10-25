@@ -81,7 +81,7 @@ describe('ships overland', () => {
       w.loot = [];
       w.party = [makeHero(w, 'knight', { x: GRID_W - 2, y: 5 })];
       w.dir = 'right';
-      tick(w);
+      tick(w, 2);
       expect(w.alive).toBe(false);
     }
   });

@@ -121,7 +121,8 @@ export type WorldEvent =
   | { type: 'waveStart'; n: number }
   | { type: 'waveCleared'; n: number; bonus: number }
   | { type: 'shipsStart'; until: number }
-  | { type: 'campaignCleared' };
+  | { type: 'campaignCleared' }
+  | { type: 'wallGrace' };
 
 export interface Loadout {
   leader: HeroKind;
@@ -163,6 +164,8 @@ export interface World {
   route: readonly RegionId[];
   /** Gemiler karadan: bu zamana kadar lider duvardan karşı tarafa geçer. */
   wallPassUntil: number;
+  /** Duvara çarpacak adımda kafile bir adım bekler; o bekleme kullanıldıysa true. */
+  wallGrace: boolean;
   loadout: Loadout;
   mods: Mods;
   cards: Partial<Record<CardId, number>>;
