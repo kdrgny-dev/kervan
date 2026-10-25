@@ -1,8 +1,8 @@
 import type Phaser from 'phaser';
 import { CELL, GRID_H, GRID_W } from '../config';
 import { isWall } from '../sim/grid';
-import { REGIONS, type RegionId } from '../data/regions';
-import { DECOR, TILES } from './sprites';
+import type { RegionId } from '../data/regions';
+import { REGION_TILES, type TileSet } from './sprites';
 
 export const ARENA = {
   floorA: 0x2b3a2e,
@@ -13,15 +13,15 @@ export const ARENA = {
 
 const DECOR_COUNT = 18;
 
-/** Rengi verilen oranda koyulaştırır (dama deseni için). */
-const mul = (c: number, k: number) =>
-  (Math.round(((c >> 16) & 255) * k) << 16) | (Math.round(((c >> 8) & 255) * k) << 8) | Math.round((c & 255) * k);
+/** Duvarlar karakterlerin önüne geçmesin diye bir ton koyu. */
+const WALL_SHADE = 0xc4c0d0;
 
 /** Konumdan sabit sayı; her açılışta aynı harita düzeni için. */
 const hash = (x: number, y: number) => (Math.imul(x, 73856093) ^ Math.imul(y, 19349663)) >>> 0;
 
 export function drawArena(scene: Phaser.Scene, region: RegionId = 'vale') {
-  const keys = [...TILES.floors, TILES.wallTop, TILES.wallSide, TILES.wallCorner];
+  const t = REGION_TILES[region];
+  const keys = [...t.floors, t.wallTop, t.wallSide, t.wallCorner];
   if (keys.every((k) => scene.textures.exists(k))) return drawTiles(scene, region);
 
   const g = scene.add.graphics();
@@ -38,53 +38,46 @@ export function drawArena(scene: Phaser.Scene, region: RegionId = 'vale') {
   return g;
 }
 
-function wallTile(x: number, y: number): { key: string; angle: number } {
+function wallTile(t: TileSet, x: number, y: number): { key: string; angle: number } {
   const right = GRID_W - 1;
   const bottom = GRID_H - 1;
-  if (x === 0 && y === 0) return { key: TILES.wallCorner, angle: 0 };
-  if (x === right && y === 0) return { key: TILES.wallCorner, angle: 90 };
-  if (x === right && y === bottom) return { key: TILES.wallCorner, angle: 180 };
-  if (x === 0 && y === bottom) return { key: TILES.wallCorner, angle: 270 };
-  if (y === 0) return { key: TILES.wallTop, angle: 0 };
-  if (y === bottom) return { key: TILES.wallSide, angle: 180 };
-  return { key: TILES.wallSide, angle: x === 0 ? 0 : 180 };
+  if (x === 0 && y === 0) return { key: t.wallCorner, angle: 0 };
+  if (x === right && y === 0) return { key: t.wallCorner, angle: 90 };
+  if (x === right && y === bottom) return { key: t.wallCorner, angle: 180 };
+  if (x === 0 && y === bottom) return { key: t.wallCorner, angle: 270 };
+  if (y === 0) return { key: t.wallTop, angle: 0 };
+  if (y === bottom) return { key: t.wallSide, angle: 180 };
+  return { key: t.wallSide, angle: x === 0 ? 0 : 180 };
 }
 
 function drawTiles(scene: Phaser.Scene, region: RegionId) {
-  const r = REGIONS[region];
+  const t = REGION_TILES[region];
   const layer = scene.add.container(0, 0);
   for (let y = 0; y < GRID_H; y++) {
     for (let x = 0; x < GRID_W; x++) {
       const cx = x * CELL + CELL / 2;
       const cy = y * CELL + CELL / 2;
       if (isWall({ x, y })) {
-        const { key, angle } = wallTile(x, y);
-        layer.add(scene.add.image(cx, cy, key).setDisplaySize(CELL, CELL).setAngle(angle).setTint(r.wallTint));
+        const { key, angle } = wallTile(t, x, y);
+        layer.add(scene.add.image(cx, cy, key).setDisplaySize(CELL, CELL).setAngle(angle).setTint(WALL_SHADE));
         continue;
       }
       const h = hash(x, y);
-      const img = scene.add.image(cx, cy, TILES.floors[h % TILES.floors.length]).setDisplaySize(CELL, CELL);
+      const img = scene.add.image(cx, cy, t.floors[h % t.floors.length]).setDisplaySize(CELL, CELL);
       img.setFlip(((h >> 3) & 1) === 1, ((h >> 5) & 1) === 1);
-      img.setTint((x + y) % 2 ? mul(r.floorTint, 0.9) : r.floorTint);
+      // Dama hissi için hafif ton farkı
+      if ((x + y) % 2) img.setTint(0xe6e6e6);
       layer.add(img);
     }
   }
 
-  if (r.overlay) {
-    layer.add(
-      scene.add
-        .rectangle(CELL, CELL, (GRID_W - 2) * CELL, (GRID_H - 2) * CELL, r.overlay.color, r.overlay.alpha)
-        .setOrigin(0),
-    );
-  }
-
-  if (DECOR.every((k) => scene.textures.exists(k))) {
+  if (t.decor.every((k) => scene.textures.exists(k))) {
     for (let i = 0; i < DECOR_COUNT; i++) {
       const h = hash(i * 31 + 7, i * 17 + 3);
       const x = 1 + (h % (GRID_W - 2));
       const y = 1 + ((h >> 8) % (GRID_H - 2));
       const d = scene.add
-        .image(x * CELL + CELL / 2, y * CELL + CELL / 2, DECOR[(r.decor[(h >> 16) % r.decor.length] - 1) % DECOR.length])
+        .image(x * CELL + CELL / 2, y * CELL + CELL / 2, t.decor[(h >> 16) % t.decor.length])
         .setDisplaySize(CELL * 0.7, CELL * 0.7)
         .setAlpha(0.85)
         .setFlipX(((h >> 20) & 1) === 1);

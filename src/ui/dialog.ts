@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { audio } from '../audio/audio';
 import { NARRATOR, STORY, type StoryId } from '../data/story';
+import { NARRATOR_ART } from '../render/sprites';
 import { slice } from './kit';
 import { displayStyle, textStyle, UI } from './theme';
 
@@ -12,6 +13,7 @@ export class StoryDialog {
   private readonly title: Phaser.GameObjects.Text;
   private readonly body: Phaser.GameObjects.Text;
   private readonly hint: Phaser.GameObjects.Text;
+  private readonly portrait?: Phaser.GameObjects.Image;
   private queue: StoryId[] = [];
   private lines: string[] = [];
   private line = 0;
@@ -28,13 +30,13 @@ export class StoryDialog {
     const boxY = height - 150;
     const box = slice(scene, 'ui.panel', width / 2, boxY, 900, 220);
 
-    // Kervanbaşı çizimi gelene kadar sade bir rozet
-    const face = scene.add.graphics();
     const fx = width / 2 - 360;
-    face.fillStyle(0x8a5532).fillCircle(fx, boxY - 20, 62).lineStyle(4, 0x14121c).strokeCircle(fx, boxY - 20, 62);
-    face.fillStyle(0xf4c9a0).fillCircle(fx, boxY - 8, 40);
-    face.fillStyle(0xe5533d).fillEllipse(fx, boxY - 46, 96, 40);
-    face.fillStyle(0xf0e6d2).fillEllipse(fx, boxY + 18, 70, 34);
+    const face = scene.add.graphics();
+    face.fillStyle(UI.panel2).fillCircle(fx, boxY - 24, 74).lineStyle(4, 0x14121c).strokeCircle(fx, boxY - 24, 74);
+    face.lineStyle(3, UI.goldNum, 0.8).strokeCircle(fx, boxY - 24, 68);
+    if (scene.textures.exists(NARRATOR_ART.normal)) {
+      this.portrait = scene.add.image(fx, boxY - 26, NARRATOR_ART.normal).setDisplaySize(150, 150);
+    }
     const nameTag = scene.add.text(fx, boxY + 62, NARRATOR, displayStyle(17, { color: UI.gold })).setOrigin(0.5);
 
     this.title = scene.add.text(width / 2 - 270, boxY - 84, '', displayStyle(26)).setOrigin(0, 0.5);
@@ -42,7 +44,7 @@ export class StoryDialog {
     this.hint = scene.add.text(width / 2 + 420, boxY + 86, 'Devam ▸', displayStyle(16, { color: UI.muted })).setOrigin(1, 0.5);
     scene.tweens.add({ targets: this.hint, alpha: { from: 1, to: 0.35 }, duration: 600, yoyo: true, repeat: -1 });
 
-    this.root.add([shade, box, face, nameTag, this.title, this.body, this.hint]);
+    this.root.add([shade, box, face, ...(this.portrait ? [this.portrait] : []), nameTag, this.title, this.body, this.hint]);
     scene.input.keyboard?.on('keydown', (e: KeyboardEvent) => {
       if (this.open && (e.code === 'Space' || e.code === 'Enter' || e.code === 'Escape')) this.advance();
     });
@@ -84,6 +86,10 @@ export class StoryDialog {
     this.lines = STORY[id].lines;
     this.line = 0;
     this.title.setText(STORY[id].title);
+    const mood = (STORY[id] as { mood?: keyof typeof NARRATOR_ART }).mood ?? 'normal';
+    if (this.portrait && this.scene.textures.exists(NARRATOR_ART[mood])) {
+      this.portrait.setTexture(NARRATOR_ART[mood]).setDisplaySize(150, 150);
+    }
     if (!this.root.visible) {
       this.root.setVisible(true).setAlpha(0);
       this.scene.tweens.add({ targets: this.root, alpha: 1, duration: 200 });

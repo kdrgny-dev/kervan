@@ -276,10 +276,10 @@ F6 paralel yürüyebilir: grafik üretimi F0'dan itibaren başlayabilir.
 - **Rota:** Yeşil Vadi → Kemik Ovası → Kül Dağları → Buz Çölü; her bölge 10 dalga, her 5. dalgada bölgenin boss'u. 40. dalgadan sonra Yolculuk II başlar (rota tekrar eder, zorluk dalgayla büyümeye devam eder).
 - **Yeni düşmanlar:** Hayalet (hızlı, zikzak), Magma Balçığı (ölünce 2 balçığa bölünür), Buz İskeleti (okları kafileyi 1,5 sn yavaşlatır; adım ×1,35).
 - **Yeni boss'lar:** Kemik Lordu (iskelet çağırır + 3 hedefe kemik yağmuru), Kor Kral (magma balçığı çağırır), Buz Devi (buz iskeleti çağırır, şok dalgası yavaşlatır).
-- Çizimler gelene kadar yeni türler mevcut sprite'ları renklendirerek, bölgeler zemin katmanı + renk tonuyla gösterilir (`look`, `overlay`). Aşama 5 istemi: `docs/claude-design-prompt-stage5.md`.
+- **Çizimler (Aşama 5):** her bölgenin kendi karo ve süs seti (`tiles/<bölge>/`, `decor/<bölge>/`), yeni düşman/boss sprite'ları, Hüsnü portreleri (normal/gülme/şaşkın, diyalogda hikaye anının ruh hâline göre), Kamp sahnesi (`ui/camp/`: arka plan, seviyeye göre büyüyen 3 bina, kamp ateşi), parşömen rota haritası (`ui/map/`) ve bölge afişleri. İstem: `docs/claude-design-prompt-stage5.md`, teslim manifesti `docs/design/stage5/manifest.json`.
 - **Kervanbaşı Hüsnü:** 13 hikaye anı (giriş, ilk sefer, her bölge, her boss, Yolculuk II, seviye 5/10/20). Tur sonunda sıraya girer, menüde anlatılır, Yolculuk → Günlük sekmesinden tekrar okunur.
 - **Harita:** Yolculuk → Harita sekmesi; ulaşılan bölgeler, devrilen boss'lar, şu anki bölgenin hikayesi.
-- **Kamp:** dükkân yerine Kışla (kahramanlar), Tapınak (mücevher yükseltmeleri), Pazar (yeni): Tüccar Ağı (+%10 altın, 5 sv), Kervan Kasası (+1 ücretsiz yeniden çekme, 3 sv), Harita Ustası (+%10 hesap XP'si, 5 sv).
+- **Kamp:** menüden açılan kamp sahnesi; binaya tıklayınca paneli açılır. Dükkân yerine Kışla (kahramanlar), Tapınak (mücevher yükseltmeleri), Pazar (yeni): Tüccar Ağı (+%10 altın, 5 sv), Kervan Kasası (+1 ücretsiz yeniden çekme, 3 sv), Harita Ustası (+%10 hesap XP'si, 5 sv).
 - Kayıt şeması v3: yolculuk ilerlemesi, hikaye, pazar.
 
 ## 14. Görsel Sistem (F6)

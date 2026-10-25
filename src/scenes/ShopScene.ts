@@ -5,29 +5,54 @@ import { bindPad } from '../input/gamepad';
 import { profile } from '../meta/profile';
 import { refreshAchievements } from '../meta/progression';
 import { buyMarket, nextMarketCost } from '../meta/shop';
+import type { SaveData } from '../meta/save';
+import { type Building, CAMP, CAMP_SLOTS, NARRATOR_ART } from '../render/sprites';
 import { buyGemUpgrade, nextGemCost, nextUpgradeCost, unlockHero, upgradeHero } from '../meta/shop';
 import { icon } from '../ui/assets';
 import { Button, enter, fmt, panel, pips, shake, slice, tab } from '../ui/kit';
 import { backdrop, fadeIn, heroBadge, wallet } from '../ui/screen';
 import { displayStyle, textStyle, UI } from '../ui/theme';
 
-type Tab = 'heroes' | 'general' | 'market';
+type Tab = 'camp' | 'heroes' | 'general' | 'market';
+
+const BUILDING_TAB: Record<Building, Tab> = { barracks: 'heroes', temple: 'general', market: 'market' };
+const BUILDING_NAME: Record<Building, string> = { barracks: 'Kışla', temple: 'Tapınak', market: 'Pazar' };
+
+/** Bina seviyesi (1–3), o binadan alınanlara göre büyür. */
+export function buildingLevel(s: SaveData, b: Building) {
+  const score =
+    b === 'barracks'
+      ? s.unlocked.length - 2 + Object.values(s.upgrades).reduce((n, u) => n + u.hp + u.dmg, 0) / 4
+      : b === 'temple'
+        ? Object.values(s.gemUpgrades).reduce((n, v) => n + v, 0)
+        : Object.values(s.market).reduce((n, v) => n + v, 0);
+  const [mid, high] = b === 'barracks' ? [3, 10] : b === 'temple' ? [2, 4] : [3, 8];
+  return score >= high ? 3 : score >= mid ? 2 : 1;
+}
+
+const QUIPS = [
+  'Kampa hoş geldin! Çay demde, develer uykuda.',
+  'Kışlaya uğra, yoldaşlar seni bekliyor. Biri de borcunu.',
+  'Tapınakta dua edersen güçlendirmeler uzun sürer. Bana sorarsan çay da uzun sürer.',
+  'Pazar’da her şey var. Fiyatlar da var. Fiyatlar biraz fazla var.',
+];
 
 const PANEL = { x: 576, y: 425, w: 990, h: 530 };
 
 export class ShopScene extends Phaser.Scene {
-  private tab: Tab = 'heroes';
+  private tab: Tab = 'camp';
 
   constructor() {
     super('shop');
   }
 
   init(data: { tab?: Tab }) {
-    this.tab = data.tab ?? 'heroes';
+    this.tab = data.tab ?? 'camp';
   }
 
   create() {
     fadeIn(this);
+    if (this.tab === 'camp') return this.campView();
     backdrop(this);
     wallet(this);
 
@@ -50,7 +75,68 @@ export class ShopScene extends Phaser.Scene {
   }
 
   private back() {
-    this.scene.start('menu');
+    if (this.tab === 'camp') this.scene.start('menu');
+    else this.scene.restart({ tab: 'camp' });
+  }
+
+  /** Kamp sahnesi: binalar ilerlemeye göre büyür, tıklanınca o binanın paneli açılır. */
+  private campView() {
+    const { width } = this.scale;
+    const save = profile.data;
+    if (this.textures.exists(CAMP.bg)) this.add.image(0, 0, CAMP.bg).setOrigin(0).setDisplaySize(width, this.scale.height);
+    else backdrop(this);
+    wallet(this);
+    new Button(this, 78, 60, '', () => this.back(), { width: 64, height: 64, icon: 'back', iconOnly: true });
+    this.add.text(126, 58, 'Kamp', displayStyle(46)).setOrigin(0, 0.5).setStroke(UI.ink, 8);
+
+    (Object.keys(BUILDING_TAB) as Building[]).forEach((b, i) => {
+      const [x, y, w, h] = CAMP_SLOTS[b];
+      const level = buildingLevel(save, b);
+      const cx = x + w / 2;
+      const c = this.add.container(cx, y + h);
+      const img = this.add.image(0, 0, CAMP.buildings[b][level - 1]).setOrigin(0.5, 1).setDisplaySize(w, h);
+      c.add(img);
+      const plaque = this.add.container(0, -h - 6);
+      const label = this.add.text(0, 0, `${BUILDING_NAME[b]} · Sv ${level}`, displayStyle(20, { color: UI.ink })).setOrigin(0.5);
+      const bg = this.add.graphics();
+      bg.fillStyle(UI.goldNum).fillRoundedRect(-label.width / 2 - 14, -18, label.width + 28, 36, 12);
+      bg.lineStyle(3, 0x14121c).strokeRoundedRect(-label.width / 2 - 14, -18, label.width + 28, 36, 12);
+      plaque.add([bg, label]);
+      c.add(plaque);
+      const zone = this.add.zone(0, -h / 2, w * 0.8, h).setInteractive({ useHandCursor: true });
+      zone.on('pointerover', () => this.tweens.add({ targets: c, scale: 1.04, duration: 120, ease: 'Quad.Out' }));
+      zone.on('pointerout', () => this.tweens.add({ targets: c, scale: 1, duration: 120, ease: 'Quad.Out' }));
+      zone.on('pointerup', () => this.scene.restart({ tab: BUILDING_TAB[b] }));
+      c.add(zone);
+      c.setAlpha(0).y += 30;
+      this.tweens.add({ targets: c, alpha: 1, y: y + h, duration: 260, delay: 80 + i * 90, ease: 'Back.Out' });
+    });
+
+    const [fx, fy, fw] = CAMP_SLOTS.campfire;
+    if (this.anims.exists(CAMP.campfire)) {
+      const fire = this.add.sprite(fx + fw / 2, fy + fw / 2, this.anims.get(CAMP.campfire).frames[0].textureKey);
+      fire.setDisplaySize(fw, fw).play(CAMP.campfire);
+    }
+    if (this.textures.exists(NARRATOR_ART.full)) {
+      const husnu = this.add.image(fx + fw + 70, fy + fw, NARRATOR_ART.full).setOrigin(0.5, 1).setDisplaySize(96, 144);
+      this.tweens.add({ targets: husnu, scaleY: husnu.scaleY * 1.02, duration: 1400, yoyo: true, repeat: -1, ease: 'Sine.InOut' });
+      const quip = QUIPS[Math.floor(Math.random() * QUIPS.length)];
+      const t = this.add.text(0, 0, quip, textStyle(15, { color: UI.ink, wordWrap: { width: 260 } })).setOrigin(0, 0.5);
+      const bw = t.width + 28;
+      const bh = t.height + 20;
+      const bubble = this.add.container(fx + fw + 120, fy - 40);
+      const g = this.add.graphics();
+      g.fillStyle(0xf0e6d2).fillRoundedRect(0, -bh / 2, bw, bh, 12).lineStyle(3, 0x14121c).strokeRoundedRect(0, -bh / 2, bw, bh, 12);
+      g.fillStyle(0xf0e6d2).fillTriangle(10, bh / 2 - 2, 26, bh / 2 - 2, 4, bh / 2 + 14);
+      t.x = 14;
+      bubble.add([g, t]);
+      bubble.setAlpha(0);
+      this.tweens.add({ targets: bubble, alpha: 1, duration: 300, delay: 600 });
+    }
+
+    this.add.text(width / 2, this.scale.height - 24, 'Bir binaya tıkla', textStyle(15, { color: UI.text })).setOrigin(0.5).setStroke(UI.ink, 4);
+    this.input.keyboard?.on('keydown-ESC', () => this.back());
+    bindPad(this, { back: () => this.back() });
   }
 
   private switchTo(tab: Tab) {

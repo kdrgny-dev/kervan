@@ -4,6 +4,7 @@ import { ACHIEVEMENT_IDS, ACHIEVEMENTS, rewardsFor, titleFor, xpForLevel } from 
 import { journeyName, REGIONS, ROUTE } from '../data/regions';
 import { STORY, STORY_ORDER } from '../data/story';
 import { StoryDialog } from '../ui/dialog';
+import { MAP, MAP_NODES } from '../render/sprites';
 import { bindPad } from '../input/gamepad';
 import { profile } from '../meta/profile';
 import { ensureQuests, questDef } from '../meta/progression';
@@ -71,46 +72,43 @@ export class ProgressScene extends Phaser.Scene {
     const journey = Math.floor(furthest / ROUTE.length) + 1;
     const current = furthest % ROUTE.length;
     const top = PANEL.y - PANEL.h / 2;
-    this.add.text(PANEL.x, top + 50, `Kervan Yolu · ${journeyName(journey)}`, displayStyle(28)).setOrigin(0.5);
-    this.add
-      .text(PANEL.x, top + 84, `En iyi dalga: ${profile.data.lifetime.bestWave} · her bölge 10 dalga, her 5 dalgada bir boss`, textStyle(15, { color: UI.muted }))
-      .setOrigin(0.5);
+    this.add.text(PANEL.x, top + 38, `Kervan Yolu · ${journeyName(journey)}`, displayStyle(26)).setOrigin(0.5);
 
-    const gap = 210;
-    const x0 = PANEL.x - (gap * ROUTE.length) / 2 + gap / 2 - 50;
-    const ny = top + 210;
-    const road = this.add.graphics();
-    road.lineStyle(10, UI.panelEdge).lineBetween(x0, ny, x0 + gap * ROUTE.length, ny);
-    road.lineStyle(10, 0x8a5532).lineBetween(x0, ny, x0 + gap * Math.min(furthest, ROUTE.length), ny);
+    // Parşömen harita: manifestteki düğüm noktaları 1100 × 420 tuvale göre
+    const mapW = 900;
+    const scale = mapW / 1100;
+    const ox = PANEL.x - mapW / 2;
+    const oy = top + 64;
+    const at = (key: keyof typeof MAP_NODES) => [ox + MAP_NODES[key][0] * scale, oy + MAP_NODES[key][1] * scale] as const;
+    if (this.textures.exists(MAP.route)) this.add.image(ox, oy, MAP.route).setOrigin(0).setDisplaySize(mapW, 420 * scale);
 
     ROUTE.forEach((id, i) => {
       const r = REGIONS[id];
-      const x = x0 + i * gap;
+      const [x, y] = at(id);
       const reached = journey > 1 || i <= current;
-      const here = journey === 1 ? i === current : false;
-      const disc = this.add.graphics();
-      disc.fillStyle(reached ? r.floorTint : UI.bgRaised).fillCircle(x, ny, 46);
-      disc.fillStyle(0x2f4032, reached ? 0.55 : 0).fillCircle(x, ny, 46);
-      disc.lineStyle(4, here ? UI.goldNum : 0x14121c).strokeCircle(x, ny, 46);
-      if (here) disc.lineStyle(3, UI.goldNum, 0.45).strokeCircle(x, ny, 56);
-      this.add.text(x, ny, reached ? `${i + 1}` : '?', displayStyle(30, { color: reached ? UI.text : UI.dim })).setOrigin(0.5);
-      this.add.text(x, ny + 70, reached ? r.name : '???', displayStyle(19, { color: reached ? UI.text : UI.dim })).setOrigin(0.5);
-      const bossDown = bosses.includes(r.boss);
-      this.add
-        .text(x, ny + 96, reached ? `${bossDown ? '✓' : '·'} ${ENEMIES[r.boss].name}` : 'Keşfedilmedi', textStyle(13, { color: bossDown ? UI.gold : UI.muted }))
-        .setOrigin(0.5);
+      const here = i === current;
+      if (here) {
+        const ring = this.add.circle(x, y, 40, UI.goldNum, 0).setStrokeStyle(4, UI.goldNum);
+        this.tweens.add({ targets: ring, scale: { from: 1, to: 1.25 }, alpha: { from: 1, to: 0 }, duration: 1100, repeat: -1 });
+      }
+      const icon = this.add.image(x, y, MAP.icons[id]).setDisplaySize(64, 64);
+      if (!reached) icon.setTint(0x3a3348);
+      const label = this.add.text(x, y + 44, reached ? r.name : '???', displayStyle(17, { color: reached ? UI.ink : '#6f6879' })).setOrigin(0.5);
+      label.setStroke('#f0e6d2', 5);
+      if (reached && bosses.includes(r.boss)) this.add.text(x + 26, y - 26, '✓', displayStyle(20, { color: '#3f7f3a' })).setOrigin(0.5).setStroke('#f0e6d2', 5);
     });
-    const endX = x0 + gap * ROUTE.length;
-    this.add.text(endX, ny, '∞', displayStyle(40, { color: furthest >= ROUTE.length ? UI.gold : UI.dim })).setOrigin(0.5);
-    this.add.text(endX, ny + 70, journeyName(journey + 1), displayStyle(17, { color: UI.muted })).setOrigin(0.5);
+    const [hx, hy] = at('horizon');
+    this.add.text(hx - 20, hy + 34, journeyName(journey + 1), displayStyle(14, { color: UI.ink })).setOrigin(0.5).setStroke('#f0e6d2', 4);
 
     const r = REGIONS[ROUTE[current]];
-    const card = this.add.container(PANEL.x, top + 420);
+    const card = this.add.container(PANEL.x, top + 456);
     const bg = this.add.graphics();
-    bg.fillStyle(UI.bgRaised).fillRoundedRect(-420, -60, 840, 120, 16).lineStyle(2, UI.panelEdge).strokeRoundedRect(-420, -60, 840, 120, 16);
+    bg.fillStyle(UI.bgRaised).fillRoundedRect(-450, -46, 900, 92, 16).lineStyle(2, UI.panelEdge).strokeRoundedRect(-450, -46, 900, 92, 16);
     card.add(bg);
-    card.add(this.add.text(-390, -30, `Şu an: ${r.name}`, displayStyle(22, { color: UI.gold })).setOrigin(0, 0.5));
-    card.add(this.add.text(-390, 4, r.desc, textStyle(16, { color: UI.muted, wordWrap: { width: 780 } })).setOrigin(0, 0));
+    card.add(this.add.image(-410, 0, MAP.icons[ROUTE[current]]).setDisplaySize(52, 52));
+    card.add(this.add.text(-372, -20, `Şu an: ${r.name} · boss: ${ENEMIES[r.boss].name}`, displayStyle(19, { color: UI.gold })).setOrigin(0, 0.5));
+    card.add(this.add.text(-372, 4, r.desc, textStyle(15, { color: UI.muted, wordWrap: { width: 800 } })).setOrigin(0, 0));
+    card.add(this.add.text(430, -20, `En iyi dalga: ${profile.data.lifetime.bestWave}`, textStyle(14, { color: UI.muted })).setOrigin(1, 0.5));
   }
 
   // ---------- Günlük ----------

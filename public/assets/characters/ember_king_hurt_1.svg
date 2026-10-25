@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="ember king hurt 1">
+<g transform="translate(0 -2)" stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<ellipse cx="64" cy="122" rx="45.7" ry="5" fill="#14121c" fill-opacity="0.22" stroke="none"/>
+<g transform="translate(26.7 64.4) rotate(138)"><path d="M-3 0 V-26 L0 -31 L3 -26 V0 Z" fill="#d6deea"/><rect x="-2" y="2" width="4" height="9" rx="1" fill="#8a5532"/><rect x="-8" y="-1.5" width="16" height="4" rx="1.5" fill="#f0c23b"/><circle cx="0" cy="12.5" r="3" fill="#f0c23b"/></g>
+<path d="M16.2 122.5 Q9.9 122.5 11.0 114.6 C13.1 84.8 34.9 62.5 64.0 62.5 C93.1 62.5 114.9 84.8 117.0 114.6 Q118.1 122.5 111.8 122.5 Z" fill="#f28a3b"/>
+<path d="M12.1 105.3 Q64.0 120.2 115.9 105.3 L117.0 114.6 Q118.1 122.5 111.8 122.5 H16.2 Q9.9 122.5 11.0 114.6 Z" fill="#e5533d" stroke="none"/>
+<circle cx="37.0" cy="101.6" r="4" fill="#e5533d" stroke="none"/>
+<circle cx="47.4" cy="92.3" r="2.5" fill="#e5533d" stroke="none"/>
+<path d="M16.2 122.5 Q9.9 122.5 11.0 114.6 C13.1 84.8 34.9 62.5 64.0 62.5 C93.1 62.5 114.9 84.8 117.0 114.6 Q118.1 122.5 111.8 122.5 Z" fill="none"/>
+<path d="M28.7 105.3 L41.1 97.8 L51.5 105.3 L59.8 97.8 M70.2 112.7 L82.7 107.2 L97.3 112.7" stroke="#e5533d" stroke-opacity="0.5" stroke-width="6" fill="none"/><path d="M28.7 105.3 L41.1 97.8 L51.5 105.3 L59.8 97.8 M70.2 112.7 L82.7 107.2 L97.3 112.7" stroke="#f0c23b" stroke-width="2.5" fill="none"/>
+<ellipse cx="37.0" cy="79.2" rx="8" ry="4.5" transform="rotate(-35 37.0 79.2)" fill="#f0e6d2" fill-opacity="0.75" stroke="none"/>
+<path d="M76.6 86.4 L84.6 94.4 M84.6 86.4 L76.6 94.4" stroke-width="3" fill="none"/>
+<path d="M95.3 86.4 L103.3 94.4 M103.3 86.4 L95.3 94.4" stroke-width="3" fill="none"/>
+<path d="M82.1 106.4 L87.1 102.4 L92.1 106.4 L97.1 102.4 L102.1 106.4" stroke-width="2.5" fill="none"/>
+<g transform="translate(0 4.5) rotate(-18 62 50)"><path d="M44 62 Q40 46 46 38 Q48 46 52 46 Q50 32 60 24 Q60 38 64 40 Q66 30 74 28 Q72 40 76 44 Q80 38 84 40 Q84 52 80 62 Q62 66 44 62 Z" fill="#f28a3b"/><path d="M50 60 Q48 50 52 46 Q56 54 60 50 Q60 42 64 40 Q68 50 72 46 Q76 52 76 60 Q62 63 50 60 Z" fill="#f0c23b" stroke="none"/><path d="M44 62 Q62 66 80 62 L80 66 Q62 70 44 66 Z" fill="#e5533d"/></g><path d="M108 52 L111 59 L118.5 59.5 L112.5 64 L114.5 71.5 L108 67.5 L101.5 71.5 L103.5 64 L97.5 59.5 L105 59 Z" fill="#f0c23b" stroke-width="2"/><path d="M114 80 L121 78 M115 88 L122 90" stroke="#e5533d" stroke-width="3" fill="none"/>
+</g>
+</svg>

@@ -8,13 +8,8 @@ export interface RegionDef {
   /** Bölge içi dalga sırasına göre açılan düşmanlar (1 = bölgenin ilk dalgası). */
   roster: { kind: EnemyKind; from: number }[];
   boss: EnemyKind;
-  /** Çizimler gelene kadar karoları renklendirmek için. */
-  floorTint: number;
-  wallTint: number;
-  /** Zemine binen renk katmanı (çizimler gelene kadar bölgeyi ayırt etmek için). */
-  overlay?: { color: number; alpha: number };
-  /** Arena süsleri (decor.1..6) arasından. */
-  decor: number[];
+  /** Harita ve arayüzde bölgenin ana rengi. */
+  color: number;
 }
 
 /** Bir bölgede kaç dalga geçirilir; boss her 5. dalgada. */
@@ -22,6 +17,7 @@ export const REGION_WAVES = 10;
 
 export const REGIONS: Record<RegionId, RegionDef> = {
   vale: {
+    color: 0x6fbf5a,
     name: 'Yeşil Vadi',
     desc: 'Kervanın yola çıktığı çayırlar. Balçıklar dost canlısıdır, yalnızca fazla yapışkandır.',
     roster: [
@@ -31,11 +27,9 @@ export const REGIONS: Record<RegionId, RegionDef> = {
       { kind: 'goblin', from: 4 },
     ],
     boss: 'slimeKing',
-    floorTint: 0xffffff,
-    wallTint: 0xc4c0d0,
-    decor: [1, 2, 4, 5],
   },
   bones: {
+    color: 0xd8c49a,
     name: 'Kemik Ovası',
     desc: 'Eski bir savaş meydanı. İskeletler kendi kemiklerini sayar, eksik çıkınca seninkilere göz diker.',
     roster: [
@@ -45,12 +39,9 @@ export const REGIONS: Record<RegionId, RegionDef> = {
       { kind: 'goblin', from: 4 },
     ],
     boss: 'boneLord',
-    floorTint: 0xd8cba8,
-    wallTint: 0xd0c4a8,
-    overlay: { color: 0xcdb88a, alpha: 0.42 },
-    decor: [2, 3, 3, 6],
   },
   ash: {
+    color: 0xe5533d,
     name: 'Kül Dağları',
     desc: 'Toprağı sıcak, havası isli. Çayı demlemeye gerek yok, bardağı tutman yeter.',
     roster: [
@@ -60,12 +51,9 @@ export const REGIONS: Record<RegionId, RegionDef> = {
       { kind: 'wraith', from: 4 },
     ],
     boss: 'emberKing',
-    floorTint: 0xc08070,
-    wallTint: 0x9a6a62,
-    overlay: { color: 0x6a2418, alpha: 0.42 },
-    decor: [2, 3, 6],
   },
   frost: {
+    color: 0x9fd0ff,
     name: 'Buz Çölü',
     desc: 'Ne kum var ne çöl; sadece buz. Adını koyan coğrafya bilmezmiş (Hüsnü koymuş).',
     roster: [
@@ -75,10 +63,6 @@ export const REGIONS: Record<RegionId, RegionDef> = {
       { kind: 'magmaSlime', from: 5 },
     ],
     boss: 'frostGiant',
-    floorTint: 0xc8dcff,
-    wallTint: 0xdce8ff,
-    overlay: { color: 0xe4f0ff, alpha: 0.5 },
-    decor: [2, 3],
   },
 };
 

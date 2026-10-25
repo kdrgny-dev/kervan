@@ -305,7 +305,7 @@ export class GameScene extends Phaser.Scene {
       case 'regionEnter': {
         const r = REGIONS[e.region];
         this.time.delayedCall(400, () => this.paintRegion(e.region));
-        this.hud.banner('region', r.name, undefined, e.journey > 1 ? journeyName(e.journey) : 'Kervan yola devam ediyor');
+        this.hud.banner('region', r.name, undefined, e.journey > 1 ? journeyName(e.journey) : 'Kervan yola devam ediyor', e.region);
         audio.play('levelUp');
         break;
       }
@@ -801,7 +801,7 @@ export class GameScene extends Phaser.Scene {
     if (report) o.add(this.progressBlock(cx, 478, before, report));
 
     const buttons = this.add.container(0, 0, [
-      new Button(this, cx - 268, 622, 'Dükkan', () => this.scene.start('shop'), { width: 196, height: 60, icon: 'shop' }),
+      new Button(this, cx - 268, 622, 'Kamp', () => this.scene.start('shop'), { width: 196, height: 60, icon: 'shop' }),
       new Button(this, cx, 625, 'Tekrar', () => this.restart(), { variant: 'primary', width: 290, height: 76, fontSize: 34 }),
       new Button(this, cx + 268, 622, 'Menü', () => this.scene.start('menu'), { width: 196, height: 60 }),
     ]).setAlpha(0);

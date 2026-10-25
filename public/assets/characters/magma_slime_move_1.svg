@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" role="img" aria-label="magma slime move 1">
+<g transform="translate(0 -2)" stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<ellipse cx="48.0" cy="90" rx="26" ry="3.5" fill="#14121c" fill-opacity="0.22" stroke="none"/>
+<path d="M20.6 90.5 Q14.8 90.5 16.0 85.1 C17.2 70.1 29.7 58.5 48.0 58.5 C66.3 58.5 78.8 70.1 80.0 85.1 Q81.2 90.5 75.4 90.5 Z" fill="#f28a3b"/>
+<path d="M17.7 81.8 Q48.0 90.1 78.3 81.8 L80.0 85.1 Q81.2 90.5 75.4 90.5 H20.6 Q14.8 90.5 16.0 85.1 Z" fill="#e5533d" stroke="none"/>
+<path d="M28.2 74.5 L36.8 70.7 L44.8 75.1 L51.2 68.1 M33.6 84.1 L43.2 80.9 L54.4 84.1" stroke="#e5533d" stroke-opacity="0.6" stroke-width="5" fill="none"/>
+<path d="M28.2 74.5 L36.8 70.7 L44.8 75.1 L51.2 68.1 M33.6 84.1 L43.2 80.9 L54.4 84.1" stroke="#f0c23b" stroke-width="2.2" fill="none"/>
+<path d="M20.6 90.5 Q14.8 90.5 16.0 85.1 C17.2 70.1 29.7 58.5 48.0 58.5 C66.3 58.5 78.8 70.1 80.0 85.1 Q81.2 90.5 75.4 90.5 Z" fill="none"/>
+<ellipse cx="30.4" cy="67.5" rx="4.5" ry="2.6" transform="rotate(-35 30.4 67.5)" fill="#f0c23b" fill-opacity="0.9" stroke="none"/>
+<path d="M43.2 55.5 q-5 -5 0 -10 q5 -5 0 -10 M55.2 56.5 q-4 -4 0 -8 q4 -4 0 -8" stroke="#8f88a0" stroke-opacity="0.75" stroke-width="2.5" fill="none"/>
+<ellipse cx="57.2" cy="73.5" rx="3.5" ry="5.5" fill="#14121c" stroke="none"/><circle cx="58.2" cy="72.0" r="1.5" fill="#f0c23b" stroke="none"/>
+<ellipse cx="70.8" cy="73.5" rx="3.5" ry="5.5" fill="#14121c" stroke="none"/><circle cx="71.8" cy="72.0" r="1.5" fill="#f0c23b" stroke="none"/>
+<path d="M60.0 80.932 Q64.0 83.932 68.0 80.932" stroke-width="2" fill="none"/>
+
+</g>
+</svg>

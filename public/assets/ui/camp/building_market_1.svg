@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="280" viewBox="0 0 320 280" role="img" aria-label="market level 1">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<ellipse cx="160" cy="266" rx="80" ry="9" fill="#14121c" fill-opacity="0.22" stroke="none"/><rect x="108" y="222" width="104" height="44" rx="3" fill="#8a5532"/><rect x="102" y="214" width="116" height="10" rx="3" fill="#8a5532"/><path d="M118 240 H202" stroke="#14121c" stroke-opacity="0.35" stroke-width="2"/><path d="M160 214 V178 M138 182 H182" stroke-width="3.5"/><path d="M138 182 L130 198 H146 Z M182 182 L174 198 H190 Z" fill="none" stroke-width="2"/><path d="M129 198 Q138 206 147 198 Z M173 198 Q182 206 191 198 Z" fill="#f0c23b" stroke-width="2.5"/><rect x="150" y="211" width="20" height="5" rx="2" fill="#f0c23b" stroke-width="2.5"/><circle cx="160" cy="176" r="3.5" fill="#f0c23b" stroke-width="2"/><path d="M220 266 Q216 240 228 232 L224 226 H240 L236 232 Q248 240 244 266 Z" fill="#f4c9a0"/>
+</g>
+</svg>

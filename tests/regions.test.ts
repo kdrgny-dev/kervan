@@ -5,6 +5,7 @@ import { MARKET_UPGRADES } from '../src/data/economy';
 import { type RunSummary } from '../src/data/progression';
 import { REGIONS, regionAt, ROUTE } from '../src/data/regions';
 import { STORY } from '../src/data/story';
+import { ENEMY_SPRITES } from '../src/render/sprites';
 import { applyRunResults } from '../src/meta/progression';
 import { defaultSave, parseSave } from '../src/meta/save';
 import { buyMarket, loadoutFrom } from '../src/meta/shop';
@@ -83,8 +84,8 @@ describe('new enemies', () => {
     expect(w.projectiles.filter((p) => p.owner === 'enemy').length).toBeGreaterThanOrEqual(3);
   });
 
-  it('borrowed looks point at real sprites', () => {
-    for (const def of Object.values(ENEMIES)) if (def.look) expect(ENEMIES[def.look.as].look).toBeUndefined();
+  it('every enemy has its own sprite set', () => {
+    for (const kind of Object.keys(ENEMIES)) expect(ENEMY_SPRITES[kind as keyof typeof ENEMIES]).toBeDefined();
   });
 });
 
