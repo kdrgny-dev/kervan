@@ -9,7 +9,8 @@ import {
   waveGoldBonus,
   BOSS_EVERY,
 } from '../data/balance';
-import { BOSS_KIND, ENEMIES, ENEMY_KINDS, type EnemyKind } from '../data/enemies';
+import { ENEMIES, type EnemyKind } from '../data/enemies';
+import { regionAt, REGIONS as REGION_DEFS } from '../data/regions';
 import { POWER_KINDS } from '../data/loot';
 import { chebyshev, eq, type Vec } from './grid';
 import { spawnEnemy } from './enemies';
@@ -56,15 +57,20 @@ export function startWave(w: World) {
   s.n++;
   s.phase = 'active';
   s.pending = rollWave(w, s.n);
+  const region = regionAt(s.n);
+  if (region.local === 1 && s.n > 1) w.events.push({ type: 'regionEnter', region: region.id, journey: region.journey });
+  w.tally.furthestRegion = Math.max(w.tally.furthestRegion, Math.floor((s.n - 1) / 10));
   w.events.push({ type: 'waveStart', n: s.n });
   if ((s.n === 1 && w.loadout.startPower) || w.mods.wavePower) activatePower(w, pick(w.rng, POWER_KINDS.filter((k) => k !== 'bomb')));
 }
 
 function rollWave(w: World, n: number): PendingSpawn[] {
-  const kinds = ENEMY_KINDS.filter((k) => ENEMIES[k].firstWave <= n);
+  const region = regionAt(n);
+  const def = REGION_DEFS[region.id];
+  const kinds = def.roster.filter((r) => r.from <= region.local).map((r) => r.kind);
   const minCost = Math.min(...kinds.map((k) => ENEMIES[k].cost));
   const bossWave = n % BOSS_EVERY === 0;
-  const roster: EnemyKind[] = bossWave ? [BOSS_KIND] : [];
+  const roster: EnemyKind[] = bossWave ? [def.boss] : [];
   const scaled = waveBudget(n) * w.mods.enemyCountMult;
   let budget = Math.floor(bossWave ? scaled / 2 : scaled);
   while (budget >= minCost) {

@@ -18,6 +18,8 @@ import {
 import { createRng, type Rng } from '../sim/rng';
 import type { QuestBoard, SaveData } from './save';
 import { applyRun } from './shop';
+import { storyAfterRun } from './story';
+import { MARKET_STEP } from '../data/economy';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
@@ -178,8 +180,9 @@ export function applyRunResults(s: SaveData, run: RunSummary, now = new Date()):
   l.maxTier = Math.max(l.maxTier, ...Object.values(run.maxTier).map((t) => t ?? 0), 0);
 
   const p = emptyProgress();
+  const levelBefore = s.account.level;
   ensureQuests(s, now);
-  let xp = accountXpForRun(run);
+  let xp = Math.round(accountXpForRun(run) * (1 + MARKET_STEP * s.market.xpGain));
   xp += advanceBoard(s, s.quests.daily, 'daily', run, p);
   xp += advanceBoard(s, s.quests.weekly, 'weekly', run, p);
   addAccountXp(s, xp, p);
@@ -189,6 +192,7 @@ export function applyRunResults(s: SaveData, run: RunSummary, now = new Date()):
     if (!more) break;
     addAccountXp(s, more, p);
   }
+  storyAfterRun(s, run, levelBefore);
   return { ...p, rank };
 }
 

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" role="img" aria-label="bones decor 1">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<ellipse cx="24" cy="40" rx="13" ry="2.5" fill="#14121c" fill-opacity="0.22" stroke="none"/><path d="M10 33 Q8 16 24 14 Q40 16 38 33 L34 33 V38 H14 V33 Z" fill="#f0e6d2"/><ellipse cx="18" cy="26" rx="4" ry="5" fill="#14121c" stroke="none"/><ellipse cx="30" cy="26" rx="4" ry="5" fill="#14121c" stroke="none"/><path d="M24 30 L22 33 H26 Z" fill="#14121c" stroke-width="1"/><path d="M19 33 V37 M24 33 V37 M29 33 V37" stroke-width="1.5"/><path d="M30 17 L33 21 L31 24" stroke-width="1.5" fill="none"/>
+</g>
+</svg>

@@ -2,7 +2,9 @@ import Phaser from 'phaser';
 import { ENEMIES } from '../data/enemies';
 import { type PowerKind, xpToNext } from '../data/loot';
 import { HERO_CLASSES, SYNERGIES, SYNERGY_TIERS } from '../data/synergies';
-import { POWER_ICONS } from '../render/sprites';
+import type { RegionId } from '../data/regions';
+import { POWER_ICONS, REGION_BANNER } from '../render/sprites';
+import { UI_RASTER } from './assets';
 import { classCounts } from '../sim/synergy';
 import type { World } from '../sim/world';
 import { icon, portrait } from './assets';
@@ -48,7 +50,7 @@ export class Hud {
     this.gem = new Pill(scene, width - 76, 34, { icon: 'gem', align: 'right', height: 42 }).setDepth(DEPTH);
     this.coin = new Pill(scene, width - 200, 34, { icon: 'coin', align: 'right', height: 42 }).setDepth(DEPTH);
 
-    const bossName = scene.add.text(0, -26, ENEMIES.slimeKing.name.toLocaleUpperCase('tr-TR'), displayStyle(18)).setOrigin(0.5).setStroke(UI.ink, 5);
+    const bossName = scene.add.text(0, -26, '', displayStyle(18)).setOrigin(0.5).setStroke(UI.ink, 5).setName('bossName');
     this.bossBar = new Bar(scene, 0, 0, 580, 'boss');
     this.boss = scene.add.container(width / 2, 104, [bossName, this.bossBar]).setDepth(DEPTH).setVisible(false);
 
@@ -86,6 +88,7 @@ export class Hud {
 
     const boss = w.enemies.find((e) => ENEMIES[e.kind].boss);
     if (boss && !this.boss.visible) {
+      (this.boss.getByName('bossName') as Phaser.GameObjects.Text).setText(ENEMIES[boss.kind].name.toLocaleUpperCase('tr-TR'));
       this.boss.setVisible(true).setAlpha(0).setY(74);
       this.bossBar.setRatio(1, false);
       this.scene.tweens.add({ targets: this.boss, y: 104, alpha: 1, duration: 300, ease: 'Back.Out' });
@@ -158,16 +161,22 @@ export class Hud {
   }
 
   /** Dalga afişi: boss için kırmızı, temizlendi için ödüllü sarı. */
-  banner(kind: 'wave' | 'boss' | 'clear', title: string, bonus?: number) {
+  banner(kind: 'wave' | 'boss' | 'clear' | 'region', title: string, bonus?: number, sub?: string, region?: RegionId) {
     const { width, height } = this.scene.scale;
     const danger = kind === 'boss';
     const y = kind === 'wave' ? 170 : height / 2 - 40;
     const c = this.scene.add.container(width / 2, y).setDepth(DEPTH + 3);
     const w = kind === 'wave' ? 380 : 580;
-    c.add(slice(this.scene, danger ? 'ui.banner_danger' : 'ui.banner', 0, 0, w));
-    const titleY = bonus === undefined ? -6 : -20;
-    c.add(this.scene.add.text(0, titleY, title, displayStyle(kind === 'wave' ? 38 : 44, { color: danger ? UI.text : UI.ink })).setOrigin(0.5));
-
+    const art = region && REGION_BANNER[region];
+    let ink: string = danger ? UI.text : UI.ink;
+    if (art && this.scene.textures.exists(art.key)) {
+      const r = UI_RASTER;
+      c.add(this.scene.add.nineslice(0, 0, art.key, undefined, w * r, 128 * r, 60 * r, 60 * r, 0, 0).setScale(1 / r));
+      ink = art.text;
+    } else c.add(slice(this.scene, danger ? 'ui.banner_danger' : 'ui.banner', 0, 0, w));
+    const titleY = bonus === undefined && !sub ? -6 : -20;
+    c.add(this.scene.add.text(0, titleY, title, displayStyle(kind === 'wave' ? 38 : 44, { color: ink })).setOrigin(0.5));
+    if (sub) c.add(this.scene.add.text(0, 24, sub, displayStyle(20, { color: ink })).setOrigin(0.5));
     if (bonus !== undefined) {
       const amount = this.scene.add.text(0, 0, `+${fmt(bonus)}`, displayStyle(22, { color: UI.ink })).setOrigin(0, 0.5);
       const coin = this.scene.add.image(0, 0, icon('coin')).setDisplaySize(24, 24);
@@ -194,7 +203,7 @@ export class Hud {
         targets: c,
         tweens: [
           { y, alpha: 1, duration: 240, ease: 'Back.Out' },
-          { y: y - 30, alpha: 0, duration: 200, delay: kind === 'wave' ? 700 : 1000, ease: 'Quad.In', onComplete: () => c.destroy() },
+          { y: y - 30, alpha: 0, duration: 200, delay: kind === 'wave' ? 700 : kind === 'region' ? 2200 : 1000, ease: 'Quad.In', onComplete: () => c.destroy() },
         ],
       });
     }

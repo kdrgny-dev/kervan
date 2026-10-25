@@ -1,4 +1,6 @@
-import { type GemUpgrade, type HeroStat, STARTING_HEROES } from '../data/economy';
+import { type GemUpgrade, type HeroStat, MARKET_KEYS, type MarketUpgrade, STARTING_HEROES } from '../data/economy';
+import { ENEMY_KINDS, type EnemyKind } from '../data/enemies';
+import { STORY_ORDER, type StoryId } from '../data/story';
 import { CARD_IDS, type CardId } from '../data/cards';
 import { HERO_KINDS, type HeroKind } from '../data/heroes';
 import { ACHIEVEMENT_IDS, type AchievementId, emptyLifetime, type Lifetime, STARTER_CARDS } from '../data/progression';
@@ -32,7 +34,7 @@ export interface QuestBoard {
 }
 
 export interface SaveData {
-  version: 2;
+  version: 3;
   gold: number;
   gems: number;
   unlocked: HeroKind[];
@@ -46,6 +48,11 @@ export interface SaveData {
   quests: { daily: QuestBoard; weekly: QuestBoard };
   achievements: AchievementId[];
   lifetime: Lifetime;
+  market: Record<MarketUpgrade, number>;
+  /** Kervan Yolu: ulaşılan en uzak bölge sırası ve devrilen boss türleri. */
+  journey: { furthest: number; bosses: EnemyKind[] };
+  /** Hikaye: okunanlar günlükte, bekleyenler menüde gösterilir. */
+  story: { seen: StoryId[]; pending: StoryId[] };
 }
 
 export interface KeyValueStore {
@@ -57,7 +64,7 @@ const KEY = 'kervan.save';
 
 export function defaultSave(): SaveData {
   return {
-    version: 2,
+    version: 3,
     gold: 0,
     gems: 0,
     unlocked: [...STARTING_HEROES],
@@ -71,8 +78,14 @@ export function defaultSave(): SaveData {
     quests: { daily: { key: '', items: [] }, weekly: { key: '', items: [] } },
     achievements: [],
     lifetime: emptyLifetime(),
+    market: { goldGain: 0, freeRerolls: 0, xpGain: 0 },
+    journey: { furthest: 0, bosses: [] },
+    story: { seen: [], pending: [] },
   };
 }
+
+const isStory = (v: unknown): v is StoryId => typeof v === 'string' && (STORY_ORDER as string[]).includes(v);
+const isEnemy = (v: unknown): v is EnemyKind => typeof v === 'string' && (ENEMY_KINDS as string[]).includes(v);
 
 const isCard = (v: unknown): v is CardId => typeof v === 'string' && (CARD_IDS as string[]).includes(v);
 
@@ -120,7 +133,7 @@ export function parseSave(raw: string | null): SaveData {
   for (const k of Object.keys(life) as (keyof Lifetime)[]) life[k] = num(data.lifetime?.[k], 0);
 
   return {
-    version: 2,
+    version: 3,
     gold: num(data.gold, 0),
     gems: num(data.gems, 0),
     unlocked,
@@ -136,6 +149,15 @@ export function parseSave(raw: string | null): SaveData {
       ? data.achievements.filter((a): a is AchievementId => (ACHIEVEMENT_IDS as string[]).includes(a))
       : [],
     lifetime: life,
+    market: Object.fromEntries(MARKET_KEYS.map((k) => [k, num(data.market?.[k], 0)])) as SaveData['market'],
+    journey: {
+      furthest: num(data.journey?.furthest, 0),
+      bosses: Array.isArray(data.journey?.bosses) ? data.journey.bosses.filter(isEnemy) : [],
+    },
+    story: {
+      seen: Array.isArray(data.story?.seen) ? data.story.seen.filter(isStory) : [],
+      pending: Array.isArray(data.story?.pending) ? data.story.pending.filter(isStory) : [],
+    },
   };
 }
 

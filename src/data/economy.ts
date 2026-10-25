@@ -25,5 +25,17 @@ export const GEM_UPGRADES: Record<GemUpgrade, { name: string; desc: string; cost
 
 export const GEM_UPGRADE_KEYS = Object.keys(GEM_UPGRADES) as GemUpgrade[];
 
+export type MarketUpgrade = 'goldGain' | 'freeRerolls' | 'xpGain';
+
+/** Pazar: altınla alınan kamp yükseltmeleri. */
+export const MARKET_UPGRADES: Record<MarketUpgrade, { name: string; desc: string; costs: number[] }> = {
+  goldGain: { name: 'Tüccar Ağı', desc: 'Turlarda altın +%10', costs: [300, 600, 1200, 2400, 4800] },
+  freeRerolls: { name: 'Kervan Kasası', desc: 'Her tur +1 ücretsiz yeniden çekme', costs: [500, 1500, 4000] },
+  xpGain: { name: 'Harita Ustası', desc: 'Hesap XP’si +%10', costs: [400, 800, 1600, 3200, 6400] },
+};
+
+export const MARKET_KEYS = Object.keys(MARKET_UPGRADES) as MarketUpgrade[];
+export const MARKET_STEP = 0.1;
+
 export const POWER_BONUS_STEP_MS = 2000;
 export const BEST_LIST_SIZE = 10;

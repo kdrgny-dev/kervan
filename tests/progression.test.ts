@@ -32,6 +32,8 @@ const run = (over: Partial<RunSummary> = {}): RunSummary => ({
   cursedPicked: 0,
   maxParty: 4,
   maxTier: {},
+  furthestRegion: 0,
+  bossKinds: {},
   ...over,
 });
 
@@ -164,7 +166,7 @@ describe('save v2', () => {
   it('migrates a v1 save keeping progress', () => {
     const v1 = JSON.stringify({ version: 1, gold: 420, gems: 7, unlocked: ['knight', 'archer', 'mage'], best: [] });
     const s = parseSave(v1);
-    expect(s.version).toBe(2);
+    expect(s.version).toBe(3);
     expect(s.gold).toBe(420);
     expect(s.unlocked).toContain('mage');
     expect(s.account).toEqual({ level: 1, xp: 0 });

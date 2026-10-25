@@ -2,6 +2,7 @@ import type Phaser from 'phaser';
 import type { EnemyKind } from '../data/enemies';
 import type { HeroKind } from '../data/heroes';
 import type { PowerKind } from '../data/loot';
+import type { RegionId } from '../data/regions';
 
 export interface SpriteSet {
   idle: string;
@@ -41,6 +42,17 @@ const C = 'characters';
 const idle = (name: string, size = 96) => add(`${name}.idle`, `${C}/${name}_idle_1.svg`, size);
 const frames = (name: string, move: string, n: number, size = 96) => seq(C, `${name}_${move}`, n, size);
 
+/** Boss: 2 kare nefes, çağırma ve şok öncesi hazırlanma kareleri. */
+function boss(name: string): SpriteSet {
+  return {
+    idle: add(`${name}.idle`, `${C}/${name}_idle_1.svg`, 128),
+    idleLoop: frames(name, 'idle', 2, 128),
+    walkMs: 400,
+    hurt: add(`${name}.hurt`, `${C}/${name}_hurt_1.svg`, 128),
+    special: { summon: frames(name, 'summon', 2, 128), charge: frames(name, 'charge', 2, 128) },
+  };
+}
+
 function unit(name: string, move: 'walk' | 'move', moveFrames = 4, walkMs?: number): SpriteSet {
   return {
     idle: idle(name),
@@ -64,28 +76,104 @@ export const ENEMY_SPRITES: Partial<Record<EnemyKind, SpriteSet>> = {
   bat: unit('bat', 'move', 4, 80),
   skeleton: unit('skeleton', 'move', 4),
   goblin: unit('goblin', 'move', 4, 90),
-  slimeKing: {
-    idle: add('slime_king.idle', `${C}/slime_king_idle_1.svg`, 128),
-    idleLoop: frames('slime_king', 'idle', 2, 128),
-    walkMs: 400,
-    hurt: add('slime_king.hurt', `${C}/slime_king_hurt_1.svg`, 128),
-    special: {
-      summon: frames('slime_king', 'summon', 2, 128),
-      charge: frames('slime_king', 'charge', 2, 128),
-    },
-  },
+  wraith: unit('wraith', 'move', 4, 120),
+  magmaSlime: unit('magma_slime', 'move', 3, 150),
+  frostSkeleton: unit('frost_skeleton', 'move', 4),
+  slimeKing: boss('slime_king'),
+  boneLord: boss('bone_lord'),
+  emberKing: boss('ember_king'),
+  frostGiant: boss('frost_giant'),
 };
 
-// ---------- dünya ----------
+export interface TileSet {
+  floors: string[];
+  wallTop: string;
+  wallSide: string;
+  wallCorner: string;
+  decor: string[];
+}
 
-export const TILES = {
-  floors: [1, 2, 3].map((i) => add(`tile.floor${i}`, `tiles/tile_floor_${i}.svg`, 96)),
-  wallTop: add('tile.wall', 'tiles/tile_wall.svg', 96),
-  wallSide: add('tile.wallSide', 'tiles/tile_wall_side.svg', 96),
-  wallCorner: add('tile.wallCorner', 'tiles/tile_wall_corner.svg', 96),
+function tileSet(region: RegionId): TileSet {
+  const dir = region === 'vale' ? 'tiles' : `tiles/${region}`;
+  const decorDir = region === 'vale' ? 'decor' : `decor/${region}`;
+  const p = region === 'vale' ? 'tile' : `tile.${region}`;
+  return {
+    floors: [1, 2, 3].map((i) => add(`${p}.floor${i}`, `${dir}/tile_floor_${i}.svg`, 96)),
+    wallTop: add(`${p}.wall`, `${dir}/tile_wall.svg`, 96),
+    wallSide: add(`${p}.wallSide`, `${dir}/tile_wall_side.svg`, 96),
+    wallCorner: add(`${p}.wallCorner`, `${dir}/tile_wall_corner.svg`, 96),
+    decor: (region === 'vale' ? [1, 2, 3, 4, 5, 6] : [1, 2, 3, 4]).map((i) => add(`${p}.decor${i}`, `${decorDir}/decor_${i}.svg`, 48)),
+  };
+}
+
+export const REGION_TILES: Record<RegionId, TileSet> = {
+  vale: tileSet('vale'),
+  bones: tileSet('bones'),
+  ash: tileSet('ash'),
+  frost: tileSet('frost'),
 };
 
-export const DECOR = [1, 2, 3, 4, 5, 6].map((i) => add(`decor.${i}`, `decor/decor_${i}.svg`, 48));
+/** Eski çağrılar için Yeşil Vadi seti. */
+export const TILES = REGION_TILES.vale;
+export const DECOR = REGION_TILES.vale.decor;
+
+// ---------- anlatıcı, kamp, harita ----------
+
+export type Mood = 'normal' | 'laugh' | 'surprised';
+
+export const NARRATOR_ART = {
+  normal: add('husnu.normal', 'ui/narrator/husnu_portrait_normal.svg', 256),
+  laugh: add('husnu.laugh', 'ui/narrator/husnu_portrait_laugh.svg', 256),
+  surprised: add('husnu.surprised', 'ui/narrator/husnu_portrait_surprised.svg', 256),
+  full: add('husnu.full', 'ui/narrator/husnu_full.svg', 256, 384),
+} satisfies Record<Mood | 'full', string>;
+
+export type Building = 'barracks' | 'temple' | 'market';
+
+export const CAMP = {
+  bg: add('camp.bg', 'ui/camp/camp_bg.svg', 1152, 720),
+  buildings: Object.fromEntries(
+    (['barracks', 'temple', 'market'] as Building[]).map((b) => [
+      b,
+      [1, 2, 3].map((i) => add(`camp.${b}${i}`, `ui/camp/building_${b}_${i}.svg`, 320, 280)),
+    ]),
+  ) as Record<Building, string[]>,
+  campfire: anim('campfire', seq('ui/camp', 'campfire', 4, 96), 120),
+};
+
+/** camp_bg üzerindeki yerleşim (manifest _meta.camp_slots): sol üst köşe + boyut. */
+export const CAMP_SLOTS: Record<Building | 'campfire', [number, number, number, number]> = {
+  barracks: [40, 300, 320, 280],
+  temple: [416, 282, 320, 280],
+  market: [792, 300, 320, 280],
+  campfire: [528, 590, 96, 96],
+};
+
+const ART_REGION: Record<RegionId, string> = { vale: 'valley', bones: 'bones', ash: 'ash', frost: 'frost' };
+
+export const MAP = {
+  route: add('map.route', 'ui/map/route_map.svg', 1100, 420),
+  icons: Object.fromEntries(
+    (Object.keys(ART_REGION) as RegionId[]).map((r) => [r, add(`map.icon.${r}`, `ui/map/region_icon_${ART_REGION[r]}.svg`, 96)]),
+  ) as Record<RegionId, string>,
+};
+
+/** route_map üzerindeki düğüm merkezleri (manifest _meta.map_nodes). */
+export const MAP_NODES: Record<RegionId | 'start' | 'horizon', [number, number]> = {
+  start: [40, 300],
+  vale: [300, 250],
+  bones: [520, 180],
+  ash: [760, 270],
+  frost: [980, 170],
+  horizon: [1088, 140],
+};
+
+export const REGION_BANNER: Record<RegionId, { key: string; text: string }> = {
+  vale: { key: add('banner.vale', 'ui/components/ui_banner_region_valley.svg', 640, 128), text: '#14121c' },
+  bones: { key: add('banner.bones', 'ui/components/ui_banner_region_bones.svg', 640, 128), text: '#14121c' },
+  ash: { key: add('banner.ash', 'ui/components/ui_banner_region_ash.svg', 640, 128), text: '#f4efe6' },
+  frost: { key: add('banner.frost', 'ui/components/ui_banner_region_frost.svg', 640, 128), text: '#14121c' },
+};
 
 // ---------- ganimet ----------
 

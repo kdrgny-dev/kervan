@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" role="img" aria-label="magma slime attack 2">
+<g transform="translate(0 -2)" stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<ellipse cx="51.5" cy="90" rx="20" ry="3.5" fill="#14121c" fill-opacity="0.22" stroke="none"/>
+<path d="M32.7 90.5 Q28.1 90.5 29.0 83.4 C29.9 63.8 40.2 48.5 55.0 48.5 C69.8 48.5 80.1 63.8 81.0 83.4 Q81.9 90.5 77.3 90.5 Z" fill="#f28a3b"/>
+<path d="M30.4 79.0 Q55.0 90.0 79.6 79.0 L81.0 83.4 Q81.9 90.5 77.3 90.5 H32.7 Q28.1 90.5 29.0 83.4 Z" fill="#e5533d" stroke="none"/>
+<path d="M38.9 69.5 L45.9 64.5 L52.4 70.3 L57.6 61.1 M43.3 82.1 L51.1 77.9 L60.2 82.1" stroke="#e5533d" stroke-opacity="0.6" stroke-width="5" fill="none"/>
+<path d="M38.9 69.5 L45.9 64.5 L52.4 70.3 L57.6 61.1 M43.3 82.1 L51.1 77.9 L60.2 82.1" stroke="#f0c23b" stroke-width="2.2" fill="none"/>
+<path d="M32.7 90.5 Q28.1 90.5 29.0 83.4 C29.9 63.8 40.2 48.5 55.0 48.5 C69.8 48.5 80.1 63.8 81.0 83.4 Q81.9 90.5 77.3 90.5 Z" fill="none"/>
+<ellipse cx="40.7" cy="60.3" rx="4.5" ry="2.6" transform="rotate(-35 40.7 60.3)" fill="#f0c23b" fill-opacity="0.9" stroke="none"/>
+<path d="M51.1 45.5 q-5 -5 0 -10 q5 -5 0 -10 M63.1 46.5 q-4 -4 0 -8 q4 -4 0 -8" stroke="#8f88a0" stroke-opacity="0.75" stroke-width="2.5" fill="none"/>
+<ellipse cx="62.4" cy="68.2" rx="3.5" ry="5.5" fill="#14121c" stroke="none"/><circle cx="63.4" cy="66.7" r="1.5" fill="#f0c23b" stroke="none"/>
+<ellipse cx="73.6" cy="68.2" rx="3.5" ry="5.5" fill="#14121c" stroke="none"/><circle cx="74.6" cy="66.7" r="1.5" fill="#f0c23b" stroke="none"/>
+<path d="M58.436 58.156000000000006 L66.436 61.156000000000006 M77.564 58.156000000000006 L69.564 61.156000000000006" stroke-width="2.5" fill="none"/>
+<ellipse cx="68.0" cy="78.9" rx="4.5" ry="3.5" fill="#14121c" stroke-width="1.5"/><circle cx="77.0" cy="75.9" r="1.6" fill="#f0c23b" stroke="none"/><circle cx="80.0" cy="80.9" r="1.2" fill="#f28a3b" stroke="none"/>
+
+</g>
+</svg>

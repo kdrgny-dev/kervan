@@ -1,7 +1,7 @@
 import { bossHpScale, CHARGE_DIST, CHARGE_SPEEDUP, enemyHpScale } from '../data/balance';
 import { type BossAbilities, ENEMIES, type EnemyDef, type EnemyKind } from '../data/enemies';
 import { chebyshev, manhattan, neighbors, type Vec } from './grid';
-import { damageHero, fire, nearestHero } from './combat';
+import { damageHero, fire, nearestHero, slowParty } from './combat';
 import { pick } from './rng';
 import { isFree } from './state';
 import type { Enemy, World } from './types';
@@ -31,7 +31,7 @@ export function updateEnemies(w: World, dt: number) {
     if (e.attackCd === 0) {
       if (def.brain === 'kite') {
         if (dist <= (def.range ?? 0) + 1) {
-          fire(w, 'bone', 'enemy', e.pos, near, def.dmg);
+          fire(w, 'bone', 'enemy', e.pos, near, def.dmg, 0, def.slowMs ?? 0);
           e.attackCd = def.attackMs;
           w.events.push({ type: 'enemyAttack', id: e.id });
         }
@@ -45,6 +45,7 @@ export function updateEnemies(w: World, dt: number) {
 
     if (def.boss) {
       bossAbilities(w, e, def.boss, dt);
+      bossVolley(w, e, def.boss, dt);
       if (!w.alive) return;
     }
 
@@ -80,10 +81,26 @@ function bossAbilities(w: World, e: Enemy, b: BossAbilities, dt: number) {
     e.shockCd += b.shockEveryMs;
     e.shockWarned = false;
     w.events.push({ type: 'shockwave', pos: e.pos, radius: b.shockRadius });
+    let hit = false;
     for (const h of [...w.party]) {
-      if (chebyshev(h.pos, e.pos) <= b.shockRadius) damageHero(w, h, b.shockDmg);
+      if (chebyshev(h.pos, e.pos) <= b.shockRadius) {
+        damageHero(w, h, b.shockDmg);
+        hit = true;
+      }
     }
+    if (hit && b.shockSlowMs) slowParty(w, b.shockSlowMs);
   }
+}
+
+function bossVolley(w: World, e: Enemy, b: BossAbilities, dt: number) {
+  if (!b.volley) return;
+  e.volleyCd = (e.volleyCd ?? b.volley.everyMs) - dt;
+  if (e.volleyCd > 0) return;
+  e.volleyCd += b.volley.everyMs;
+  const targets = [...w.party]
+    .sort((a, c) => (a.pos.x - e.pos.x) ** 2 + (a.pos.y - e.pos.y) ** 2 - ((c.pos.x - e.pos.x) ** 2 + (c.pos.y - e.pos.y) ** 2))
+    .slice(0, b.volley.count);
+  for (const h of targets) fire(w, 'bone', 'enemy', e.pos, h, Math.round(ENEMIES[e.kind].dmg / 2));
 }
 
 function chooseStep(w: World, e: Enemy, def: EnemyDef, nearPos: Vec, dist: number): Vec | null {

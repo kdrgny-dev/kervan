@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" role="img" aria-label="valley region icon">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<circle cx="48" cy="48" r="44" fill="#f0c23b"/><circle cx="48" cy="48" r="34" fill="#6fbf5a"/><circle cx="48" cy="48" r="34" fill="none" stroke-width="3"/><path d="M20 70 Q34 50 50 62 Q62 48 78 68 Z" fill="#3f7f3a"/><path d="M56 54 V39.6" stroke-width="6"/><path d="M56 54 V39.6" stroke="#8a5532" stroke-width="3"/><circle cx="56" cy="32.4" r="10.8" fill="#3f7f3a"/><circle cx="53.3" cy="28.8" r="3.6" fill="#6fbf5a" stroke="none"/><circle cx="32" cy="34" r="7" fill="#f0c23b" stroke-width="2.5"/><path d="M14 36 Q20 18 38 10" stroke="#f0e6d2" stroke-opacity="0.75" stroke-width="3.5" fill="none"/>
+</g>
+</svg>

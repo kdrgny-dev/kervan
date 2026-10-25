@@ -1,0 +1,774 @@
+{
+ "tiles/bones/tile_floor_1.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/bones/tile_floor_2.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/bones/tile_floor_3.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/bones/tile_wall.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/bones/tile_wall_side.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/bones/tile_wall_corner.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/ash/tile_floor_1.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/ash/tile_floor_2.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/ash/tile_floor_3.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/ash/tile_wall.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/ash/tile_wall_side.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/ash/tile_wall_corner.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/frost/tile_floor_1.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/frost/tile_floor_2.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/frost/tile_floor_3.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/frost/tile_wall.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/frost/tile_wall_side.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/frost/tile_wall_corner.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "characters/wraith_idle_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "wraith_idle",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/wraith_move_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "wraith_move",
+  "frame": 1,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/wraith_move_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "wraith_move",
+  "frame": 2,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/wraith_move_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "wraith_move",
+  "frame": 3,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/wraith_move_4.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "wraith_move",
+  "frame": 4,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/wraith_attack_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "wraith_attack",
+  "frame": 1,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/wraith_attack_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "wraith_attack",
+  "frame": 2,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/wraith_hurt_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "wraith_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/magma_slime_idle_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "magma_slime_idle",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/magma_slime_move_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "magma_slime_move",
+  "frame": 1,
+  "frames": 3,
+  "ms": 110
+ },
+ "characters/magma_slime_move_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "magma_slime_move",
+  "frame": 2,
+  "frames": 3,
+  "ms": 110
+ },
+ "characters/magma_slime_move_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "magma_slime_move",
+  "frame": 3,
+  "frames": 3,
+  "ms": 110
+ },
+ "characters/magma_slime_attack_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "magma_slime_attack",
+  "frame": 1,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/magma_slime_attack_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "magma_slime_attack",
+  "frame": 2,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/magma_slime_hurt_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "magma_slime_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/frost_skeleton_idle_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "frost_skeleton_idle",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/frost_skeleton_move_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "frost_skeleton_move",
+  "frame": 1,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/frost_skeleton_move_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "frost_skeleton_move",
+  "frame": 2,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/frost_skeleton_move_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "frost_skeleton_move",
+  "frame": 3,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/frost_skeleton_move_4.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "frost_skeleton_move",
+  "frame": 4,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/frost_skeleton_attack_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "frost_skeleton_attack",
+  "frame": 1,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/frost_skeleton_attack_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "frost_skeleton_attack",
+  "frame": 2,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/frost_skeleton_hurt_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "frost_skeleton_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "decor/bones/decor_1.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/bones/decor_2.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/bones/decor_3.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/bones/decor_4.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/ash/decor_1.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/ash/decor_2.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/ash/decor_3.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/ash/decor_4.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/frost/decor_1.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/frost/decor_2.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/frost/decor_3.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/frost/decor_4.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "characters/bone_lord_idle_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "bone_lord_idle",
+  "frame": 1,
+  "frames": 2,
+  "ms": 400
+ },
+ "characters/bone_lord_idle_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "bone_lord_idle",
+  "frame": 2,
+  "frames": 2,
+  "ms": 400
+ },
+ "characters/bone_lord_summon_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "bone_lord_summon",
+  "frame": 1,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/bone_lord_summon_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "bone_lord_summon",
+  "frame": 2,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/bone_lord_charge_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "bone_lord_charge",
+  "frame": 1,
+  "frames": 2,
+  "ms": 200
+ },
+ "characters/bone_lord_charge_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "bone_lord_charge",
+  "frame": 2,
+  "frames": 2,
+  "ms": 200
+ },
+ "characters/bone_lord_hurt_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "bone_lord_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/ember_king_idle_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "ember_king_idle",
+  "frame": 1,
+  "frames": 2,
+  "ms": 400
+ },
+ "characters/ember_king_idle_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "ember_king_idle",
+  "frame": 2,
+  "frames": 2,
+  "ms": 400
+ },
+ "characters/ember_king_summon_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "ember_king_summon",
+  "frame": 1,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/ember_king_summon_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "ember_king_summon",
+  "frame": 2,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/ember_king_charge_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "ember_king_charge",
+  "frame": 1,
+  "frames": 2,
+  "ms": 200
+ },
+ "characters/ember_king_charge_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "ember_king_charge",
+  "frame": 2,
+  "frames": 2,
+  "ms": 200
+ },
+ "characters/ember_king_hurt_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "ember_king_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/frost_giant_idle_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "frost_giant_idle",
+  "frame": 1,
+  "frames": 2,
+  "ms": 400
+ },
+ "characters/frost_giant_idle_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "frost_giant_idle",
+  "frame": 2,
+  "frames": 2,
+  "ms": 400
+ },
+ "characters/frost_giant_summon_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "frost_giant_summon",
+  "frame": 1,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/frost_giant_summon_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "frost_giant_summon",
+  "frame": 2,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/frost_giant_charge_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "frost_giant_charge",
+  "frame": 1,
+  "frames": 2,
+  "ms": 200
+ },
+ "characters/frost_giant_charge_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "frost_giant_charge",
+  "frame": 2,
+  "frames": 2,
+  "ms": 200
+ },
+ "characters/frost_giant_hurt_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "frost_giant_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "ui/narrator/husnu_portrait_normal.svg": {
+  "w": 256,
+  "h": 256,
+  "frames": 1
+ },
+ "ui/narrator/husnu_portrait_laugh.svg": {
+  "w": 256,
+  "h": 256,
+  "frames": 1
+ },
+ "ui/narrator/husnu_portrait_surprised.svg": {
+  "w": 256,
+  "h": 256,
+  "frames": 1
+ },
+ "ui/narrator/husnu_full.svg": {
+  "w": 256,
+  "h": 384,
+  "frames": 1
+ },
+ "ui/camp/camp_bg.svg": {
+  "w": 1152,
+  "h": 720,
+  "frames": 1
+ },
+ "ui/camp/building_barracks_1.svg": {
+  "w": 320,
+  "h": 280,
+  "frames": 1,
+  "level": 1
+ },
+ "ui/camp/building_barracks_2.svg": {
+  "w": 320,
+  "h": 280,
+  "frames": 1,
+  "level": 2
+ },
+ "ui/camp/building_barracks_3.svg": {
+  "w": 320,
+  "h": 280,
+  "frames": 1,
+  "level": 3
+ },
+ "ui/camp/building_temple_1.svg": {
+  "w": 320,
+  "h": 280,
+  "frames": 1,
+  "level": 1
+ },
+ "ui/camp/building_temple_2.svg": {
+  "w": 320,
+  "h": 280,
+  "frames": 1,
+  "level": 2
+ },
+ "ui/camp/building_temple_3.svg": {
+  "w": 320,
+  "h": 280,
+  "frames": 1,
+  "level": 3
+ },
+ "ui/camp/building_market_1.svg": {
+  "w": 320,
+  "h": 280,
+  "frames": 1,
+  "level": 1
+ },
+ "ui/camp/building_market_2.svg": {
+  "w": 320,
+  "h": 280,
+  "frames": 1,
+  "level": 2
+ },
+ "ui/camp/building_market_3.svg": {
+  "w": 320,
+  "h": 280,
+  "frames": 1,
+  "level": 3
+ },
+ "ui/camp/campfire_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "campfire",
+  "frame": 1,
+  "frames": 4,
+  "ms": 120
+ },
+ "ui/camp/campfire_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "campfire",
+  "frame": 2,
+  "frames": 4,
+  "ms": 120
+ },
+ "ui/camp/campfire_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "campfire",
+  "frame": 3,
+  "frames": 4,
+  "ms": 120
+ },
+ "ui/camp/campfire_4.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "campfire",
+  "frame": 4,
+  "frames": 4,
+  "ms": 120
+ },
+ "ui/map/route_map.svg": {
+  "w": 1100,
+  "h": 420,
+  "frames": 1,
+  "nodes": {
+   "start": [
+    40,
+    300
+   ],
+   "valley": [
+    300,
+    250
+   ],
+   "bones": [
+    520,
+    180
+   ],
+   "ash": [
+    760,
+    270
+   ],
+   "frost": [
+    980,
+    170
+   ],
+   "horizon": [
+    1088,
+    140
+   ]
+  },
+  "note": "nodes: oyun içi düğüm merkezleri (x, y); horizon = yolun ufukta kaybolduğu nokta"
+ },
+ "ui/map/region_icon_valley.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "ui/map/region_icon_bones.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "ui/map/region_icon_ash.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "ui/map/region_icon_frost.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "ui/components/ui_banner_region_valley.svg": {
+  "w": 640,
+  "h": 128,
+  "frames": 1,
+  "slice": {
+   "top": 0,
+   "right": 60,
+   "bottom": 0,
+   "left": 60
+  },
+  "mode": "3-slice yatay",
+  "text_color": "#14121c"
+ },
+ "ui/components/ui_banner_region_bones.svg": {
+  "w": 640,
+  "h": 128,
+  "frames": 1,
+  "slice": {
+   "top": 0,
+   "right": 60,
+   "bottom": 0,
+   "left": 60
+  },
+  "mode": "3-slice yatay",
+  "text_color": "#14121c"
+ },
+ "ui/components/ui_banner_region_ash.svg": {
+  "w": 640,
+  "h": 128,
+  "frames": 1,
+  "slice": {
+   "top": 0,
+   "right": 60,
+   "bottom": 0,
+   "left": 60
+  },
+  "mode": "3-slice yatay",
+  "text_color": "#f4efe6"
+ },
+ "ui/components/ui_banner_region_frost.svg": {
+  "w": 640,
+  "h": 128,
+  "frames": 1,
+  "slice": {
+   "top": 0,
+   "right": 60,
+   "bottom": 0,
+   "left": 60
+  },
+  "mode": "3-slice yatay",
+  "text_color": "#14121c"
+ },
+ "_meta": {
+  "camp_slots": {
+   "barracks": [
+    40,
+    300,
+    320,
+    280
+   ],
+   "temple": [
+    416,
+    282,
+    320,
+    280
+   ],
+   "market": [
+    792,
+    300,
+    320,
+    280
+   ],
+   "campfire": [
+    528,
+    590,
+    96,
+    96
+   ]
+  },
+  "map_nodes": {
+   "start": [
+    40,
+    300
+   ],
+   "valley": [
+    300,
+    250
+   ],
+   "bones": [
+    520,
+    180
+   ],
+   "ash": [
+    760,
+    270
+   ],
+   "frost": [
+    980,
+    170
+   ],
+   "horizon": [
+    1088,
+    140
+   ]
+  },
+  "notes": "Karakter ve boss kare süreleri ms alanında. Kamp slotları camp_bg üzerinde [x, y, w, h]."
+ }
+}
