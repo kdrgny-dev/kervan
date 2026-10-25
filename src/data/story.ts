@@ -1,12 +1,15 @@
 import type { RegionId } from './regions';
 
 export const NARRATOR = 'Kervanbaşı Hüsnü';
+export const DEDE = 'Dede Hüsnü · 1453';
 
 export interface StoryBeat {
   title: string;
   lines: string[];
   /** Hüsnü'nün yüz ifadesi. */
   mood?: 'normal' | 'laugh' | 'surprised';
+  /** Destan anlarını o dönemin Hüsnü'sü kendi ağzından anlatır. */
+  voice?: 'dede';
 }
 
 /** Kervanbaşının anlattıkları; tetiklenince günlüğe yazılır. */
@@ -113,47 +116,54 @@ export const STORY = {
     ],
   },
   region_halic: {
+    voice: 'dede',
     mood: 'surprised',
     title: 'Haliç Kıyısı',
     lines: [
-      'Limanın ağzına zincir germişler. Zincir de canlanmış! Dedem “zincirle tartışılmaz” derdi.',
-      'Boss dalgalarında gemileri karadan yürütüyoruz: kafile duvardan girip öbür taraftan çıkar. Tarih böyle yazar. Dedem öyle yazdırdı.',
+      'Limanın ağzına zincir germişler. Zincir de canlanmış! Ben derim ki zincirle tartışılmaz, etrafından dolaşılır.',
+      'Boss dalgalarında gemileri karadan yürütüyoruz: kafile duvardan girip öbür taraftan çıkar. Fikir benim. Fatih’e sorarsan o da “Hüsnü’nün” der.',
     ],
   },
   region_galata: {
+    voice: 'dede',
     mood: 'laugh',
     title: 'Galata Sırtları',
     lines: [
-      'Kızakları yağladık, gemileri tepeden aşırdık! Yağ dedemin dükkânındandı. Hesabı hâlâ ödenmedi.',
-      'Yağ küplerinden biri biraz fazla heveslendi. Dikkat et, kaygandır.',
+      'Kızakları yağladık, gemileri tepeden aşırıyoruz! Yağ benim dükkândan. Hesabını sonra konuşuruz.',
+      'Yağ küplerinden biri biraz fazla heveslendi. Dikkat et evlat, kaygandır.',
     ],
   },
   region_surlar: {
+    voice: 'dede',
     title: 'Kara Surlar',
     lines: [
       'Önümüzde bin yıllık surlar. Yorgunlar ama pes etmeye niyetleri yok. Bizim de yok.',
-      'Son dalgada surların bekçisi uyanacak. Dedem onu ilk görünce testisini düşürmüş. Testi kırılmamış, dedem öyle iddia eder.',
+      'Son dalgada surların bekçisi uyanacak derler. Testimi sıkı tutuyorum. Düşürürsem kırılmaz ama yine de.',
     ],
   },
   boss_stoneSentinel: {
+    voice: 'dede',
     mood: 'laugh',
     title: 'Taş Nöbetçi',
-    lines: ['Hisarın taş nöbetçisi de yıkıldı! Taşlarını geri kullandık. Dedem hiçbir şeyi israf etmezdi, özellikle de taşı.'],
+    lines: ['Taş nöbetçi yıkıldı! Taşlarını hisara geri koyduk. Ben hiçbir şeyi israf etmem, hele taşı hiç.'],
   },
   boss_harborKraken: {
+    voice: 'dede',
     mood: 'surprised',
     title: 'Liman Ahtapotu',
-    lines: ['Ahtapot kaçtı! Giderken dedemin şapkasını da götürdü. Dedem ömür boyu ahtapota küs kaldı.'],
+    lines: ['Ahtapot kaçtı! Giderken sarığımı da götürdü. Bu iş burada bitmedi ahtapot, haberin olsun.'],
   },
   boss_oilGiant: {
+    voice: 'dede',
     mood: 'laugh',
     title: 'Yağ Küpü Devi',
-    lines: ['Dev kaydı, düştü, yuvarlandı, Haliç’e kadar gitti. Gemilerden önce o vardı denize. Tarihe not düşelim.'],
+    lines: ['Dev kaydı, düştü, yuvarlandı, Haliç’e kadar gitti. Gemilerden önce o vardı denize. Yazın bunu tarihe!'],
   },
   boss_wallWarden: {
+    voice: 'dede',
     mood: 'surprised',
     title: 'Sur Bekçisi Dev',
-    lines: ['Bekçi diz çöktü! Surlar düştü!'],
+    lines: ['Bekçi diz çöktü! Surlar düştü! Testim de düşmedi, şahidim var.'],
   },
   fetih_done: {
     mood: 'laugh',

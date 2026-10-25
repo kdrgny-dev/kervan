@@ -291,11 +291,11 @@ F6 paralel yürüyebilir: grafik üretimi F0'dan itibaren başlayabilir.
 
 - Ayrıntılı tasarım: `docs/destanlar.md`. Çizim istemi: `docs/claude-design-prompt-stage6.md`.
 - **Yolculuk seçimi:** en az bir destan açıksa "Oyna" önce yolculuk seçim ekranını açar (Hüsnü'nün Yolu / destanlar / yakında). Seçim kayıtta hatırlanır.
-- **Destan I · Fetih** (hesap Sv 6): Rumeli Hisarı → Haliç Kıyısı → Galata Sırtları → Kara Surlar. Yeni düşmanlar: Sur Gargoylesi, Zincir Yılanı, Sis Perisi, Mancınık Golemi. Boss'lar: Taş Nöbetçi, Liman Ahtapotu, Yağ Küpü Devi; 40. dalgada final boss Sur Bekçisi Dev.
+- **Destan I · Fetih** (hesap Sv 6): Rumeli Hisarı → Haliç Kıyısı → Galata Sırtları → Kara Surlar. Yeni düşmanlar: Canlı Mazgal, Zincir Yılanı, Sis Perisi, Mancınık Golemi. Boss'lar: Taş Nöbetçi, Liman Ahtapotu, Yağ Küpü Devi; 40. dalgada final boss Sur Bekçisi Dev.
 - **Gemiler karadan:** destanda her boss dalgasında 10 sn boyunca kafile duvardan girip karşı kenardan çıkar.
 - 40. dalga temizlenince destan biter, efsanevi kahraman **Fatih** (Şahi topu: menzil 5, alan hasarı) açılır; yol Destan+ olarak sürer. Efsanevi kahramanlar altınla açılmaz.
 - Hikaye: `destans`, `fetih_intro`, bölge/boss anları, `fetih_done`. Kayıt şeması v4 (`campaigns`, `lastCampaign`).
-- Çizimler gelene kadar yeni bölgeler mevcut karo setlerini, yeni düşmanlar/boss'lar ve Fatih mevcut sprite'ları renklendirerek kullanır.
+- Çizimler: Claude Design Aşama 6 (`docs/design/stage6/manifest.json`); bölge/boss anlarını Dede Hüsnü kendi ağzından anlatır.
 
 ## 14. Görsel Sistem (F6)
 

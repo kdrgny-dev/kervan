@@ -2,6 +2,7 @@ import type Phaser from 'phaser';
 import type { EnemyKind } from '../data/enemies';
 import type { HeroKind } from '../data/heroes';
 import type { PowerKind } from '../data/loot';
+import type { CampaignId } from '../data/campaigns';
 import type { RegionId, RoadRegion } from '../data/regions';
 
 export interface SpriteSet {
@@ -43,13 +44,13 @@ const idle = (name: string, size = 96) => add(`${name}.idle`, `${C}/${name}_idle
 const frames = (name: string, move: string, n: number, size = 96) => seq(C, `${name}_${move}`, n, size);
 
 /** Boss: 2 kare nefes, çağırma ve şok öncesi hazırlanma kareleri. */
-function boss(name: string): SpriteSet {
+function boss(name: string, size = 128): SpriteSet {
   return {
-    idle: add(`${name}.idle`, `${C}/${name}_idle_1.svg`, 128),
-    idleLoop: frames(name, 'idle', 2, 128),
+    idle: add(`${name}.idle`, `${C}/${name}_idle_1.svg`, size),
+    idleLoop: frames(name, 'idle', 2, size),
     walkMs: 400,
-    hurt: add(`${name}.hurt`, `${C}/${name}_hurt_1.svg`, 128),
-    special: { summon: frames(name, 'summon', 2, 128), charge: frames(name, 'charge', 2, 128) },
+    hurt: add(`${name}.hurt`, `${C}/${name}_hurt_1.svg`, size),
+    special: { summon: frames(name, 'summon', 2, size), charge: frames(name, 'charge', 2, size) },
   };
 }
 
@@ -69,11 +70,8 @@ export const HERO_SPRITES: Partial<Record<HeroKind, SpriteSet>> = {
   mage: unit('mage', 'walk'),
   priest: unit('priest', 'walk'),
   rogue: unit('rogue', 'walk'),
+  fatih: unit('fatih', 'walk'),
 };
-HERO_SPRITES.fatih = HERO_SPRITES.knight;
-
-/** Çizimi gelene kadar başka kahramanın sprite'ını kullananların rengi. */
-export const HERO_TINT: Partial<Record<HeroKind, number>> = { fatih: 0xf0b070 };
 
 export const ENEMY_SPRITES: Partial<Record<EnemyKind, SpriteSet>> = {
   slime: unit('slime', 'move', 3, 150),
@@ -87,6 +85,14 @@ export const ENEMY_SPRITES: Partial<Record<EnemyKind, SpriteSet>> = {
   boneLord: boss('bone_lord'),
   emberKing: boss('ember_king'),
   frostGiant: boss('frost_giant'),
+  mazgal: unit('mazgal', 'move', 4, 110),
+  chainSerpent: unit('chain_serpent', 'move', 4, 130),
+  fogWisp: unit('fog_wisp', 'move', 4, 120),
+  catapultGolem: unit('catapult_golem', 'move', 4),
+  stoneSentinel: boss('stone_sentinel'),
+  harborKraken: boss('harbor_kraken'),
+  oilGiant: boss('oil_giant'),
+  wallWarden: boss('wall_warden', 160),
 };
 
 export interface TileSet {
@@ -97,7 +103,7 @@ export interface TileSet {
   decor: string[];
 }
 
-function tileSet(region: RoadRegion): TileSet {
+function tileSet(region: RegionId): TileSet {
   const dir = region === 'vale' ? 'tiles' : `tiles/${region}`;
   const decorDir = region === 'vale' ? 'decor' : `decor/${region}`;
   const p = region === 'vale' ? 'tile' : `tile.${region}`;
@@ -115,9 +121,11 @@ export const REGION_TILES = {
   bones: tileSet('bones'),
   ash: tileSet('ash'),
   frost: tileSet('frost'),
-} as Record<RegionId, TileSet>;
-// Fetih çizimleri gelene kadar en yakın setler
-Object.assign(REGION_TILES, { hisar: REGION_TILES.bones, halic: REGION_TILES.frost, galata: REGION_TILES.vale, surlar: REGION_TILES.ash });
+  hisar: tileSet('hisar'),
+  halic: tileSet('halic'),
+  galata: tileSet('galata'),
+  surlar: tileSet('surlar'),
+} satisfies Record<RegionId, TileSet>;
 
 /** Eski çağrılar için Yeşil Vadi seti. */
 export const TILES = REGION_TILES.vale;
@@ -133,6 +141,22 @@ export const NARRATOR_ART = {
   surprised: add('husnu.surprised', 'ui/narrator/husnu_portrait_surprised.svg', 256),
   full: add('husnu.full', 'ui/narrator/husnu_full.svg', 256, 384),
 } satisfies Record<Mood | 'full', string>;
+
+/** Destan anlarını kendi ağzından anlatan Dede Hüsnü (1453). */
+export const DEDE_ART = {
+  normal: add('dede.normal', 'ui/narrator/dede_husnu_portrait_normal.svg', 256),
+  laugh: add('dede.laugh', 'ui/narrator/dede_husnu_portrait_laugh.svg', 256),
+  surprised: add('dede.surprised', 'ui/narrator/dede_husnu_portrait_surprised.svg', 256),
+} satisfies Record<Mood, string>;
+
+export const CAMPAIGN_ART = {
+  covers: {
+    road: add('campaign.road', 'ui/campaign/campaign_cover_road.svg', 480, 270),
+    fetih: add('campaign.fetih', 'ui/campaign/campaign_cover_fetih.svg', 480, 270),
+  } satisfies Record<CampaignId, string>,
+  locked: add('campaign.locked', 'ui/campaign/campaign_cover_locked.svg', 480, 270),
+  ship: add('campaign.ship', 'ui/campaign/ship_icon.svg', 64),
+};
 
 export type Building = 'barracks' | 'temple' | 'market';
 
@@ -155,13 +179,15 @@ export const CAMP_SLOTS: Record<Building | 'campfire', [number, number, number, 
   campfire: [528, 590, 96, 96],
 };
 
-const ART_REGION: Record<RoadRegion, string> = { vale: 'valley', bones: 'bones', ash: 'ash', frost: 'frost' };
+const ART_REGION: Record<RegionId, string> = {
+  vale: 'valley', bones: 'bones', ash: 'ash', frost: 'frost', hisar: 'hisar', halic: 'halic', galata: 'galata', surlar: 'surlar',
+};
 
 export const MAP = {
   route: add('map.route', 'ui/map/route_map.svg', 1100, 420),
   icons: Object.fromEntries(
-    (Object.keys(ART_REGION) as RoadRegion[]).map((r) => [r, add(`map.icon.${r}`, `ui/map/region_icon_${ART_REGION[r]}.svg`, 96)]),
-  ) as Record<RoadRegion, string>,
+    (Object.keys(ART_REGION) as RegionId[]).map((r) => [r, add(`map.icon.${r}`, `ui/map/region_icon_${ART_REGION[r]}.svg`, 96)]),
+  ) as Record<RegionId, string>,
 };
 
 /** route_map üzerindeki düğüm merkezleri (manifest _meta.map_nodes). */
@@ -179,8 +205,11 @@ export const REGION_BANNER = {
   bones: { key: add('banner.bones', 'ui/components/ui_banner_region_bones.svg', 640, 128), text: '#14121c' },
   ash: { key: add('banner.ash', 'ui/components/ui_banner_region_ash.svg', 640, 128), text: '#f4efe6' },
   frost: { key: add('banner.frost', 'ui/components/ui_banner_region_frost.svg', 640, 128), text: '#14121c' },
-} as Record<RegionId, { key: string; text: string }>;
-Object.assign(REGION_BANNER, { hisar: REGION_BANNER.bones, halic: REGION_BANNER.frost, galata: REGION_BANNER.vale, surlar: REGION_BANNER.ash });
+  hisar: { key: add('banner.hisar', 'ui/components/ui_banner_region_hisar.svg', 640, 128), text: '#14121c' },
+  halic: { key: add('banner.halic', 'ui/components/ui_banner_region_halic.svg', 640, 128), text: '#f4efe6' },
+  galata: { key: add('banner.galata', 'ui/components/ui_banner_region_galata.svg', 640, 128), text: '#14121c' },
+  surlar: { key: add('banner.surlar', 'ui/components/ui_banner_region_surlar.svg', 640, 128), text: '#f4efe6' },
+} satisfies Record<RegionId, { key: string; text: string }>;
 
 // ---------- ganimet ----------
 
@@ -206,6 +235,8 @@ export const FX = {
   bone: add('fx.bone', 'fx/fx_bone_arrow.svg', 48, 16),
   holy: add('fx.holy', 'fx/fx_holy.svg', 48),
   fireball: anim('fx.fireball', seq('fx', 'fx_fireball', 3, 48), 90),
+  cannonball: add('fx.cannonball', 'fx/cannonball.svg', 24),
+  cannonBlast: anim('fx.cannonBlast', seq('fx', 'cannon_blast', 4, 96), 80, 0),
   slash: anim('fx.slash', seq('fx', 'fx_slash', 3, 48), 60, 0),
   explosion: anim('fx.explosion', seq('fx', 'fx_explosion', 4, 96), 80, 0),
   spawnMarker: anim('fx.spawnMarker', seq('fx', 'fx_spawn_marker', 2, 48), 250),

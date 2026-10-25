@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" role="img" aria-label="halic decor 2">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<ellipse cx="24" cy="42" rx="15" ry="2.5" fill="#14121c" fill-opacity="0.22" stroke="none"/><path d="M24 10 V38" stroke-width="7" fill="none"/><path d="M24 10 V38" stroke="#8d9ab0" stroke-width="3.5" fill="none"/><path d="M8 28 Q10 40 24 40 Q38 40 40 28" stroke-width="7" fill="none"/><path d="M8 28 Q10 40 24 40 Q38 40 40 28" stroke="#8d9ab0" stroke-width="3.5" fill="none"/><circle cx="24" cy="7" r="4" fill="none" stroke-width="2.5"/><path d="M5 26 L9 28 L8 32 M43 26 L39 28 L40 32" stroke-width="2.5" fill="none"/>
+</g>
+</svg>

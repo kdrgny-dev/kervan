@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { audio } from '../audio/audio';
-import { NARRATOR, STORY, type StoryId } from '../data/story';
-import { NARRATOR_ART } from '../render/sprites';
+import { DEDE, NARRATOR, STORY, type StoryBeat, type StoryId } from '../data/story';
+import { DEDE_ART, NARRATOR_ART } from '../render/sprites';
 import { slice } from './kit';
 import { displayStyle, textStyle, UI } from './theme';
 
@@ -13,6 +13,7 @@ export class StoryDialog {
   private readonly title: Phaser.GameObjects.Text;
   private readonly body: Phaser.GameObjects.Text;
   private readonly hint: Phaser.GameObjects.Text;
+  private readonly nameTag: Phaser.GameObjects.Text;
   private readonly portrait?: Phaser.GameObjects.Image;
   private queue: StoryId[] = [];
   private lines: string[] = [];
@@ -37,14 +38,14 @@ export class StoryDialog {
     if (scene.textures.exists(NARRATOR_ART.normal)) {
       this.portrait = scene.add.image(fx, boxY - 26, NARRATOR_ART.normal).setDisplaySize(150, 150);
     }
-    const nameTag = scene.add.text(fx, boxY + 62, NARRATOR, displayStyle(17, { color: UI.gold })).setOrigin(0.5);
+    this.nameTag = scene.add.text(fx, boxY + 62, NARRATOR, displayStyle(17, { color: UI.gold })).setOrigin(0.5);
 
     this.title = scene.add.text(width / 2 - 270, boxY - 84, '', displayStyle(26)).setOrigin(0, 0.5);
     this.body = scene.add.text(width / 2 - 270, boxY - 52, '', textStyle(20, { wordWrap: { width: 650 }, lineSpacing: 6 })).setOrigin(0, 0);
     this.hint = scene.add.text(width / 2 + 420, boxY + 86, 'Devam ▸', displayStyle(16, { color: UI.muted })).setOrigin(1, 0.5);
     scene.tweens.add({ targets: this.hint, alpha: { from: 1, to: 0.35 }, duration: 600, yoyo: true, repeat: -1 });
 
-    this.root.add([shade, box, face, ...(this.portrait ? [this.portrait] : []), nameTag, this.title, this.body, this.hint]);
+    this.root.add([shade, box, face, ...(this.portrait ? [this.portrait] : []), this.nameTag, this.title, this.body, this.hint]);
     scene.input.keyboard?.on('keydown', (e: KeyboardEvent) => {
       if (this.open && (e.code === 'Space' || e.code === 'Enter' || e.code === 'Escape')) this.advance();
     });
@@ -86,10 +87,11 @@ export class StoryDialog {
     this.lines = STORY[id].lines;
     this.line = 0;
     this.title.setText(STORY[id].title);
-    const mood = (STORY[id] as { mood?: keyof typeof NARRATOR_ART }).mood ?? 'normal';
-    if (this.portrait && this.scene.textures.exists(NARRATOR_ART[mood])) {
-      this.portrait.setTexture(NARRATOR_ART[mood]).setDisplaySize(150, 150);
-    }
+    const beat: StoryBeat = STORY[id];
+    const art = beat.voice === 'dede' ? DEDE_ART : NARRATOR_ART;
+    const face = art[beat.mood ?? 'normal'];
+    if (this.portrait && this.scene.textures.exists(face)) this.portrait.setTexture(face).setDisplaySize(150, 150);
+    this.nameTag.setText(beat.voice === 'dede' ? DEDE : NARRATOR);
     if (!this.root.visible) {
       this.root.setVisible(true).setAlpha(0);
       this.scene.tweens.add({ targets: this.root, alpha: 1, duration: 200 });

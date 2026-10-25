@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" role="img" aria-label="surlar region icon">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<circle cx="48" cy="48" r="44" fill="#f0c23b"/><circle cx="48" cy="48" r="34" fill="#6b6478"/><circle cx="48" cy="48" r="34" fill="#14121c" fill-opacity="0.35" stroke="none"/><circle cx="48" cy="48" r="34" fill="none" stroke-width="3"/><rect x="22" y="48" width="52" height="24" fill="#8f88a0"/><rect x="22" y="40" width="9" height="9" fill="#8f88a0"/><rect x="37.5" y="40" width="9" height="9" fill="#8f88a0"/><rect x="53" y="40" width="9" height="9" fill="#8f88a0"/><rect x="65" y="40" width="9" height="9" fill="#8f88a0"/><path d="M22 58 H74" stroke="#e5533d" stroke-width="4"/><path d="M48 40 V18" stroke-width="3.5"/><path d="M49 18 L66 23 L60 27 L66 31 L49 31 Z" fill="#e5533d" stroke-width="2"/><path d="M14 36 Q20 18 38 10" stroke="#f0e6d2" stroke-opacity="0.75" stroke-width="3.5" fill="none"/>
+</g>
+</svg>

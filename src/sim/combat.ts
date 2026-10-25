@@ -213,7 +213,7 @@ function impact(w: World, p: Projectile, target: Enemy | Hero | undefined) {
     for (const e of w.enemies) {
       if (e.hp > 0 && chebyshev(center, e.pos) <= p.splash) damageEnemy(w, e, p.dmg);
     }
-    w.events.push({ type: 'explosion', x: p.tx, y: p.ty, radius: p.splash });
+    w.events.push({ type: 'explosion', x: p.tx, y: p.ty, radius: p.splash, kind: p.kind });
     return;
   }
   if (!target) return;

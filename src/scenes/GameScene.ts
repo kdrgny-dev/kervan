@@ -14,7 +14,8 @@ import { drawArena } from '../render/arena';
 import { bossAt, journeyName, REGIONS } from '../data/regions';
 import type { CampaignId } from '../data/campaigns';
 import { Fx } from '../render/fx';
-import { ENEMY_SPRITES, FX, HERO_SPRITES, HERO_TINT, LOOT, POWER_ICONS } from '../render/sprites';
+import { ENEMY_SPRITES, FX, HERO_SPRITES, LOOT, POWER_ICONS } from '../render/sprites';
+import type { ProjectileKind } from '../data/balance';
 import { UnitView } from '../render/UnitView';
 import { chebyshev, type Vec } from '../sim/grid';
 import {
@@ -218,7 +219,7 @@ export class GameScene extends Phaser.Scene {
       case 'heroAttack': {
         this.heroViews.get(e.id)?.playAttack(now);
         const kind = this.world.party.find((h) => h.id === e.id)?.kind;
-        const sound = kind && ({ archer: 'arrow', mage: 'fireball', priest: 'holy' } as const)[kind as 'archer'];
+        const sound = kind && ({ archer: 'arrow', mage: 'fireball', priest: 'holy', fatih: 'fireball' } as const)[kind as 'archer'];
         if (sound) audio.play(sound);
         break;
       }
@@ -284,8 +285,8 @@ export class GameScene extends Phaser.Scene {
         audio.play('slash');
         break;
       case 'explosion':
-        this.oneShot(FX.explosion, px(e.x), px(e.y), CELL * (e.radius * 2 + 1) * 0.9);
-        this.fx.puff(px(e.x), px(e.y), 0xff8a2b, 18);
+        this.oneShot(e.kind === 'cannon' ? FX.cannonBlast : FX.explosion, px(e.x), px(e.y), CELL * (e.radius * 2 + 1) * 0.9);
+        this.fx.puff(px(e.x), px(e.y), e.kind === 'cannon' ? 0xb8a890 : 0xff8a2b, 18);
         audio.play('explosion');
         break;
       case 'shockwaveWarn': {
@@ -398,7 +399,6 @@ export class GameScene extends Phaser.Scene {
           shape: 'square',
           sprite: HERO_SPRITES[hero.kind],
           spriteSize: CELL * 1.15,
-          tint: HERO_TINT[hero.kind],
         });
         this.heroViews.set(hero.id, view);
         this.tweens.add({ targets: view, scale: { from: 1.4, to: 1 }, duration: 220, ease: 'Back.Out' });
@@ -434,7 +434,7 @@ export class GameScene extends Phaser.Scene {
           shape: 'circle',
           outline: COLORS.enemyOutline,
           sprite: ENEMY_SPRITES[look?.as ?? enemy.kind],
-          spriteSize: CELL * (look?.scale ?? base),
+          spriteSize: CELL * (look?.scale ?? def.spriteScale ?? base),
           tint: look?.tint,
           alpha: look?.alpha,
         });
@@ -471,7 +471,7 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
-  private makeProjectile(kind: 'arrow' | 'bone' | 'fireball' | 'holy') {
+  private makeProjectile(kind: ProjectileKind) {
     switch (kind) {
       case 'arrow':
         return this.add.image(0, 0, FX.arrow).setDisplaySize(36, 12).setDepth(15);
@@ -481,6 +481,8 @@ export class GameScene extends Phaser.Scene {
         return this.add.image(0, 0, FX.holy).setDisplaySize(26, 26).setDepth(15);
       case 'fireball':
         return this.add.sprite(0, 0, this.firstFrame(FX.fireball)).setDisplaySize(32, 32).setDepth(15).play(FX.fireball);
+      case 'cannon':
+        return this.add.image(0, 0, FX.cannonball).setDisplaySize(22, 22).setDepth(15);
     }
   }
 
@@ -530,7 +532,7 @@ export class GameScene extends Phaser.Scene {
         const def = HEROES[loot.hero];
         c.add([
           this.add.circle(0, 0, CELL * 0.42, COLORS.leader, 0.18),
-          new UnitView(this, { color: def.color, glyph: def.glyph, size: CELL - 20, shape: 'square', sprite: HERO_SPRITES[loot.hero], spriteSize: CELL * 0.8, tint: HERO_TINT[loot.hero] }),
+          new UnitView(this, { color: def.color, glyph: def.glyph, size: CELL - 20, shape: 'square', sprite: HERO_SPRITES[loot.hero], spriteSize: CELL * 0.8 }),
           this.add.image(0, 0, LOOT.heroToken).setDisplaySize(CELL, CELL),
         ]);
         break;

@@ -3,7 +3,7 @@ import { ENEMIES } from '../data/enemies';
 import { type PowerKind, xpToNext } from '../data/loot';
 import { HERO_CLASSES, SYNERGIES, SYNERGY_TIERS } from '../data/synergies';
 import type { RegionId } from '../data/regions';
-import { POWER_ICONS, REGION_BANNER } from '../render/sprites';
+import { CAMPAIGN_ART, POWER_ICONS, REGION_BANNER } from '../render/sprites';
 import { UI_RASTER } from './assets';
 import { classCounts } from '../sim/synergy';
 import type { World } from '../sim/world';
@@ -123,14 +123,18 @@ export class Hud {
   }
 
   private renderPowers(w: World, now: number) {
-    const active = (Object.keys(w.powers) as PowerKind[]).sort();
+    // Gemiler karadan da süreli bir güç gibi gösterilir
+    const timers: Record<string, { icon: string; left: number }> = {};
+    for (const k of Object.keys(w.powers) as PowerKind[]) timers[k] = { icon: POWER_ICONS[k], left: w.powers[k] ?? 0 };
+    if (w.time < w.wallPassUntil) timers.ship = { icon: CAMPAIGN_ART.ship, left: w.wallPassUntil - w.time };
+    const active = Object.keys(timers).sort();
     const keys = active.join(',');
     if (keys !== this.powerKeys) {
       this.powers.removeAll(true);
       const gap = 64;
       active.forEach((k, i) => {
         const x = (i - (active.length - 1) / 2) * gap;
-        const img = this.scene.add.image(x, 0, POWER_ICONS[k]).setDisplaySize(48, 48).setName(`icon:${k}`);
+        const img = this.scene.add.image(x, 0, timers[k].icon).setDisplaySize(48, 48).setName(`icon:${k}`);
         const secs = this.scene.add.text(x + 18, 18, '', displayStyle(15)).setOrigin(0.5).setStroke(UI.ink, 4).setName(`secs:${k}`);
         this.powers.add([img, secs]);
         if (!this.powerKeys.split(',').includes(k)) {
@@ -141,7 +145,7 @@ export class Hud {
       this.powerKeys = keys;
     }
     for (const k of active) {
-      const left = w.powers[k] ?? 0;
+      const { left } = timers[k];
       (this.powers.getByName(`secs:${k}`) as Phaser.GameObjects.Text)?.setText(`${Math.ceil(left / 1000)}s`);
       const img = this.powers.getByName(`icon:${k}`) as Phaser.GameObjects.Image | null;
       img?.setAlpha(left < 3000 && Math.floor(now / 250) % 2 ? 0.4 : 1);

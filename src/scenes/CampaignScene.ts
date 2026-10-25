@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { CAMPAIGNS, type CampaignId, CAMPAIGN_IDS, finalWave, UPCOMING } from '../data/campaigns';
 import { HEROES } from '../data/heroes';
 import { REGIONS, regionAt } from '../data/regions';
+import { CAMPAIGN_ART } from '../render/sprites';
 import { bindPad } from '../input/gamepad';
 import { profile } from '../meta/profile';
 import { campaignUnlocked } from '../meta/progression';
@@ -15,8 +16,8 @@ import { displayStyle, textStyle, UI } from '../ui/theme';
 
 const CARD_W = 330;
 const CARD_H = 430;
-const COVER_H = 150;
-const COVER_LABEL: Record<CampaignId, string> = { road: 'Kervan', fetih: '1453' };
+const COVER_W = CARD_W - 36;
+const COVER_H = Math.round((COVER_W * 270) / 480);
 
 interface Card {
   root: Phaser.GameObjects.Container;
@@ -81,7 +82,7 @@ export class CampaignScene extends Phaser.Scene {
     root.add([glow, slice(this, 'ui.panel', 0, 0, CARD_W, CARD_H).setAlpha(locked ? 0.6 : 1)]);
 
     const top = -CARD_H / 2 + 18;
-    root.add(this.cover(id, 0, top + COVER_H / 2, locked));
+    root.add(this.cover(CAMPAIGN_ART.covers[id], 0, top + COVER_H / 2, locked));
     root.add(this.add.text(0, top + COVER_H + 30, def.name, displayStyle(30, { color: locked ? UI.dim : UI.text })).setOrigin(0.5));
     root.add(this.add.text(0, top + COVER_H + 58, def.era, textStyle(14, { color: UI.gold, fontStyle: '800' })).setOrigin(0.5));
     root.add(
@@ -108,19 +109,11 @@ export class CampaignScene extends Phaser.Scene {
     enter(this, root, { y: 60 }, 80 + index * 70, 240);
   }
 
-  /** Kapak çizimleri gelene kadar: rotanın bölge renklerinden şerit. */
-  private cover(id: CampaignId, x: number, y: number, locked: boolean) {
-    const w = CARD_W - 36;
+  private cover(key: string, x: number, y: number, locked = false) {
     const c = this.add.container(x, y);
-    const route = CAMPAIGNS[id].route;
-    const g = this.add.graphics();
-    const bw = w / route.length;
-    route.forEach((r, i) => g.fillStyle(REGIONS[r].color, 1).fillRect(-w / 2 + i * bw, -COVER_H / 2, bw + 1, COVER_H));
-    g.fillStyle(0x14121c, 0.35).fillRect(-w / 2, -COVER_H / 2, w, COVER_H);
-    c.add(g);
-    c.add(this.add.text(0, 0, COVER_LABEL[id], displayStyle(52)).setOrigin(0.5));
+    c.add(this.add.image(0, 0, key).setDisplaySize(COVER_W, COVER_H));
     const frame = this.add.graphics();
-    frame.lineStyle(4, 0x14121c).strokeRoundedRect(-w / 2, -COVER_H / 2, w, COVER_H, 12);
+    frame.lineStyle(4, 0x14121c).strokeRoundedRect(-COVER_W / 2, -COVER_H / 2, COVER_W, COVER_H, 12);
     c.add(frame);
     if (locked) c.setAlpha(0.35);
     return c;
@@ -152,10 +145,11 @@ export class CampaignScene extends Phaser.Scene {
   private upcoming(x: number, y: number) {
     const root = this.add.container(x, y);
     root.add(slice(this, 'ui.panel', 0, 0, CARD_W, CARD_H).setAlpha(0.6));
-    root.add(this.add.text(0, -CARD_H / 2 + 50, 'Yakında', displayStyle(30, { color: UI.dim })).setOrigin(0.5));
-    root.add(this.add.text(0, -CARD_H / 2 + 82, 'Hüsnü’nün dedeleri daha çok yol gördü', textStyle(14, { color: UI.muted })).setOrigin(0.5));
+    const top = -CARD_H / 2 + 18;
+    root.add(this.cover(CAMPAIGN_ART.locked, 0, top + COVER_H / 2));
+    root.add(this.add.text(0, top + COVER_H + 30, 'Yakında', displayStyle(30, { color: UI.dim })).setOrigin(0.5));
     UPCOMING.forEach((u, i) => {
-      const cy = -CARD_H / 2 + 150 + i * 82;
+      const cy = top + COVER_H + 84 + i * 62;
       root.add(this.add.image(-CARD_W / 2 + 54, cy, icon('lock')).setDisplaySize(30, 30).setAlpha(0.6));
       root.add(this.add.text(-CARD_W / 2 + 84, cy - 12, u.name, displayStyle(22, { color: UI.dim })).setOrigin(0, 0.5));
       root.add(this.add.text(-CARD_W / 2 + 84, cy + 14, u.era, textStyle(13, { color: UI.muted })).setOrigin(0, 0.5));

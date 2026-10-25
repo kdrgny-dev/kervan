@@ -3,7 +3,6 @@ import { UNLOCK_COST, UPGRADE_STEP } from '../data/economy';
 import { HERO_KINDS, HEROES, type HeroKind } from '../data/heroes';
 import { CAMPAIGNS, type CampaignId, DESTAN_IDS } from '../data/campaigns';
 import { campaignUnlocked } from '../meta/progression';
-import { HERO_TINT } from '../render/sprites';
 import { bindPad } from '../input/gamepad';
 import { profile } from '../meta/profile';
 import { icon, type IconName, portrait } from '../ui/assets';
@@ -91,7 +90,6 @@ export class HeroSelectScene extends Phaser.Scene {
     if (selectedFrame) root.add(selectedFrame);
 
     const face = this.add.image(0, -58, portrait(kind)).setDisplaySize(148, 148);
-    if (!locked && HERO_TINT[kind]) face.setTint(HERO_TINT[kind]);
     root.add(face);
     const name = this.add.text(0, 30, def.name, displayStyle(26)).setOrigin(0.5);
     const role = this.add.text(0, 54, def.role, textStyle(13, { color: UI.muted })).setOrigin(0.5);
