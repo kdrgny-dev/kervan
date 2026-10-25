@@ -42,6 +42,7 @@ export function createWorld({ seed = Date.now(), waves = true, drafts = true, lo
     campaign,
     route: CAMPAIGNS[campaign].route,
     wallPassUntil: 0,
+    wallGrace: false,
     loadout: { ...DEFAULT_LOADOUT, ...loadout },
     mods: defaultMods(),
     cards: {},
@@ -83,7 +84,11 @@ export function createWorld({ seed = Date.now(), waves = true, drafts = true, lo
 }
 
 export function turn(w: World, dir: Dir) {
-  if (w.alive) w.input.push(dir, w.dir);
+  if (!w.alive) return;
+  const before = w.input.size;
+  w.input.push(dir, w.dir);
+  // Duvar önünde bekleyen kafile yeni yönü bir sonraki adımı beklemeden alır
+  if (w.wallGrace && w.input.size > before) w.moveAcc = effectiveTick(w);
 }
 
 export function stepWorld(w: World, dtMs: number): WorldEvent[] {
@@ -134,9 +139,17 @@ function moveTick(w: World) {
   let target = add(w.party[0].pos, DIR_VEC[w.dir]);
 
   if (isWall(target)) {
-    if (w.time >= w.wallPassUntil) return endGame(w, 'wall');
-    target = wrapAround(target);
+    if (w.time < w.wallPassUntil) target = wrapAround(target);
+    else if (w.wallGrace) return endGame(w, 'wall');
+    else {
+      // Çizim bir adım geriden geldiği için oyuncu duvarı geç görür: bir adımlık son an payı
+      w.wallGrace = true;
+      for (const h of w.party) h.prev = h.pos;
+      w.events.push({ type: 'wallGrace' });
+      return;
+    }
   }
+  w.wallGrace = false;
 
   const enemy = enemyAt(w, target);
   if (enemy && !bump(w, enemy)) {

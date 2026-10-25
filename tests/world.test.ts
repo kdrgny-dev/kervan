@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { BASE_TICK_MS } from '../src/config';
+import { SIM_DT } from '../src/data/balance';
 import { InputQueue } from '../src/sim/inputQueue';
 import { createWorld, stepWorld, turn } from '../src/sim/world';
 import { arena, tick } from './helpers';
@@ -57,11 +58,37 @@ describe('world', () => {
     ]);
   });
 
-  it('ends the game on wall hit', () => {
+  it('ends the game on wall hit after a one-step grace', () => {
     const w = arena([{ x: 22, y: 5 }]);
+    const first = tick(w);
+    expect(w.alive).toBe(true);
+    expect(first).toContainEqual({ type: 'wallGrace' });
+    expect(w.party[0].pos).toEqual({ x: 22, y: 5 });
     const events = tick(w);
     expect(w.alive).toBe(false);
     expect(events).toContainEqual({ type: 'gameOver', reason: 'wall' });
+  });
+
+  it('a turn during the grace step is taken right away', () => {
+    const w = arena([{ x: 22, y: 5 }]);
+    tick(w);
+    turn(w, 'down');
+    stepWorld(w, SIM_DT);
+    expect(w.alive).toBe(true);
+    expect(w.party[0].pos).toEqual({ x: 22, y: 6 });
+    expect(w.wallGrace).toBe(false);
+  });
+
+  it('the grace is spent per wall, not per run', () => {
+    const w = arena([{ x: 22, y: 5 }]);
+    tick(w);
+    turn(w, 'down');
+    tick(w);
+    turn(w, 'right');
+    tick(w);
+    expect(w.alive).toBe(true);
+    tick(w);
+    expect(w.alive).toBe(false);
   });
 
   it('ends the game on self hit', () => {

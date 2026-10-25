@@ -305,6 +305,7 @@ F6 paralel yürüyebilir: grafik üretimi F0'dan itibaren başlayabilir.
 - Dokunmatikte buton, sekme ve toggle'ların dokunma alanı en az 44 pt'ye büyür (`minTouchPx`).
 - **Telefon oynanışı:** yatay telefonda oyun sahnesi ekran oranına genişler (menüler 1152×720'de kalır); dünya kamerası kare ~34 pt olacak kadar yakınlaşıp kafileyi izler, arayüz (derinlik ≥ 40) ayrı kamerada sabit çizilir.
 - Kaydırma parmak kalkmadan algılanır (20 pt); tek hamlede art arda dönülebilir.
+- **Duvar son an payı:** kafile duvara çarpacağı adımda bir adım bekler (lider kırmızı yanar); bu sırada verilen yön hemen uygulanır, verilmezse sonraki adımda çarpar. Çizim bir adım geriden geldiği için gerekli.
 - iPhone'da tam ekran API'si yok; Ayarlar'da tam ekran yerine "Ana ekrana ekle" yazar. iOS ses bağlamı dokunmayla ve uygulamaya dönünce yeniden açılır.
 
 ## 14. Görsel Sistem (F6)

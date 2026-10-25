@@ -420,6 +420,9 @@ export class GameScene extends Phaser.Scene {
         audio.play('power');
         this.hud.toast(CARDS[e.id].name, UI.gold);
         break;
+      case 'wallGrace':
+        this.heroViews.get(this.world.party[0]?.id ?? -1)?.flash(0xff5a4a, 160, 'tint');
+        break;
       case 'shipsStart':
         this.time.delayedCall(1400, () => this.hud.toast('Gemiler karadan! Duvarlardan geçebilirsin', UI.gem));
         break;
