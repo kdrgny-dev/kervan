@@ -10,7 +10,28 @@ permissions:
   contents: write
 
 jobs:
+  # Taslak tek yerde açılır; matris işleri aynı anda açmaya çalışınca iki taslak oluşuyordu
+  create-release:
+    runs-on: ubuntu-latest
+    outputs:
+      id: ${{ steps.draft.outputs.id }}
+    steps:
+      - id: draft
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          id=$(gh api "repos/$GITHUB_REPOSITORY/releases" --jq ".[] | select(.tag_name == \"$TAG\") | .id" | head -n1)
+          if [ -z "$id" ]; then
+            id=$(gh api -X POST "repos/$GITHUB_REPOSITORY/releases" \
+              -f tag_name="$TAG" -f name="Kervan $TAG" -F draft=true \
+              -f body="Kurulum dosyaları aşağıda. macOS ve Windows sürümleri henüz imzasız; ilk açılışta güvenlik uyarısını onaylaman gerekir." \
+              --jq .id)
+          fi
+          echo "id=$id" >> "$GITHUB_OUTPUT"
+
   desktop:
+    needs: create-release
     strategy:
       fail-fast: false
       matrix:
@@ -53,11 +74,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: ${{ github.ref_name }}
-          releaseName: Kervan ${{ github.ref_name }}
-          releaseBody: Kurulum dosyaları aşağıda. macOS ve Windows sürümleri henüz imzasız; ilk açılışta güvenlik uyarısını onaylaman gerekir.
-          releaseDraft: true
-          prerelease: false
+          releaseId: ${{ needs.create-release.outputs.id }}
           args: ${{ matrix.args }}
 
   web-zip:
