@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { minTouchPx } from '../platform';
 import { icon, type IconName, SLICES, type SliceKey, TOGGLE, UI_RASTER } from './assets';
 import { displayStyle, textStyle, UI } from './theme';
 
@@ -68,7 +69,8 @@ export class Button extends Phaser.GameObjects.Container {
     this.layout();
     this.add(this.content);
 
-    const zone = scene.add.zone(0, 0, w, h).setInteractive({ useHandCursor: true });
+    const min = minTouchPx(scene.scale);
+    const zone = scene.add.zone(0, 0, Math.max(w, min), Math.max(h, min)).setInteractive({ useHandCursor: true });
     this.add(zone);
     zone.on('pointerover', () => {
       if (!this.enabled) return;
@@ -315,7 +317,17 @@ export class Bar extends Phaser.GameObjects.Container {
 export class Toggle extends Phaser.GameObjects.Image {
   constructor(scene: Phaser.Scene, x: number, y: number, private value: boolean, onChange: (v: boolean) => void) {
     super(scene, x, y, value ? TOGGLE.on : TOGGLE.off);
-    this.setDisplaySize(96, 48).setInteractive({ useHandCursor: true });
+    this.setDisplaySize(96, 48);
+    // Dokunmatikte görünenden büyük dokunma alanı (doku koordinatlarında); ayar listeleri
+    // sık dizildiği için dikeyde az büyür, yoksa alttaki satırın düğmesi tıklamayı kapar
+    const { width: fw, height: fh } = this.frame;
+    const padX = Math.max(0, (minTouchPx(scene.scale) - 96) / 2) / this.scaleX;
+    const padY = Math.min(12, Math.max(0, (minTouchPx(scene.scale) - 48) / 2)) / this.scaleY;
+    this.setInteractive({
+      hitArea: new Phaser.Geom.Rectangle(-padX, -padY, fw + padX * 2, fh + padY * 2),
+      hitAreaCallback: Phaser.Geom.Rectangle.Contains,
+      useHandCursor: true,
+    });
     const base = this.scale;
     this.on('pointerup', () => {
       this.set(!this.value);
@@ -337,7 +349,7 @@ export function tab(scene: Phaser.Scene, x: number, y: number, w: number, text: 
   c.add(slice(scene, active ? 'ui.tab_active' : 'ui.tab_idle', 0, 0, w));
   c.add(scene.add.text(0, 2, text, displayStyle(22, { color: active ? UI.text : UI.muted })).setOrigin(0.5));
   if (!active) {
-    const zone = scene.add.zone(0, 0, w, 56).setInteractive({ useHandCursor: true });
+    const zone = scene.add.zone(0, 0, w, Math.max(56, minTouchPx(scene.scale))).setInteractive({ useHandCursor: true });
     zone.on('pointerup', onClick);
     c.add(zone);
   }
