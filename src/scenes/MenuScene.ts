@@ -6,7 +6,8 @@ import { isDesktop, quitApp } from '../platform';
 import { HERO_SPRITES } from '../render/sprites';
 import { UnitView } from '../render/UnitView';
 import { titleFor, xpForLevel } from '../data/progression';
-import { ensureQuests } from '../meta/progression';
+import { campaignUnlocked, ensureQuests } from '../meta/progression';
+import { DESTAN_IDS } from '../data/campaigns';
 import { ensureIntro, markSeen } from '../meta/story';
 import { StoryDialog } from '../ui/dialog';
 import { LOGO } from '../ui/assets';
@@ -81,8 +82,10 @@ export class MenuScene extends Phaser.Scene {
     enter(this, c, { x: -40 }, 100, 240);
   }
 
+  /** Açık destan yoksa seçim ekranını atla. */
   private play() {
-    this.scene.start('heroSelect');
+    if (DESTAN_IDS.some((c) => campaignUnlocked(profile.data, c))) this.scene.start('campaigns');
+    else this.scene.start('heroSelect', { campaign: 'road' });
   }
 
   private records(x: number, y: number) {

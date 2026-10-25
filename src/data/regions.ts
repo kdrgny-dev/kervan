@@ -1,6 +1,8 @@
 import type { EnemyKind } from './enemies';
 
-export type RegionId = 'vale' | 'bones' | 'ash' | 'frost';
+export type RoadRegion = 'vale' | 'bones' | 'ash' | 'frost';
+export type FetihRegion = 'hisar' | 'halic' | 'galata' | 'surlar';
+export type RegionId = RoadRegion | FetihRegion;
 
 export interface RegionDef {
   name: string;
@@ -8,6 +10,8 @@ export interface RegionDef {
   /** Bölge içi dalga sırasına göre açılan düşmanlar (1 = bölgenin ilk dalgası). */
   roster: { kind: EnemyKind; from: number }[];
   boss: EnemyKind;
+  /** Bölgenin son (10.) dalgasında boss yerine gelen final boss. */
+  finalBoss?: EnemyKind;
   /** Harita ve arayüzde bölgenin ana rengi. */
   color: number;
 }
@@ -64,19 +68,75 @@ export const REGIONS: Record<RegionId, RegionDef> = {
     ],
     boss: 'frostGiant',
   },
+  hisar: {
+    color: 0xc9b48a,
+    name: 'Rumeli Hisarı',
+    desc: 'Hisar üç ayda yükseldi. Taşları dedemin develeri taşıdı, develer hâlâ şikâyet eder.',
+    roster: [
+      { kind: 'bat', from: 1 },
+      { kind: 'gargoyle', from: 1 },
+      { kind: 'skeleton', from: 3 },
+      { kind: 'catapultGolem', from: 5 },
+    ],
+    boss: 'stoneSentinel',
+  },
+  halic: {
+    color: 0x4a8ac9,
+    name: 'Haliç Kıyısı',
+    desc: 'Limanın ağzı zincirle kapalı. Zincir de canlanmış, kimse şaşırmadı.',
+    roster: [
+      { kind: 'fogWisp', from: 1 },
+      { kind: 'chainSerpent', from: 1 },
+      { kind: 'gargoyle', from: 3 },
+      { kind: 'bat', from: 4 },
+    ],
+    boss: 'harborKraken',
+  },
+  galata: {
+    color: 0x6fae5a,
+    name: 'Galata Sırtları',
+    desc: 'Gemiler buradan karadan yürüdü. Kızakları yağlayan yağ küpleri biraz fazla heveslendi.',
+    roster: [
+      { kind: 'chainSerpent', from: 1 },
+      { kind: 'catapultGolem', from: 1 },
+      { kind: 'fogWisp', from: 2 },
+      { kind: 'goblin', from: 4 },
+    ],
+    boss: 'oilGiant',
+  },
+  surlar: {
+    color: 0x8a4a4a,
+    name: 'Kara Surlar',
+    desc: 'Bin yıllık surlar. Yorgunlar ama pes etmeye niyetleri yok.',
+    roster: [
+      { kind: 'gargoyle', from: 1 },
+      { kind: 'catapultGolem', from: 1 },
+      { kind: 'chainSerpent', from: 2 },
+      { kind: 'fogWisp', from: 3 },
+    ],
+    boss: 'stoneSentinel',
+    finalBoss: 'wallWarden',
+  },
 };
 
-export const ROUTE: RegionId[] = ['vale', 'bones', 'ash', 'frost'];
+export const ROUTE: RoadRegion[] = ['vale', 'bones', 'ash', 'frost'];
 
 /** n. dalganın yolculuktaki yeri: bölge, bölge içi dalga, kaçıncı yolculuk. */
-export function regionAt(wave: number) {
+export function regionAt(wave: number, route: readonly RegionId[] = ROUTE) {
   const index = Math.floor((Math.max(1, wave) - 1) / REGION_WAVES);
   return {
-    id: ROUTE[index % ROUTE.length],
-    index: index % ROUTE.length,
+    id: route[index % route.length],
+    index: index % route.length,
     local: ((Math.max(1, wave) - 1) % REGION_WAVES) + 1,
-    journey: Math.floor(index / ROUTE.length) + 1,
+    journey: Math.floor(index / route.length) + 1,
   };
+}
+
+/** n. dalganın boss'u (bölgenin son dalgasında varsa final boss). */
+export function bossAt(wave: number, route: readonly RegionId[] = ROUTE): EnemyKind {
+  const r = regionAt(wave, route);
+  const def = REGIONS[r.id];
+  return r.local === REGION_WAVES && def.finalBoss ? def.finalBoss : def.boss;
 }
 
 export const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];

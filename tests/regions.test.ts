@@ -84,8 +84,8 @@ describe('new enemies', () => {
     expect(w.projectiles.filter((p) => p.owner === 'enemy').length).toBeGreaterThanOrEqual(3);
   });
 
-  it('every enemy has its own sprite set', () => {
-    for (const kind of Object.keys(ENEMIES)) expect(ENEMY_SPRITES[kind as keyof typeof ENEMIES]).toBeDefined();
+  it('every enemy has a sprite set, its own or a borrowed look', () => {
+    for (const [kind, def] of Object.entries(ENEMIES)) expect(ENEMY_SPRITES[def.look?.as ?? (kind as keyof typeof ENEMIES)]).toBeDefined();
   });
 });
 
@@ -149,7 +149,7 @@ describe('market', () => {
 
   it('v2 saves migrate into v3', () => {
     const s = parseSave(JSON.stringify({ version: 2, gold: 50, account: { level: 3, xp: 10 } }));
-    expect(s.version).toBe(3);
+    expect(s.version).toBe(4);
     expect(s.account.level).toBe(3);
     expect(s.journey).toEqual({ furthest: 0, bosses: [] });
     expect(s.market).toEqual({ goldGain: 0, freeRerolls: 0, xpGain: 0 });

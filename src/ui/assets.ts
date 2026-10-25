@@ -49,7 +49,9 @@ export const ICONS = [
 export type IconName = (typeof ICONS)[number];
 export const icon = (name: IconName) => `icon.${name}`;
 
-export const portrait = (kind: HeroKind) => `portrait.${kind}`;
+/** Çizimi gelmemiş kahramanlar başka bir portreyi renklendirerek kullanır (bkz. HERO_TINT). */
+const PORTRAIT_AS: Partial<Record<HeroKind, HeroKind>> = { fatih: 'knight' };
+export const portrait = (kind: HeroKind) => `portrait.${PORTRAIT_AS[kind] ?? kind}`;
 export const LOGO = 'brand.logo';
 export const TOGGLE = { on: 'ui.toggle_on', off: 'ui.toggle_off' };
 

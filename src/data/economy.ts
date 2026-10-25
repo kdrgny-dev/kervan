@@ -6,6 +6,7 @@ export const UNLOCK_COST: Record<HeroKind, number> = {
   mage: 400,
   priest: 700,
   rogue: 1000,
+  fatih: 0,
 };
 
 export const STARTING_HEROES: HeroKind[] = ['knight', 'archer'];

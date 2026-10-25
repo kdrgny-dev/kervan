@@ -168,15 +168,17 @@ export class ShopScene extends Phaser.Scene {
 
   private heroRows(root: Phaser.GameObjects.Container) {
     const save = profile.data;
-    const rowH = 100;
-    const top = PANEL.y - PANEL.h / 2 + 62;
-    HERO_KINDS.forEach((kind, i) => {
+    // Efsanevi kahramanlar altınla açılmaz; destanı bitirene kadar listede yok
+    const kinds = HERO_KINDS.filter((k) => !HEROES[k].legendary || save.unlocked.includes(k));
+    const rowH = Math.min(100, (PANEL.h - 30) / kinds.length);
+    const top = PANEL.y - PANEL.h / 2 + 12 + rowH / 2;
+    kinds.forEach((kind, i) => {
       const y = top + i * rowH;
       const def = HEROES[kind];
       root.add(heroBadge(this, 150, y, kind, 64));
       root.add(this.add.text(200, y - 12, def.name, displayStyle(25)).setOrigin(0, 0.5));
       root.add(this.add.text(200, y + 15, def.role, textStyle(14, { color: UI.muted })).setOrigin(0, 0.5));
-      if (i < HERO_KINDS.length - 1) root.add(this.add.rectangle(PANEL.x, y + rowH / 2, PANEL.w - 64, 2, UI.panelEdge));
+      if (i < kinds.length - 1) root.add(this.add.rectangle(PANEL.x, y + rowH / 2, PANEL.w - 64, 2, UI.panelEdge));
 
       if (!save.unlocked.includes(kind)) {
         root.add(this.add.text(368, y, 'Kilidi açınca yükseltmeler burada görünür.', textStyle(16, { color: UI.muted })).setOrigin(0, 0.5));

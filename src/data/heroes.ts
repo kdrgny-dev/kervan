@@ -1,4 +1,4 @@
-export type HeroKind = 'knight' | 'archer' | 'mage' | 'priest' | 'rogue';
+export type HeroKind = 'knight' | 'archer' | 'mage' | 'priest' | 'rogue' | 'fatih';
 
 export type AttackKind = 'melee' | 'arrow' | 'fireball' | 'holy';
 
@@ -15,6 +15,8 @@ export interface HeroDef {
   splash?: number;
   heal?: { amount: number; everyMs: number };
   crit?: { chance: number; mult: number };
+  /** Destan ödülü; altınla açılmaz. */
+  legendary?: boolean;
 }
 
 export const HEROES: Record<HeroKind, HeroDef> = {
@@ -37,6 +39,10 @@ export const HEROES: Record<HeroKind, HeroDef> = {
   rogue: {
     name: 'Haydut', role: 'Hızlı, kritik vuruş', color: 0x5a4a8a, glyph: 'H',
     hp: 50, dmg: 9, cooldownMs: 550, range: 1, attack: 'melee', crit: { chance: 0.25, mult: 2 },
+  },
+  fatih: {
+    name: 'Fatih', role: 'Şahi topu, alan hasarı', color: 0xc8402a, glyph: 'F',
+    hp: 55, dmg: 16, cooldownMs: 1900, range: 5, attack: 'fireball', splash: 1, legendary: true,
   },
 };
 

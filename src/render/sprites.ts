@@ -2,7 +2,7 @@ import type Phaser from 'phaser';
 import type { EnemyKind } from '../data/enemies';
 import type { HeroKind } from '../data/heroes';
 import type { PowerKind } from '../data/loot';
-import type { RegionId } from '../data/regions';
+import type { RegionId, RoadRegion } from '../data/regions';
 
 export interface SpriteSet {
   idle: string;
@@ -70,6 +70,10 @@ export const HERO_SPRITES: Partial<Record<HeroKind, SpriteSet>> = {
   priest: unit('priest', 'walk'),
   rogue: unit('rogue', 'walk'),
 };
+HERO_SPRITES.fatih = HERO_SPRITES.knight;
+
+/** Çizimi gelene kadar başka kahramanın sprite'ını kullananların rengi. */
+export const HERO_TINT: Partial<Record<HeroKind, number>> = { fatih: 0xf0b070 };
 
 export const ENEMY_SPRITES: Partial<Record<EnemyKind, SpriteSet>> = {
   slime: unit('slime', 'move', 3, 150),
@@ -93,7 +97,7 @@ export interface TileSet {
   decor: string[];
 }
 
-function tileSet(region: RegionId): TileSet {
+function tileSet(region: RoadRegion): TileSet {
   const dir = region === 'vale' ? 'tiles' : `tiles/${region}`;
   const decorDir = region === 'vale' ? 'decor' : `decor/${region}`;
   const p = region === 'vale' ? 'tile' : `tile.${region}`;
@@ -106,12 +110,14 @@ function tileSet(region: RegionId): TileSet {
   };
 }
 
-export const REGION_TILES: Record<RegionId, TileSet> = {
+export const REGION_TILES = {
   vale: tileSet('vale'),
   bones: tileSet('bones'),
   ash: tileSet('ash'),
   frost: tileSet('frost'),
-};
+} as Record<RegionId, TileSet>;
+// Fetih çizimleri gelene kadar en yakın setler
+Object.assign(REGION_TILES, { hisar: REGION_TILES.bones, halic: REGION_TILES.frost, galata: REGION_TILES.vale, surlar: REGION_TILES.ash });
 
 /** Eski çağrılar için Yeşil Vadi seti. */
 export const TILES = REGION_TILES.vale;
@@ -149,17 +155,17 @@ export const CAMP_SLOTS: Record<Building | 'campfire', [number, number, number, 
   campfire: [528, 590, 96, 96],
 };
 
-const ART_REGION: Record<RegionId, string> = { vale: 'valley', bones: 'bones', ash: 'ash', frost: 'frost' };
+const ART_REGION: Record<RoadRegion, string> = { vale: 'valley', bones: 'bones', ash: 'ash', frost: 'frost' };
 
 export const MAP = {
   route: add('map.route', 'ui/map/route_map.svg', 1100, 420),
   icons: Object.fromEntries(
-    (Object.keys(ART_REGION) as RegionId[]).map((r) => [r, add(`map.icon.${r}`, `ui/map/region_icon_${ART_REGION[r]}.svg`, 96)]),
-  ) as Record<RegionId, string>,
+    (Object.keys(ART_REGION) as RoadRegion[]).map((r) => [r, add(`map.icon.${r}`, `ui/map/region_icon_${ART_REGION[r]}.svg`, 96)]),
+  ) as Record<RoadRegion, string>,
 };
 
 /** route_map üzerindeki düğüm merkezleri (manifest _meta.map_nodes). */
-export const MAP_NODES: Record<RegionId | 'start' | 'horizon', [number, number]> = {
+export const MAP_NODES: Record<RoadRegion | 'start' | 'horizon', [number, number]> = {
   start: [40, 300],
   vale: [300, 250],
   bones: [520, 180],
@@ -168,12 +174,13 @@ export const MAP_NODES: Record<RegionId | 'start' | 'horizon', [number, number]>
   horizon: [1088, 140],
 };
 
-export const REGION_BANNER: Record<RegionId, { key: string; text: string }> = {
+export const REGION_BANNER = {
   vale: { key: add('banner.vale', 'ui/components/ui_banner_region_valley.svg', 640, 128), text: '#14121c' },
   bones: { key: add('banner.bones', 'ui/components/ui_banner_region_bones.svg', 640, 128), text: '#14121c' },
   ash: { key: add('banner.ash', 'ui/components/ui_banner_region_ash.svg', 640, 128), text: '#f4efe6' },
   frost: { key: add('banner.frost', 'ui/components/ui_banner_region_frost.svg', 640, 128), text: '#14121c' },
-};
+} as Record<RegionId, { key: string; text: string }>;
+Object.assign(REGION_BANNER, { hisar: REGION_BANNER.bones, halic: REGION_BANNER.frost, galata: REGION_BANNER.vale, surlar: REGION_BANNER.ash });
 
 // ---------- ganimet ----------
 

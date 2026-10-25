@@ -1,9 +1,10 @@
 import { BASE_TICK_MS, GRID_H, GRID_W } from '../config';
 import { CARD_IDS, defaultMods } from '../data/cards';
+import { CAMPAIGNS, type CampaignId } from '../data/campaigns';
 import { BUMP_DMG_RATIO, BUMP_INVULN_MS, FIRST_BREAK_MS, SIM_DT, SLOW_FACTOR } from '../data/balance';
 import { damageHero, updateHeroes, updateProjectiles } from './combat';
 import { updateEnemies } from './enemies';
-import { add, DIR_VEC, type Dir, eq, isWall } from './grid';
+import { add, DIR_VEC, type Dir, eq, isWall, type Vec } from './grid';
 import { InputQueue } from './inputQueue';
 import { createRng, pick } from './rng';
 import { collect, spawnHeroToken, updateLoot } from './loot';
@@ -21,6 +22,7 @@ export interface WorldOptions {
   /** Dalga sonu kart seçimi; testlerde kapatılabilir. */
   drafts?: boolean;
   loadout?: Partial<Loadout>;
+  campaign?: CampaignId;
 }
 
 export const DEFAULT_LOADOUT: Loadout = {
@@ -35,15 +37,18 @@ export const DEFAULT_LOADOUT: Loadout = {
   cards: [...CARD_IDS],
 };
 
-export function createWorld({ seed = Date.now(), waves = true, drafts = true, loadout = {} }: WorldOptions = {}): World {
+export function createWorld({ seed = Date.now(), waves = true, drafts = true, loadout = {}, campaign = 'road' }: WorldOptions = {}): World {
   const w: World = {
+    campaign,
+    route: CAMPAIGNS[campaign].route,
+    wallPassUntil: 0,
     loadout: { ...DEFAULT_LOADOUT, ...loadout },
     mods: defaultMods(),
     cards: {},
     draft: null,
     draftsEnabled: drafts,
     syn: emptySynergies(),
-    tally: { killsByKind: {}, bosses: 0, recruited: 0, cardsPicked: 0, cursedPicked: 0, maxParty: 1, maxTier: {}, furthestRegion: 0, bossKinds: {} },
+    tally: { killsByKind: {}, bosses: 0, recruited: 0, cardsPicked: 0, cursedPicked: 0, maxParty: 1, maxTier: {}, furthestRegion: 0, bossKinds: {}, campaignCleared: false },
     party: [],
     enemies: [],
     projectiles: [],
@@ -126,9 +131,12 @@ function simStep(w: World, dt: number) {
 function moveTick(w: World) {
   w.dir = w.input.next(w.dir);
   w.ticks++;
-  const target = add(w.party[0].pos, DIR_VEC[w.dir]);
+  let target = add(w.party[0].pos, DIR_VEC[w.dir]);
 
-  if (isWall(target)) return endGame(w, 'wall');
+  if (isWall(target)) {
+    if (w.time >= w.wallPassUntil) return endGame(w, 'wall');
+    target = wrapAround(target);
+  }
 
   const enemy = enemyAt(w, target);
   if (enemy && !bump(w, enemy)) {
@@ -157,6 +165,12 @@ function moveTick(w: World) {
     w.events.push({ type: 'recruited', hero });
   }
 }
+
+/** Duvarın ötesindeki hücre: arenanın karşı kenarındaki ilk boş sıra. */
+const wrapAround = (p: Vec): Vec => ({
+  x: p.x <= 0 ? GRID_W - 2 : p.x >= GRID_W - 1 ? 1 : p.x,
+  y: p.y <= 0 ? GRID_H - 2 : p.y >= GRID_H - 1 ? 1 : p.y,
+});
 
 function trackTally(w: World) {
   const t = w.tally;

@@ -94,6 +94,75 @@ export const STORY = {
     title: 'Kervanbaşı Yardımcısı',
     lines: ['Yardımcım oldun! İlk görevin: çaydanlığı taşımak. İkinci görevin: çaydanlığı dökmemek.'],
   },
+
+  // ---------- Destan I · Fetih ----------
+  destans: {
+    mood: 'surprised',
+    title: 'Destanlar',
+    lines: [
+      'Sana hiç dedelerimi anlattım mı? Anlatmadıysam ayıp etmişim. Anlattıysam yine dinle, her seferinde daha güzel oluyor.',
+      'Tarihin bütün büyük seferlerinin arkasında bir kervan vardı. O kervanın başında da hep bir Hüsnü. Destanlar artık açık!',
+    ],
+  },
+  fetih_intro: {
+    title: 'Fetih · 1453',
+    lines: [
+      'Yıl 1453. Ordunun bütün topları, barutu, çadırı… hepsi dedem Hüsnü’nün kervanında.',
+      'Fatih’e sormuşlar: “Bu iş nasıl olacak?” “Hüsnü’ye sorun” demiş. Dedem öyle anlatırdı. Ben de öyle anlatırım.',
+      'Önce Rumeli Hisarı. Taşları dedemin develeri taşıdı. Develer hâlâ şikâyet eder.',
+    ],
+  },
+  region_halic: {
+    mood: 'surprised',
+    title: 'Haliç Kıyısı',
+    lines: [
+      'Limanın ağzına zincir germişler. Zincir de canlanmış! Dedem “zincirle tartışılmaz” derdi.',
+      'Boss dalgalarında gemileri karadan yürütüyoruz: kafile duvardan girip öbür taraftan çıkar. Tarih böyle yazar. Dedem öyle yazdırdı.',
+    ],
+  },
+  region_galata: {
+    mood: 'laugh',
+    title: 'Galata Sırtları',
+    lines: [
+      'Kızakları yağladık, gemileri tepeden aşırdık! Yağ dedemin dükkânındandı. Hesabı hâlâ ödenmedi.',
+      'Yağ küplerinden biri biraz fazla heveslendi. Dikkat et, kaygandır.',
+    ],
+  },
+  region_surlar: {
+    title: 'Kara Surlar',
+    lines: [
+      'Önümüzde bin yıllık surlar. Yorgunlar ama pes etmeye niyetleri yok. Bizim de yok.',
+      'Son dalgada surların bekçisi uyanacak. Dedem onu ilk görünce testisini düşürmüş. Testi kırılmamış, dedem öyle iddia eder.',
+    ],
+  },
+  boss_stoneSentinel: {
+    mood: 'laugh',
+    title: 'Taş Nöbetçi',
+    lines: ['Hisarın taş nöbetçisi de yıkıldı! Taşlarını geri kullandık. Dedem hiçbir şeyi israf etmezdi, özellikle de taşı.'],
+  },
+  boss_harborKraken: {
+    mood: 'surprised',
+    title: 'Liman Ahtapotu',
+    lines: ['Ahtapot kaçtı! Giderken dedemin şapkasını da götürdü. Dedem ömür boyu ahtapota küs kaldı.'],
+  },
+  boss_oilGiant: {
+    mood: 'laugh',
+    title: 'Yağ Küpü Devi',
+    lines: ['Dev kaydı, düştü, yuvarlandı, Haliç’e kadar gitti. Gemilerden önce o vardı denize. Tarihe not düşelim.'],
+  },
+  boss_wallWarden: {
+    mood: 'surprised',
+    title: 'Sur Bekçisi Dev',
+    lines: ['Bekçi diz çöktü! Surlar düştü!'],
+  },
+  fetih_done: {
+    mood: 'laugh',
+    title: 'Fetih',
+    lines: [
+      'Şehir alındı! Fatih dedeme dönmüş, “Hüsnü, sen olmasan…” demiş. Cümlenin devamını kimse duymamış.',
+      'Dedem “sen olmasan olmazdı” diye tamamlardı. Ben de öyle tamamlarım. Fatih artık kafilende, evlat. Saygıda kusur etme.',
+    ],
+  },
 } satisfies Record<string, StoryBeat>;
 
 export type StoryId = keyof typeof STORY;

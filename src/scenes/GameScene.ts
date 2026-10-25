@@ -11,11 +11,12 @@ import { applyRunResults, type RunReport } from '../meta/progression';
 import { loadoutFrom } from '../meta/shop';
 import { xpForLevel, type RunSummary } from '../data/progression';
 import { drawArena } from '../render/arena';
-import { journeyName, REGIONS, regionAt } from '../data/regions';
+import { bossAt, journeyName, REGIONS } from '../data/regions';
+import type { CampaignId } from '../data/campaigns';
 import { Fx } from '../render/fx';
-import { ENEMY_SPRITES, FX, HERO_SPRITES, LOOT, POWER_ICONS } from '../render/sprites';
+import { ENEMY_SPRITES, FX, HERO_SPRITES, HERO_TINT, LOOT, POWER_ICONS } from '../render/sprites';
 import { UnitView } from '../render/UnitView';
-import type { Vec } from '../sim/grid';
+import { chebyshev, type Vec } from '../sim/grid';
 import {
   createWorld,
   enemyAlpha,
@@ -44,14 +45,19 @@ const COLORS = {
 };
 
 const MAX_DAMAGE_TEXTS = 24;
+const COUNTDOWN_STEPS = 3;
+const COUNTDOWN_STEP_MS = 600;
 
 const px = (v: number) => v * CELL + CELL / 2;
 const lerp = (a: Vec, b: Vec, t: number): Vec => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t });
 
 export class GameScene extends Phaser.Scene {
   private hero: HeroKind = 'knight';
+  private campaign: CampaignId = 'road';
   private world!: World;
   private paused = false;
+  private countdownLeft = 0;
+  private countdownText!: Phaser.GameObjects.Text;
   /** Duraklatınca dondurulan tween'ler; menü animasyonları serbest kalsın diye pauseAll kullanılmıyor. */
   private frozen: Phaser.Tweens.Tween[] = [];
   private liveTexts = 0;
@@ -73,8 +79,9 @@ export class GameScene extends Phaser.Scene {
     super('game');
   }
 
-  init(data: { hero?: HeroKind }) {
+  init(data: { hero?: HeroKind; campaign?: CampaignId }) {
     this.hero = data.hero ?? profile.data.lastHero;
+    this.campaign = data.campaign ?? 'road';
   }
 
   create() {
@@ -89,13 +96,16 @@ export class GameScene extends Phaser.Scene {
     this.fx = new Fx(this);
     this.hud = new Hud(this, () => this.togglePause());
     this.draftUi = new DraftOverlay(this, {
-      pick: (id) => pickCard(this.world, id),
+      pick: (id) => {
+        if (pickCard(this.world, id)) this.countdown();
+      },
       reroll: () => {
         if (rerollDraft(this.world)) this.showDraft();
       },
     });
     this.overlay = this.add.container(0, 0).setDepth(60).setVisible(false);
     this.pauseMenu = this.buildPauseMenu();
+    this.countdownText = this.add.text(this.scale.width / 2, this.scale.height / 2, '', displayStyle(140, { color: UI.gold, stroke: '#14121c', strokeThickness: 12 })).setOrigin(0.5).setDepth(70);
 
     bindControls(this, {
       onDir: (d) => {
@@ -133,7 +143,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   update(_time: number, delta: number) {
-    if (!this.paused) {
+    if (!this.paused && this.countdownLeft > 0) this.tickCountdown(delta);
+    else if (!this.paused) {
       // Sekme arka plana düşünce dev bir delta gelmesin
       for (const e of stepWorld(this.world, Math.min(delta, 100))) this.handle(e);
     }
@@ -160,14 +171,40 @@ export class GameScene extends Phaser.Scene {
       for (const v of map.values()) v.destroy();
       map.clear();
     }
-    this.world = createWorld({ loadout: loadoutFrom(profile.data, this.hero) });
-    this.paintRegion('vale');
+    this.world = createWorld({ loadout: loadoutFrom(profile.data, this.hero), campaign: this.campaign });
+    this.paintRegion(this.world.route[0]);
     this.banked = false;
     this.paused = false;
     this.pauseMenu.setVisible(false);
     this.overlay.removeAll(true).setVisible(false);
     this.draftUi.hide();
-    this.hud.toast('Hazırlan!');
+    this.countdown();
+  }
+
+  private get halted() {
+    return this.paused || this.countdownLeft > 0;
+  }
+
+  /** Oyun durup yeniden akmadan önce 3-2-1; bu sırada yön seçilebilir. */
+  private countdown() {
+    this.countdownLeft = COUNTDOWN_STEPS * COUNTDOWN_STEP_MS;
+    this.showCount(COUNTDOWN_STEPS);
+  }
+
+  private tickCountdown(delta: number) {
+    const before = Math.ceil(this.countdownLeft / COUNTDOWN_STEP_MS);
+    this.countdownLeft = Math.max(0, this.countdownLeft - Math.min(delta, 100));
+    const after = Math.ceil(this.countdownLeft / COUNTDOWN_STEP_MS);
+    if (after !== before) this.showCount(after);
+  }
+
+  private showCount(n: number) {
+    const t = this.countdownText;
+    this.tweens.killTweensOf(t);
+    t.setText(n > 0 ? String(n) : 'Yürü!').setScale(1.6).setAlpha(1).setVisible(true);
+    audio.play(n > 0 ? 'click' : 'waveStart');
+    this.tweens.add({ targets: t, scale: 1, duration: 220, ease: 'Back.Out' });
+    this.tweens.add({ targets: t, alpha: 0, delay: n > 0 ? 380 : 300, duration: 200, onComplete: () => n === 0 && t.setVisible(false) });
   }
 
   private handle(e: WorldEvent) {
@@ -297,7 +334,7 @@ export class GameScene extends Phaser.Scene {
       }
       case 'waveStart':
         if (e.n % 5 === 0) {
-          this.hud.banner('boss', `Dalga ${e.n} · ${ENEMIES[REGIONS[regionAt(e.n).id].boss].name}!`);
+          this.hud.banner('boss', `Dalga ${e.n} · ${ENEMIES[bossAt(e.n, this.world.route)].name}!`);
           this.shake(300, 0.006);
         } else this.hud.banner('wave', `Dalga ${e.n}`);
         audio.play('waveStart');
@@ -324,6 +361,14 @@ export class GameScene extends Phaser.Scene {
       case 'cardPicked':
         audio.play('power');
         this.hud.toast(CARDS[e.id].name, UI.gold);
+        break;
+      case 'shipsStart':
+        this.time.delayedCall(1400, () => this.hud.toast('Gemiler karadan! Duvarlardan geçebilirsin', UI.gem));
+        break;
+      case 'campaignCleared':
+        this.time.delayedCall(600, () => this.hud.banner('region', 'Destan tamamlandı!', undefined, 'Kervan şehre giriyor', this.world.route.at(-1)));
+        this.fx.confetti(this.scale.width / 2, this.scale.height / 2, 80);
+        audio.play('levelUp');
         break;
       case 'waveCleared':
         this.hud.banner('clear', 'Dalga temizlendi!', e.bonus);
@@ -353,18 +398,21 @@ export class GameScene extends Phaser.Scene {
           shape: 'square',
           sprite: HERO_SPRITES[hero.kind],
           spriteSize: CELL * 1.15,
+          tint: HERO_TINT[hero.kind],
         });
         this.heroViews.set(hero.id, view);
         this.tweens.add({ targets: view, scale: { from: 1.4, to: 1 }, duration: 220, ease: 'Back.Out' });
       }
-      const p = lerp(hero.prev, hero.pos, alpha);
-      const bob = w.alive && !this.paused ? Math.abs(Math.sin(t / 90 + i * 0.7)) * -4 : 0;
+      // Gemiyle duvardan geçince ekranın öbür ucuna kaymasın, ışınlansın
+      const p = chebyshev(hero.prev, hero.pos) > 1 ? hero.pos : lerp(hero.prev, hero.pos, alpha);
+      const bob = w.alive && !this.halted ? Math.abs(Math.sin(t / 90 + i * 0.7)) * -4 : 0;
       view.setPosition(px(p.x), px(p.y) + bob);
       view.setDepth(10 + p.y * 0.01 + (i === 0 ? 0.005 : 0));
       view.face(hero.pos.x - hero.prev.x);
-      view.animate(t, w.alive && !this.paused);
+      view.animate(t, w.alive && !this.halted);
       view.setMarker(w.powers.shield ? COLORS.shield : i === 0 ? COLORS.leader : null);
-      view.setAlpha(i === 0 && w.bumpInvuln > 0 && Math.floor(t / 60) % 2 ? 0.5 : 1);
+      const sailing = w.time < w.wallPassUntil;
+      view.setAlpha(i === 0 && w.bumpInvuln > 0 && Math.floor(t / 60) % 2 ? 0.5 : sailing ? 0.75 + 0.2 * Math.sin(t / 120) : 1);
       view.setHp(hero.hp / hero.maxHp);
       view.setFrost(w.time < w.slowUntil);
     });
@@ -398,7 +446,7 @@ export class GameScene extends Phaser.Scene {
       view.setDepth(9 + p.y * 0.01);
       const target = w.party[0]?.pos;
       if (target) view.face(target.x - enemy.pos.x);
-      view.animate(this.time.now, w.alive && !this.paused);
+      view.animate(this.time.now, w.alive && !this.halted);
       view.setHp(enemy.hp / enemy.maxHp);
     }
   }
@@ -482,7 +530,7 @@ export class GameScene extends Phaser.Scene {
         const def = HEROES[loot.hero];
         c.add([
           this.add.circle(0, 0, CELL * 0.42, COLORS.leader, 0.18),
-          new UnitView(this, { color: def.color, glyph: def.glyph, size: CELL - 20, shape: 'square', sprite: HERO_SPRITES[loot.hero], spriteSize: CELL * 0.8 }),
+          new UnitView(this, { color: def.color, glyph: def.glyph, size: CELL - 20, shape: 'square', sprite: HERO_SPRITES[loot.hero], spriteSize: CELL * 0.8, tint: HERO_TINT[loot.hero] }),
           this.add.image(0, 0, LOOT.heroToken).setDisplaySize(CELL, CELL),
         ]);
         break;
@@ -652,6 +700,7 @@ export class GameScene extends Phaser.Scene {
         onComplete: () => {
           this.pauseMenu.setVisible(false);
           this.thaw();
+          this.countdown();
         },
       });
     }
@@ -693,6 +742,8 @@ export class GameScene extends Phaser.Scene {
       maxTier: { ...tally.maxTier },
       furthestRegion: tally.furthestRegion,
       bossKinds: { ...tally.bossKinds },
+      campaign: this.world.campaign,
+      campaignCleared: tally.campaignCleared,
     };
   }
 
@@ -819,6 +870,7 @@ export class GameScene extends Phaser.Scene {
     c.add([bar, lvl, gain]);
 
     const chips: { text: string; color: number }[] = [];
+    if (report.heroUnlocked) chips.push({ text: `Yeni kahraman: ${HEROES[report.heroUnlocked].name}`, color: UI.dangerNum });
     for (const l of report.levelUps) chips.push({ text: `Seviye ${l.level}!`, color: UI.xpNum });
     for (const id of report.newCards) chips.push({ text: `Yeni kart: ${CARDS[id].name}`, color: UI.bossNum });
     for (const q of report.quests) chips.push({ text: `✓ ${q.desc}`, color: UI.successNum });
