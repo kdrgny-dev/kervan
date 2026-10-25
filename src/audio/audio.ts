@@ -25,7 +25,12 @@ class AudioEngine {
       if (this.musicOn) this.startMusic();
     };
     window.addEventListener('pointerdown', unlock, { once: true });
+    window.addEventListener('touchend', unlock, { once: true });
     window.addEventListener('keydown', unlock, { once: true });
+    // iOS uygulamadan çıkıp dönünce bağlamı askıya alır
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && this.ctx?.state !== 'running') void this.ctx?.resume();
+    });
   }
 
   configure(opts: { sfx: boolean; music: boolean }) {

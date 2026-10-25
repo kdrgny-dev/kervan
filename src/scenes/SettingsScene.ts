@@ -3,7 +3,7 @@ import { audio } from '../audio/audio';
 import { bindPad } from '../input/gamepad';
 import { profile } from '../meta/profile';
 import type { Settings } from '../meta/save';
-import { isFullscreen, toggleFullscreen } from '../platform';
+import { isDesktop, isFullscreen, toggleFullscreen } from '../platform';
 import { icon, type IconName } from '../ui/assets';
 import { Button, enter, panel, ribbon, Toggle } from '../ui/kit';
 import { backdrop, fadeIn } from '../ui/screen';
@@ -41,7 +41,10 @@ export class SettingsScene extends Phaser.Scene {
       line.add(this.add.text(-174, 0, row.label, textStyle(20)).setOrigin(0, 0.5));
       if (i < ROWS.length - 1) line.add(this.add.rectangle(0, rowH / 2, 448, 2, UI.panelEdge));
 
-      if (row.key === 'fullscreen') {
+      if (row.key === 'fullscreen' && !isDesktop && !this.sys.game.device.fullscreen.available) {
+        // iPhone Safari tam ekran API'sini desteklemez; ana ekrandan açılınca zaten tam ekran
+        line.add(this.add.text(176 + 40, 0, 'Ana ekrana ekle', textStyle(15, { color: UI.muted })).setOrigin(1, 0.5));
+      } else if (row.key === 'fullscreen') {
         const t = new Toggle(this, 176, 0, false, () => void toggleFullscreen(this.scale).then(sync));
         const sync = () => this.time.delayedCall(150, async () => t.set(await isFullscreen(this.scale)));
         void sync();

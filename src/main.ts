@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { CELL, GRID_H, GRID_W } from './config';
 import { audio } from './audio/audio';
 import { profile } from './meta/profile';
-import { toggleFullscreen } from './platform';
+import { isDesktop, toggleFullscreen } from './platform';
 import { BootScene, PreloadScene } from './scenes/BootScene';
 import { CampaignScene } from './scenes/CampaignScene';
 import { CollectionScene } from './scenes/CollectionScene';
@@ -36,3 +36,8 @@ window.addEventListener('keydown', (e) => {
 });
 
 if (import.meta.env.DEV) Object.assign(window, { __kervan: game, __profile: profile });
+
+// Web sürümü ana ekrana eklenip çevrimdışı oynanabilsin; masaüstü paketi dosyaları zaten taşır
+if (import.meta.env.PROD && !isDesktop && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => void navigator.serviceWorker.register('./sw.js').catch(() => undefined));
+}

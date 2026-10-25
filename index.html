@@ -2,15 +2,67 @@
 <html lang="tr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>Kervan</title>
+    <meta name="theme-color" content="#14121c" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Kervan" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" type="image/png" href="./icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
     <style>
-      html, body { margin: 0; height: 100%; background: #14121c; overflow: hidden; }
-      #game { width: 100%; height: 100%; }
+      html, body {
+        margin: 0;
+        height: 100%;
+        background: #14121c;
+        overflow: hidden;
+        overscroll-behavior: none;
+        touch-action: none;
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+      #game {
+        box-sizing: border-box;
+        width: 100%;
+        height: 100%;
+        padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+      }
+      #rotate {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 10;
+        background: #14121c;
+        color: #f4efe6;
+        font: 700 20px/1.4 system-ui, sans-serif;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        text-align: center;
+        padding: 24px;
+      }
+      #rotate svg { animation: tilt 1.6s ease-in-out infinite; }
+      @keyframes tilt { 0%, 30% { transform: rotate(0); } 60%, 100% { transform: rotate(-90deg); } }
+      /* Oyun yatay tasarlandı; dikey tutulan dokunmatik ekranda uyar */
+      @media (orientation: portrait) and (pointer: coarse) {
+        #rotate { display: flex; }
+      }
     </style>
   </head>
   <body>
     <div id="game"></div>
+    <div id="rotate">
+      <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="#f0c23b" stroke-width="2" stroke-linecap="round">
+        <rect x="6" y="2" width="12" height="20" rx="2" />
+        <line x1="11" y1="18" x2="13" y2="18" />
+      </svg>
+      Kervan yatay oynanır.<br />Telefonu yan çevir.
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

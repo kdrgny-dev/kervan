@@ -297,6 +297,14 @@ F6 paralel yürüyebilir: grafik üretimi F0'dan itibaren başlayabilir.
 - Hikaye: `destans`, `fetih_intro`, bölge/boss anları, `fetih_done`. Kayıt şeması v4 (`campaigns`, `lastCampaign`).
 - Çizimler: Claude Design Aşama 6 (`docs/design/stage6/manifest.json`); bölge/boss anlarını Dede Hüsnü kendi ağzından anlatır.
 
+### Mobil web (PWA)
+
+- `public/manifest.webmanifest` + ikonlar (`public/icons/`): ana ekrana eklenince tam ekran, yatay açılır.
+- `public/sw.js`: kurulumda derlemedeki bütün dosyaları önbelleğe alır (liste ve sürüm `vite.config.ts` içindeki eklentiyle derlemede yazılır); sonra önbellekten verir, çevrimdışı oynanır. Yeni yayın bir sonraki açılışta devreye girer. Masaüstü pakette ve geliştirmede kayıtlı değil.
+- Dikey tutulan dokunmatik ekranda "yan çevir" uyarısı; çentikli ekranlar için güvenli alan boşlukları.
+- Dokunmatikte buton, sekme ve toggle'ların dokunma alanı en az 44 pt'ye büyür (`minTouchPx`).
+- iPhone'da tam ekran API'si yok; Ayarlar'da tam ekran yerine "Ana ekrana ekle" yazar. iOS ses bağlamı dokunmayla ve uygulamaya dönünce yeniden açılır.
+
 ## 14. Görsel Sistem (F6)
 
 - Çizimler Claude Design ile 4 aşamada üretildi; referanslar `docs/design/` altında (palet, önizleme sayfaları, mockup'lar, `tokens.json`, `motion.json`, `components.json`).
