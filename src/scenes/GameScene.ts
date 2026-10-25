@@ -62,6 +62,7 @@ export class GameScene extends Phaser.Scene {
   private campaign: CampaignId = 'road';
   private world!: World;
   private paused = false;
+  private pauseBusy = false;
   private countdownLeft = 0;
   private phone = false;
   private countdownText!: Phaser.GameObjects.Text;
@@ -223,6 +224,7 @@ export class GameScene extends Phaser.Scene {
   private restart() {
     this.tweens.killAll();
     this.frozen = [];
+    this.pauseBusy = false;
     for (const map of [this.heroViews, this.enemyViews, this.projectileViews, this.lootViews, this.markers]) {
       for (const v of map.values()) v.destroy();
       map.clear();
@@ -332,7 +334,7 @@ export class GameScene extends Phaser.Scene {
         if (boss) {
           this.fx.confetti(px(e.pos.x), px(e.pos.y), 60);
           this.shake(300, 0.012);
-          this.hud.toast('Balçık Kralı yenildi!', UI.gold);
+          this.hud.toast(`${ENEMIES[e.kind].name} yenildi!`, UI.gold);
         }
         audio.play(boss ? 'explosion' : 'enemyDie');
         break;
@@ -740,8 +742,10 @@ export class GameScene extends Phaser.Scene {
   }
 
   private togglePause() {
-    if (!this.world?.alive || this.world.draft) return;
+    // Menü açılıp kapanırken gelen ikinci basış dondurulmuş animasyonları kaybettiriyordu
+    if (!this.world?.alive || this.world.draft || this.pauseBusy) return;
     this.paused = !this.paused;
+    this.pauseBusy = true;
     const shade = this.pauseMenu.getByName('shade') as Phaser.GameObjects.Rectangle;
     const box = this.pauseMenu.getByName('box') as Phaser.GameObjects.Container;
     const cy = this.scale.height / 2;
@@ -751,7 +755,7 @@ export class GameScene extends Phaser.Scene {
       shade.setAlpha(0);
       box.setY(cy - 200).setAlpha(0);
       this.tweens.add({ targets: shade, alpha: 1, duration: 160 });
-      this.tweens.add({ targets: box, y: cy, alpha: 1, duration: 200, ease: 'Back.Out' });
+      this.tweens.add({ targets: box, y: cy, alpha: 1, duration: 200, ease: 'Back.Out', onComplete: () => (this.pauseBusy = false) });
     } else {
       this.tweens.add({
         targets: box,
@@ -761,6 +765,7 @@ export class GameScene extends Phaser.Scene {
         ease: 'Quad.In',
         onComplete: () => {
           this.pauseMenu.setVisible(false);
+          this.pauseBusy = false;
           this.thaw();
           this.countdown();
         },
@@ -769,8 +774,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   private freeze() {
-    this.frozen = this.tweens.getTweens().filter((t) => t.isPlaying());
-    for (const t of this.frozen) t.pause();
+    const playing = this.tweens.getTweens().filter((t) => t.isPlaying());
+    for (const t of playing) t.pause();
+    this.frozen = [...new Set([...this.frozen, ...playing])];
   }
 
   private thaw() {
