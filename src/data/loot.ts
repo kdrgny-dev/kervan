@@ -30,7 +30,7 @@ export const LOOT_LIFETIME_MS = 10000;
 export const LOOT_BLINK_MS = 3000;
 
 export const RAGE_MULT = 2;
-export const SPEED_TICK_MS = 120;
+export const SPEED_TICK_MS = 140;
 export const MAGNET_RADIUS = 5;
 export const BOMB_DMG = 30;
 

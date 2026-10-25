@@ -282,6 +282,11 @@ F6 paralel yürüyebilir: grafik üretimi F0'dan itibaren başlayabilir.
 - **Kamp:** menüden açılan kamp sahnesi; binaya tıklayınca paneli açılır. Dükkân yerine Kışla (kahramanlar), Tapınak (mücevher yükseltmeleri), Pazar (yeni): Tüccar Ağı (+%10 altın, 5 sv), Kervan Kasası (+1 ücretsiz yeniden çekme, 3 sv), Harita Ustası (+%10 hesap XP'si, 5 sv).
 - Kayıt şeması v3: yolculuk ilerlemesi, hikaye, pazar.
 
+### Oynanış ayarı (v0.3 sonrası)
+
+- Oyun duraksadıktan sonra (tur başı, kart seçimi, duraklatma) 3-2-1 geri sayım; sayım sırasında yön seçilebilir, kafile durur.
+- Kafile adımı 170 → 200 ms (saniyede ~5 kare); hız gücü 120 → 140 ms.
+
 ## 14. Görsel Sistem (F6)
 
 - Çizimler Claude Design ile 4 aşamada üretildi; referanslar `docs/design/` altında (palet, önizleme sayfaları, mockup'lar, `tokens.json`, `motion.json`, `components.json`).
