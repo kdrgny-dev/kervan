@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" role="img" aria-label="hisar region icon">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<circle cx="48" cy="48" r="44" fill="#f0c23b"/><circle cx="48" cy="48" r="34" fill="#f4c9a0"/><circle cx="48" cy="48" r="34" fill="none" stroke-width="3"/><rect x="34" y="34" width="28" height="36" fill="#8f88a0"/><rect x="34" y="27" width="7" height="8" fill="#8f88a0"/><rect x="44.5" y="27" width="7" height="8" fill="#8f88a0"/><rect x="55" y="27" width="7" height="8" fill="#8f88a0"/><path d="M44 70 V60 Q48 55 52 60 V70 Z" fill="#14121c"/><path d="M26 44 H70 M30 44 V72 M66 44 V72" stroke="#8a5532" stroke-width="3.5"/><path d="M14 36 Q20 18 38 10" stroke="#f0e6d2" stroke-opacity="0.75" stroke-width="3.5" fill="none"/>
+</g>
+</svg>

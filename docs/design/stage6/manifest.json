@@ -1,0 +1,917 @@
+{
+ "tiles/surlar/tile_floor_1.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/surlar/tile_floor_2.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/surlar/tile_floor_3.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/surlar/tile_wall.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/surlar/tile_wall_side.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/surlar/tile_wall_corner.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "characters/mazgal_idle_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "mazgal_idle",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/fatih_idle_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "fatih_idle",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "tiles/hisar/tile_floor_1.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/hisar/tile_floor_2.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/hisar/tile_floor_3.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/hisar/tile_wall.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/hisar/tile_wall_side.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/hisar/tile_wall_corner.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/halic/tile_floor_1.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/halic/tile_floor_2.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/halic/tile_floor_3.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/halic/tile_wall.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/halic/tile_wall_side.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/halic/tile_wall_corner.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/galata/tile_floor_1.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/galata/tile_floor_2.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/galata/tile_floor_3.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/galata/tile_wall.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/galata/tile_wall_side.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/galata/tile_wall_corner.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "decor/hisar/decor_1.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/hisar/decor_2.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/hisar/decor_3.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/hisar/decor_4.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/halic/decor_1.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/halic/decor_2.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/halic/decor_3.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/halic/decor_4.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/galata/decor_1.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/galata/decor_2.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/galata/decor_3.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/galata/decor_4.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/surlar/decor_1.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/surlar/decor_2.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/surlar/decor_3.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/surlar/decor_4.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "characters/chain_serpent_idle_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "chain_serpent_idle",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/chain_serpent_move_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "chain_serpent_move",
+  "frame": 1,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/chain_serpent_move_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "chain_serpent_move",
+  "frame": 2,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/chain_serpent_move_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "chain_serpent_move",
+  "frame": 3,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/chain_serpent_move_4.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "chain_serpent_move",
+  "frame": 4,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/chain_serpent_attack_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "chain_serpent_attack",
+  "frame": 1,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/chain_serpent_attack_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "chain_serpent_attack",
+  "frame": 2,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/chain_serpent_hurt_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "chain_serpent_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/fog_wisp_idle_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "fog_wisp_idle",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/fog_wisp_move_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "fog_wisp_move",
+  "frame": 1,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/fog_wisp_move_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "fog_wisp_move",
+  "frame": 2,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/fog_wisp_move_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "fog_wisp_move",
+  "frame": 3,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/fog_wisp_move_4.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "fog_wisp_move",
+  "frame": 4,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/fog_wisp_attack_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "fog_wisp_attack",
+  "frame": 1,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/fog_wisp_attack_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "fog_wisp_attack",
+  "frame": 2,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/fog_wisp_hurt_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "fog_wisp_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/mazgal_move_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "mazgal_move",
+  "frame": 1,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/mazgal_move_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "mazgal_move",
+  "frame": 2,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/mazgal_move_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "mazgal_move",
+  "frame": 3,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/mazgal_move_4.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "mazgal_move",
+  "frame": 4,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/mazgal_attack_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "mazgal_attack",
+  "frame": 1,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/mazgal_attack_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "mazgal_attack",
+  "frame": 2,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/mazgal_hurt_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "mazgal_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/catapult_golem_idle_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "catapult_golem_idle",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/catapult_golem_move_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "catapult_golem_move",
+  "frame": 1,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/catapult_golem_move_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "catapult_golem_move",
+  "frame": 2,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/catapult_golem_move_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "catapult_golem_move",
+  "frame": 3,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/catapult_golem_move_4.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "catapult_golem_move",
+  "frame": 4,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/catapult_golem_attack_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "catapult_golem_attack",
+  "frame": 1,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/catapult_golem_attack_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "catapult_golem_attack",
+  "frame": 2,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/catapult_golem_hurt_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "catapult_golem_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/fatih_walk_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "fatih_walk",
+  "frame": 1,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/fatih_walk_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "fatih_walk",
+  "frame": 2,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/fatih_walk_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "fatih_walk",
+  "frame": 3,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/fatih_walk_4.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "fatih_walk",
+  "frame": 4,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/fatih_attack_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "fatih_attack",
+  "frame": 1,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/fatih_attack_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "fatih_attack",
+  "frame": 2,
+  "frames": 2,
+  "ms": 110
+ },
+ "characters/fatih_hurt_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "fatih_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "fx/cannonball.svg": {
+  "w": 24,
+  "h": 24,
+  "frames": 1
+ },
+ "fx/cannon_blast_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "cannon_blast",
+  "frame": 1,
+  "frames": 4,
+  "ms": 80
+ },
+ "fx/cannon_blast_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "cannon_blast",
+  "frame": 2,
+  "frames": 4,
+  "ms": 80
+ },
+ "fx/cannon_blast_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "cannon_blast",
+  "frame": 3,
+  "frames": 4,
+  "ms": 80
+ },
+ "fx/cannon_blast_4.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "cannon_blast",
+  "frame": 4,
+  "frames": 4,
+  "ms": 80
+ },
+ "characters/stone_sentinel_idle_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "stone_sentinel_idle",
+  "frame": 1,
+  "frames": 2,
+  "ms": 400
+ },
+ "characters/stone_sentinel_idle_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "stone_sentinel_idle",
+  "frame": 2,
+  "frames": 2,
+  "ms": 400
+ },
+ "characters/stone_sentinel_summon_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "stone_sentinel_summon",
+  "frame": 1,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/stone_sentinel_summon_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "stone_sentinel_summon",
+  "frame": 2,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/stone_sentinel_charge_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "stone_sentinel_charge",
+  "frame": 1,
+  "frames": 2,
+  "ms": 200
+ },
+ "characters/stone_sentinel_charge_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "stone_sentinel_charge",
+  "frame": 2,
+  "frames": 2,
+  "ms": 200
+ },
+ "characters/stone_sentinel_hurt_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "stone_sentinel_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/harbor_kraken_idle_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "harbor_kraken_idle",
+  "frame": 1,
+  "frames": 2,
+  "ms": 400
+ },
+ "characters/harbor_kraken_idle_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "harbor_kraken_idle",
+  "frame": 2,
+  "frames": 2,
+  "ms": 400
+ },
+ "characters/harbor_kraken_summon_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "harbor_kraken_summon",
+  "frame": 1,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/harbor_kraken_summon_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "harbor_kraken_summon",
+  "frame": 2,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/harbor_kraken_charge_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "harbor_kraken_charge",
+  "frame": 1,
+  "frames": 2,
+  "ms": 200
+ },
+ "characters/harbor_kraken_charge_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "harbor_kraken_charge",
+  "frame": 2,
+  "frames": 2,
+  "ms": 200
+ },
+ "characters/harbor_kraken_hurt_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "harbor_kraken_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/oil_giant_idle_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "oil_giant_idle",
+  "frame": 1,
+  "frames": 2,
+  "ms": 400
+ },
+ "characters/oil_giant_idle_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "oil_giant_idle",
+  "frame": 2,
+  "frames": 2,
+  "ms": 400
+ },
+ "characters/oil_giant_summon_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "oil_giant_summon",
+  "frame": 1,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/oil_giant_summon_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "oil_giant_summon",
+  "frame": 2,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/oil_giant_charge_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "oil_giant_charge",
+  "frame": 1,
+  "frames": 2,
+  "ms": 200
+ },
+ "characters/oil_giant_charge_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "oil_giant_charge",
+  "frame": 2,
+  "frames": 2,
+  "ms": 200
+ },
+ "characters/oil_giant_hurt_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "oil_giant_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/wall_warden_idle_1.svg": {
+  "w": 160,
+  "h": 160,
+  "anim": "wall_warden_idle",
+  "frame": 1,
+  "frames": 2,
+  "ms": 400
+ },
+ "characters/wall_warden_idle_2.svg": {
+  "w": 160,
+  "h": 160,
+  "anim": "wall_warden_idle",
+  "frame": 2,
+  "frames": 2,
+  "ms": 400
+ },
+ "characters/wall_warden_summon_1.svg": {
+  "w": 160,
+  "h": 160,
+  "anim": "wall_warden_summon",
+  "frame": 1,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/wall_warden_summon_2.svg": {
+  "w": 160,
+  "h": 160,
+  "anim": "wall_warden_summon",
+  "frame": 2,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/wall_warden_charge_1.svg": {
+  "w": 160,
+  "h": 160,
+  "anim": "wall_warden_charge",
+  "frame": 1,
+  "frames": 2,
+  "ms": 200
+ },
+ "characters/wall_warden_charge_2.svg": {
+  "w": 160,
+  "h": 160,
+  "anim": "wall_warden_charge",
+  "frame": 2,
+  "frames": 2,
+  "ms": 200
+ },
+ "characters/wall_warden_hurt_1.svg": {
+  "w": 160,
+  "h": 160,
+  "anim": "wall_warden_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "ui/narrator/dede_husnu_portrait_normal.svg": {
+  "w": 256,
+  "h": 256,
+  "frames": 1
+ },
+ "ui/narrator/dede_husnu_portrait_laugh.svg": {
+  "w": 256,
+  "h": 256,
+  "frames": 1
+ },
+ "ui/narrator/dede_husnu_portrait_surprised.svg": {
+  "w": 256,
+  "h": 256,
+  "frames": 1
+ },
+ "ui/campaign/campaign_cover_road.svg": {
+  "w": 480,
+  "h": 270,
+  "frames": 1
+ },
+ "ui/campaign/campaign_cover_fetih.svg": {
+  "w": 480,
+  "h": 270,
+  "frames": 1
+ },
+ "ui/campaign/campaign_cover_locked.svg": {
+  "w": 480,
+  "h": 270,
+  "frames": 1
+ },
+ "ui/campaign/campaign_frame.svg": {
+  "w": 520,
+  "h": 360,
+  "frames": 1,
+  "slice": {
+   "top": 48,
+   "right": 48,
+   "bottom": 48,
+   "left": 48
+  },
+  "inner": {
+   "x": 20,
+   "y": 20,
+   "w": 480,
+   "h": 320
+  },
+  "cover_at": [
+   20,
+   20
+  ],
+  "title_area": {
+   "x": 20,
+   "y": 290,
+   "w": 480,
+   "h": 50
+  }
+ },
+ "ui/campaign/ship_icon.svg": {
+  "w": 64,
+  "h": 64,
+  "frames": 1
+ },
+ "ui/components/ui_banner_region_hisar.svg": {
+  "w": 640,
+  "h": 128,
+  "frames": 1,
+  "slice": {
+   "top": 0,
+   "right": 60,
+   "bottom": 0,
+   "left": 60
+  },
+  "mode": "3-slice yatay",
+  "text_color": "#14121c"
+ },
+ "ui/components/ui_banner_region_halic.svg": {
+  "w": 640,
+  "h": 128,
+  "frames": 1,
+  "slice": {
+   "top": 0,
+   "right": 60,
+   "bottom": 0,
+   "left": 60
+  },
+  "mode": "3-slice yatay",
+  "text_color": "#f4efe6"
+ },
+ "ui/components/ui_banner_region_galata.svg": {
+  "w": 640,
+  "h": 128,
+  "frames": 1,
+  "slice": {
+   "top": 0,
+   "right": 60,
+   "bottom": 0,
+   "left": 60
+  },
+  "mode": "3-slice yatay",
+  "text_color": "#14121c"
+ },
+ "ui/components/ui_banner_region_surlar.svg": {
+  "w": 640,
+  "h": 128,
+  "frames": 1,
+  "slice": {
+   "top": 0,
+   "right": 60,
+   "bottom": 0,
+   "left": 60
+  },
+  "mode": "3-slice yatay",
+  "text_color": "#f4efe6"
+ },
+ "ui/map/region_icon_hisar.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "ui/map/region_icon_halic.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "ui/map/region_icon_galata.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "ui/map/region_icon_surlar.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ }
+}

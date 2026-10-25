@@ -102,7 +102,7 @@ export type WorldEvent =
   | { type: 'enemyDied'; id: number; kind: EnemyKind; pos: Vec }
   | { type: 'heroAttack'; id: number }
   | { type: 'slash'; pos: Vec }
-  | { type: 'explosion'; x: number; y: number; radius: number }
+  | { type: 'explosion'; x: number; y: number; radius: number; kind?: ProjectileKind }
   | { type: 'bump'; pos: Vec }
   | { type: 'shockwaveWarn'; id: number; radius: number }
   | { type: 'shockwave'; pos: Vec; radius: number }

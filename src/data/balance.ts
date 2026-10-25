@@ -34,6 +34,7 @@ export type ProjectileKind = Exclude<AttackKind, 'melee'> | 'bone';
 export const PROJECTILE_SPEED: Record<ProjectileKind, number> = {
   arrow: 14,
   fireball: 9,
+  cannon: 10,
   holy: 11,
   bone: 8,
 };

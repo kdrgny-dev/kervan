@@ -10,7 +10,7 @@ export type EnemyKind =
   | 'boneLord'
   | 'emberKing'
   | 'frostGiant'
-  | 'gargoyle'
+  | 'mazgal'
   | 'chainSerpent'
   | 'fogWisp'
   | 'catapultGolem'
@@ -53,6 +53,8 @@ export interface EnemyDef {
   boss?: BossAbilities;
   /** Çizimi olmayan türler başka bir türün sprite'ını renklendirerek kullanır. */
   look?: { as: EnemyKind; tint: number; scale?: number; alpha?: number };
+  /** Hücreye göre çizim boyu (varsayılan: boss 1.8, diğerleri 1.05). */
+  spriteScale?: number;
   /** Ölünce bu türden N tane doğurur. */
   splitInto?: { kind: EnemyKind; count: number };
   /** Mermisi vurduğu kahramanı yavaşlatır (ms). */
@@ -98,47 +100,39 @@ export const ENEMIES: Record<EnemyKind, EnemyDef> = {
     boss: { summon: 'frostSkeleton', summonEveryMs: 7000, maxMinions: 3, shockEveryMs: 5500, shockWarnMs: 900, shockRadius: 3, shockDmg: 12, shockSlowMs: 2500 },
   },
 
-  // Fetih destanı — çizimler gelene kadar `look` ile
-  gargoyle: {
-    name: 'Sur Gargoylesi', color: 0x9a9488, glyph: 'Sg', hp: 30, dmg: 10, moveMs: 260, attackMs: 1100, brain: 'charge', cost: 4, firstWave: Infinity, gold: 2,
-    look: { as: 'goblin', tint: 0xa8a49c },
+  // Fetih destanı
+  mazgal: {
+    name: 'Canlı Mazgal', color: 0x9a9488, glyph: 'Mz', hp: 30, dmg: 10, moveMs: 260, attackMs: 1100, brain: 'charge', cost: 4, firstWave: Infinity, gold: 2,
   },
   chainSerpent: {
     name: 'Zincir Yılanı', color: 0x8a8f99, glyph: 'Zy', hp: 26, dmg: 9, moveMs: 320, attackMs: 1000, brain: 'wander', cost: 3, firstWave: Infinity, gold: 2,
-    look: { as: 'slime', tint: 0x9aa3b0 },
   },
   fogWisp: {
     name: 'Sis Perisi', color: 0xc8d0e0, glyph: 'Sp', hp: 12, dmg: 5, moveMs: 190, attackMs: 700, brain: 'erratic', cost: 2, firstWave: Infinity, gold: 1,
-    look: { as: 'wraith', tint: 0xd0d8e6, alpha: 0.8 },
   },
   catapultGolem: {
     name: 'Mancınık Golemi', color: 0xb08a5a, glyph: 'Mg', hp: 28, dmg: 8, moveMs: 420, attackMs: 2400, brain: 'kite', cost: 4, firstWave: Infinity, gold: 2,
     range: 5,
-    look: { as: 'skeleton', tint: 0xc09a6a },
   },
   stoneSentinel: {
     name: 'Taş Nöbetçi', color: 0xb8b0a0, glyph: 'TN', hp: 290, dmg: 20, moveMs: 460, attackMs: 1500, brain: 'charge',
     cost: 0, firstWave: Infinity, gold: 30, xp: 40,
-    boss: { summon: 'gargoyle', summonEveryMs: 6500, maxMinions: 3, shockEveryMs: 5000, shockWarnMs: 800, shockRadius: 3, shockDmg: 12 },
-    look: { as: 'frostGiant', tint: 0xc8c0b0 },
+    boss: { summon: 'mazgal', summonEveryMs: 6500, maxMinions: 3, shockEveryMs: 5000, shockWarnMs: 800, shockRadius: 3, shockDmg: 12 },
   },
   harborKraken: {
     name: 'Liman Ahtapotu', color: 0x4a7ab0, glyph: 'LA', hp: 340, dmg: 18, moveMs: 440, attackMs: 1500, brain: 'kite', range: 5,
     cost: 0, firstWave: Infinity, gold: 35, xp: 45,
     boss: { summon: 'chainSerpent', summonEveryMs: 6000, maxMinions: 4, shockEveryMs: 7000, shockWarnMs: 800, shockRadius: 3, shockDmg: 12, volley: { everyMs: 3500, count: 3 } },
-    look: { as: 'slimeKing', tint: 0x5a8ac0 },
   },
   oilGiant: {
     name: 'Yağ Küpü Devi', color: 0xd8b048, glyph: 'YD', hp: 400, dmg: 22, moveMs: 430, attackMs: 1500, brain: 'charge',
     cost: 0, firstWave: Infinity, gold: 40, xp: 50,
     boss: { summon: 'fogWisp', summonEveryMs: 5500, maxMinions: 4, shockEveryMs: 5000, shockWarnMs: 800, shockRadius: 3, shockDmg: 14, shockSlowMs: 1500 },
-    look: { as: 'emberKing', tint: 0xe0c060 },
   },
   wallWarden: {
     name: 'Sur Bekçisi Dev', color: 0x8a8070, glyph: 'SB', hp: 620, dmg: 26, moveMs: 480, attackMs: 1600, brain: 'charge',
-    cost: 0, firstWave: Infinity, gold: 80, xp: 120,
-    boss: { summon: 'gargoyle', summonEveryMs: 5000, maxMinions: 5, shockEveryMs: 5000, shockWarnMs: 900, shockRadius: 4, shockDmg: 16, volley: { everyMs: 4000, count: 3 } },
-    look: { as: 'boneLord', tint: 0x9a9080, scale: 2.2 },
+    cost: 0, firstWave: Infinity, gold: 80, xp: 120, spriteScale: 2.3,
+    boss: { summon: 'mazgal', summonEveryMs: 5000, maxMinions: 5, shockEveryMs: 5000, shockWarnMs: 900, shockRadius: 4, shockDmg: 16, volley: { everyMs: 4000, count: 3 } },
   },
 };
 

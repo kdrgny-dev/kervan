@@ -74,7 +74,7 @@ export const REGIONS: Record<RegionId, RegionDef> = {
     desc: 'Hisar üç ayda yükseldi. Taşları dedemin develeri taşıdı, develer hâlâ şikâyet eder.',
     roster: [
       { kind: 'bat', from: 1 },
-      { kind: 'gargoyle', from: 1 },
+      { kind: 'mazgal', from: 1 },
       { kind: 'skeleton', from: 3 },
       { kind: 'catapultGolem', from: 5 },
     ],
@@ -87,7 +87,7 @@ export const REGIONS: Record<RegionId, RegionDef> = {
     roster: [
       { kind: 'fogWisp', from: 1 },
       { kind: 'chainSerpent', from: 1 },
-      { kind: 'gargoyle', from: 3 },
+      { kind: 'mazgal', from: 3 },
       { kind: 'bat', from: 4 },
     ],
     boss: 'harborKraken',
@@ -109,7 +109,7 @@ export const REGIONS: Record<RegionId, RegionDef> = {
     name: 'Kara Surlar',
     desc: 'Bin yıllık surlar. Yorgunlar ama pes etmeye niyetleri yok.',
     roster: [
-      { kind: 'gargoyle', from: 1 },
+      { kind: 'mazgal', from: 1 },
       { kind: 'catapultGolem', from: 1 },
       { kind: 'chainSerpent', from: 2 },
       { kind: 'fogWisp', from: 3 },

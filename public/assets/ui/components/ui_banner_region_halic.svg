@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="128" viewBox="0 0 640 128" role="img" aria-label="halic region banner">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M1.5 18 H34 V122 H1.5 L12 70.0 Z" fill="#7fb3ec"/><path d="M638.5 18 H606 V122 H638.5 L628 70.0 Z" fill="#7fb3ec"/><rect x="22" y="12" width="596" height="106" rx="8" fill="#24447f"/><rect x="22" y="8" width="596" height="106" rx="8" fill="#3d74c9"/><path d="M34 15 H606" stroke="#d6deea" stroke-width="3" stroke-opacity="0.9"/><path d="M34 108 H606" stroke="#24447f" stroke-width="2" stroke-dasharray="6 6" stroke-opacity="0.8"/>
+</g>
+</svg>

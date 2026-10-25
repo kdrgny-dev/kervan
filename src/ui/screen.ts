@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import type { HeroKind } from '../data/heroes';
 import { profile } from '../meta/profile';
 import { drawArena } from '../render/arena';
-import { HERO_TINT, LOOT } from '../render/sprites';
+import { LOOT } from '../render/sprites';
 import { CARDS } from '../data/cards';
 import type { Reward } from '../data/progression';
 import { icon, portrait } from './assets';
@@ -33,9 +33,7 @@ export function wallet(scene: Phaser.Scene, gold = profile.data.gold, gems = pro
 export function heroBadge(scene: Phaser.Scene, x: number, y: number, kind: HeroKind, size = 56) {
   const c = scene.add.container(x, y);
   c.add(scene.add.circle(0, 0, size * 0.42, UI.panel2));
-  const face = scene.add.image(0, 0, portrait(kind)).setDisplaySize(size * 0.82, size * 0.82);
-  if (HERO_TINT[kind]) face.setTint(HERO_TINT[kind]);
-  c.add(face);
+  c.add(scene.add.image(0, 0, portrait(kind)).setDisplaySize(size * 0.82, size * 0.82));
   c.add(scene.add.image(0, 0, LOOT.heroToken).setDisplaySize(size, size));
   return c;
 }

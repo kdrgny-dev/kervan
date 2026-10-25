@@ -1,6 +1,6 @@
 export type HeroKind = 'knight' | 'archer' | 'mage' | 'priest' | 'rogue' | 'fatih';
 
-export type AttackKind = 'melee' | 'arrow' | 'fireball' | 'holy';
+export type AttackKind = 'melee' | 'arrow' | 'fireball' | 'holy' | 'cannon';
 
 export interface HeroDef {
   name: string;
@@ -42,7 +42,7 @@ export const HEROES: Record<HeroKind, HeroDef> = {
   },
   fatih: {
     name: 'Fatih', role: 'Şahi topu, alan hasarı', color: 0xc8402a, glyph: 'F',
-    hp: 55, dmg: 16, cooldownMs: 1900, range: 5, attack: 'fireball', splash: 1, legendary: true,
+    hp: 55, dmg: 16, cooldownMs: 1900, range: 5, attack: 'cannon', splash: 1, legendary: true,
   },
 };
 
