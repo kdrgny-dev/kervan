@@ -543,7 +543,7 @@ export class GameScene extends Phaser.Scene {
         this.projectileViews.set(p.id, view);
       }
       view.setPosition(px(p.x), px(p.y));
-      if (p.kind !== 'holy') view.setRotation(Math.atan2(p.ty - p.y, p.tx - p.x));
+      if (p.kind !== 'holy' && p.kind !== 'snow') view.setRotation(Math.atan2(p.ty - p.y, p.tx - p.x));
     }
     for (const [id, view] of this.projectileViews) {
       if (!live.has(id)) {
@@ -565,6 +565,8 @@ export class GameScene extends Phaser.Scene {
         return this.add.sprite(0, 0, this.firstFrame(FX.fireball)).setDisplaySize(32, 32).setDepth(15).play(FX.fireball);
       case 'cannon':
         return this.add.image(0, 0, FX.cannonball).setDisplaySize(22, 22).setDepth(15);
+      case 'snow':
+        return this.add.image(0, 0, FX.snowball).setDisplaySize(22, 22).setDepth(15);
     }
   }
 

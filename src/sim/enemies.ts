@@ -31,7 +31,7 @@ export function updateEnemies(w: World, dt: number) {
     if (e.attackCd === 0) {
       if (def.brain === 'kite') {
         if (dist <= (def.range ?? 0) + 1) {
-          fire(w, 'bone', 'enemy', e.pos, near, def.dmg, 0, def.slowMs ?? 0);
+          fire(w, def.shot ?? 'bone', 'enemy', e.pos, near, def.dmg, 0, def.slowMs ?? 0);
           e.attackCd = def.attackMs;
           w.events.push({ type: 'enemyAttack', id: e.id });
         }
@@ -100,7 +100,7 @@ function bossVolley(w: World, e: Enemy, b: BossAbilities, dt: number) {
   const targets = [...w.party]
     .sort((a, c) => (a.pos.x - e.pos.x) ** 2 + (a.pos.y - e.pos.y) ** 2 - ((c.pos.x - e.pos.x) ** 2 + (c.pos.y - e.pos.y) ** 2))
     .slice(0, b.volley.count);
-  for (const h of targets) fire(w, 'bone', 'enemy', e.pos, h, Math.round(ENEMIES[e.kind].dmg / 2));
+  for (const h of targets) fire(w, ENEMIES[e.kind].shot ?? 'bone', 'enemy', e.pos, h, Math.round(ENEMIES[e.kind].dmg / 2));
 }
 
 function chooseStep(w: World, e: Enemy, def: EnemyDef, nearPos: Vec, dist: number): Vec | null {

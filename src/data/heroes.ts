@@ -53,12 +53,10 @@ export const HEROES: Record<HeroKind, HeroDef> = {
   hannibal: {
     name: 'Hannibal', role: 'Fil binicisi, çarpışma ezer', color: 0x9a6a3a, glyph: 'Hn',
     hp: 85, dmg: 13, cooldownMs: 1200, range: 1, attack: 'melee', splash: 1, legendary: true, crush: true,
-    look: { as: 'knight', tint: 0xe0a060, scale: 1.1 },
   },
   elephant: {
     name: 'Fil', role: 'Tank, çarpışma ezer', color: 0x9a9aa8, glyph: 'Fl',
     hp: 140, dmg: 9, cooldownMs: 1500, range: 1, attack: 'melee', splash: 1, companion: true, crush: true,
-    look: { as: 'knight', tint: 0x9aa0b4, scale: 1.3 },
   },
 };
 

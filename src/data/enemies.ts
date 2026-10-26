@@ -67,6 +67,8 @@ export interface EnemyDef {
   spriteScale?: number;
   /** Ölünce bu türden N tane doğurur. */
   splitInto?: { kind: EnemyKind; count: number };
+  /** Uzaktan saldıranların mermisi (varsayılan kemik ok). */
+  shot?: 'bone' | 'snow';
   /** Mermisi vurduğu kahramanı yavaşlatır (ms). */
   slowMs?: number;
 }
@@ -87,7 +89,7 @@ export const ENEMIES: Record<EnemyKind, EnemyDef> = {
   },
   frostSkeleton: {
     name: 'Buz İskeleti', color: 0x9fd8ff, glyph: 'Bİ', hp: 24, dmg: 6, moveMs: 340, attackMs: 1800, brain: 'kite', cost: 4, firstWave: Infinity, gold: 2,
-    range: 4, slowMs: 1500,
+    range: 4, slowMs: 1500, shot: 'snow',
   },
   slimeKing: {
     name: 'Balçık Kralı', color: 0x8a5bd6, glyph: 'K', hp: 260, dmg: 20, moveMs: 450, attackMs: 1500, brain: 'charge',
@@ -145,56 +147,48 @@ export const ENEMIES: Record<EnemyKind, EnemyDef> = {
     boss: { summon: 'mazgal', summonEveryMs: 5000, maxMinions: 5, shockEveryMs: 5000, shockWarnMs: 900, shockRadius: 4, shockDmg: 16, volley: { everyMs: 4000, count: 3 } },
   },
 
-  // Alpler destanı; çizimler gelene kadar mevcut sprite'lar renklendirilir
+  // Alpler destanı
   sandCrab: {
     name: 'Kum Yengeci', color: 0xe07a3a, glyph: 'Ky', hp: 22, dmg: 7, moveMs: 260, attackMs: 900, brain: 'erratic', cost: 2, firstWave: Infinity, gold: 1,
-    look: { as: 'slime', tint: 0xf09a5a },
   },
   gull: {
     name: 'Martı', color: 0xeeeeee, glyph: 'Mr', hp: 10, dmg: 5, moveMs: 190, attackMs: 800, brain: 'charge', cost: 2, firstWave: Infinity, gold: 1,
-    look: { as: 'bat', tint: 0xf4f4f4 },
   },
   goat: {
     name: 'Dağ Keçisi', color: 0xb89a7a, glyph: 'Dk', hp: 30, dmg: 10, moveMs: 260, attackMs: 1000, brain: 'charge', cost: 4, firstWave: Infinity, gold: 2,
-    look: { as: 'goblin', tint: 0xd8c0a0 },
   },
   snowball: {
     name: 'Kartopu', color: 0xf4f8ff, glyph: 'Kt', hp: 28, dmg: 8, moveMs: 330, attackMs: 1000, brain: 'wander', cost: 4, firstWave: Infinity, gold: 2,
     splitInto: { kind: 'snowling', count: 2 },
-    look: { as: 'slime', tint: 0xf4f8ff },
   },
   snowling: {
     name: 'Küçük Kartopu', color: 0xf4f8ff, glyph: 'kt', hp: 9, dmg: 4, moveMs: 300, attackMs: 900, brain: 'wander', cost: 1, firstWave: Infinity, gold: 1,
-    look: { as: 'slime', tint: 0xf4f8ff, scale: 0.75 },
+    look: { as: 'snowball', tint: 0xffffff, scale: 0.75 },
   },
   yeti: {
     name: 'Yeti', color: 0xdfe8f0, glyph: 'Ye', hp: 34, dmg: 6, moveMs: 440, attackMs: 2000, brain: 'kite', cost: 4, firstWave: Infinity, gold: 2,
     range: 4, slowMs: 1500,
-    look: { as: 'frostSkeleton', tint: 0xf0f4ff, scale: 1.2 },
   },
   tideCrab: {
     name: 'Gelgit Yengeci', color: 0xd8603a, glyph: 'GY', hp: 260, dmg: 18, moveMs: 440, attackMs: 1500, brain: 'charge',
     cost: 0, firstWave: Infinity, gold: 30, xp: 40,
     boss: { summon: 'sandCrab', summonEveryMs: 7000, maxMinions: 3, shockEveryMs: 5000, shockWarnMs: 800, shockRadius: 3, shockDmg: 12 },
-    look: { as: 'slimeKing', tint: 0xf08a5a },
   },
   caveBear: {
     name: 'Mağara Ayısı', color: 0x7a5a3a, glyph: 'MA', hp: 360, dmg: 22, moveMs: 420, attackMs: 1400, brain: 'charge',
     cost: 0, firstWave: Infinity, gold: 35, xp: 45,
     boss: { summon: 'goat', summonEveryMs: 6500, maxMinions: 3, shockEveryMs: 4500, shockWarnMs: 800, shockRadius: 3, shockDmg: 14 },
-    look: { as: 'boneLord', tint: 0xa0785a },
   },
   stormEagle: {
     name: 'Fırtına Kartalı', color: 0x8ab0d8, glyph: 'FK', hp: 380, dmg: 18, moveMs: 400, attackMs: 1500, brain: 'kite', range: 5,
     cost: 0, firstWave: Infinity, gold: 40, xp: 50,
     boss: { summon: 'gull', summonEveryMs: 5500, maxMinions: 4, shockEveryMs: 6000, shockWarnMs: 800, shockRadius: 3, shockDmg: 12, shockSlowMs: 2000, volley: { everyMs: 3500, count: 3 } },
-    look: { as: 'emberKing', tint: 0xb8d8ff },
   },
   avalancheGiant: {
     name: 'Çığ Devi', color: 0xe8f0ff, glyph: 'ÇD', hp: 640, dmg: 26, moveMs: 480, attackMs: 1600, brain: 'charge',
     cost: 0, firstWave: Infinity, gold: 80, xp: 120,
     boss: { summon: 'snowball', summonEveryMs: 5000, maxMinions: 5, shockEveryMs: 5000, shockWarnMs: 900, shockRadius: 4, shockDmg: 16, shockSlowMs: 2500 },
-    look: { as: 'frostGiant', tint: 0xffffff, scale: 2.3 },
+    spriteScale: 2.3,
   },
 };
 

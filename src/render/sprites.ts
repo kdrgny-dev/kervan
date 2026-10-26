@@ -72,12 +72,17 @@ export const HERO_SPRITES: Partial<Record<HeroKind, SpriteSet>> = {
   priest: unit('priest', 'walk'),
   rogue: unit('rogue', 'walk'),
   fatih: unit('fatih', 'walk'),
+  hannibal: unit('hannibal', 'walk'),
+  elephant: unit('elephant', 'walk'),
 };
+
+/** Kafilede bir boy büyük görünenler. */
+const HERO_SCALE: Partial<Record<HeroKind, number>> = { hannibal: 1.15, elephant: 1.25 };
 
 /** Kahramanın çizimi; yoksa ödünç alınan çizim, rengi ve boy çarpanı. */
 export function heroLook(kind: HeroKind): { sprite?: SpriteSet; tint?: number; scale: number } {
   const look = HEROES[kind].look;
-  if (HERO_SPRITES[kind] || !look) return { sprite: HERO_SPRITES[kind], scale: 1 };
+  if (HERO_SPRITES[kind] || !look) return { sprite: HERO_SPRITES[kind], scale: HERO_SCALE[kind] ?? 1 };
   return { sprite: HERO_SPRITES[look.as], tint: look.tint, scale: look.scale ?? 1 };
 }
 
@@ -101,6 +106,15 @@ export const ENEMY_SPRITES: Partial<Record<EnemyKind, SpriteSet>> = {
   harborKraken: boss('harbor_kraken'),
   oilGiant: boss('oil_giant'),
   wallWarden: boss('wall_warden', 160),
+  sandCrab: unit('sand_crab', 'move', 4, 110),
+  gull: unit('gull', 'move', 4, 80),
+  goat: unit('goat', 'move', 4, 100),
+  snowball: unit('snowball', 'move', 4, 120),
+  yeti: unit('yeti', 'move', 4),
+  tideCrab: boss('tide_crab'),
+  caveBear: boss('cave_bear'),
+  stormEagle: boss('storm_eagle'),
+  avalancheGiant: boss('avalanche_giant', 160),
 };
 
 export interface TileSet {
@@ -133,9 +147,11 @@ export const REGION_TILES = {
   halic: tileSet('halic'),
   galata: tileSet('galata'),
   surlar: tileSet('surlar'),
-} as Record<RegionId, TileSet>;
-// Alpler çizimleri gelene kadar en yakın setler
-Object.assign(REGION_TILES, { iber: REGION_TILES.bones, pirene: REGION_TILES.galata, zirve: REGION_TILES.frost, po: REGION_TILES.vale });
+  iber: tileSet('iber'),
+  pirene: tileSet('pirene'),
+  zirve: tileSet('zirve'),
+  po: tileSet('po'),
+} satisfies Record<RegionId, TileSet>;
 
 /** Eski çağrılar için Yeşil Vadi seti. */
 export const TILES = REGION_TILES.vale;
@@ -159,18 +175,22 @@ export const DEDE_ART = {
   surprised: add('dede.surprised', 'ui/narrator/dede_husnu_portrait_surprised.svg', 256),
 } satisfies Record<Mood, string>;
 
-/** Alpler anlarını anlatan Ata Hüsnü (MÖ 218); portresi gelene kadar Dede Hüsnü'nün yüzü. */
-export const ATA_ART = DEDE_ART;
+/** Alpler anlarını anlatan Ata Hüsnü (MÖ 218). */
+export const ATA_ART = {
+  normal: add('ata.normal', 'ui/narrator/ata_husnu_portrait_normal.svg', 256),
+  laugh: add('ata.laugh', 'ui/narrator/ata_husnu_portrait_laugh.svg', 256),
+  surprised: add('ata.surprised', 'ui/narrator/ata_husnu_portrait_surprised.svg', 256),
+} satisfies Record<Mood, string>;
 
 export const CAMPAIGN_ART = {
   covers: {
     road: add('campaign.road', 'ui/campaign/campaign_cover_road.svg', 480, 270),
     fetih: add('campaign.fetih', 'ui/campaign/campaign_cover_fetih.svg', 480, 270),
-    // Alpler kapağı gelene kadar yolun kapağı
-    alpler: add('campaign.alpler', 'ui/campaign/campaign_cover_road.svg', 480, 270),
+    alpler: add('campaign.alpler', 'ui/campaign/campaign_cover_alpler.svg', 480, 270),
   } satisfies Record<CampaignId, string>,
   locked: add('campaign.locked', 'ui/campaign/campaign_cover_locked.svg', 480, 270),
   ship: add('campaign.ship', 'ui/campaign/ship_icon.svg', 64),
+  elephant: add('campaign.elephant', 'ui/campaign/elephant_icon.svg', 64),
 };
 
 export type Building = 'barracks' | 'temple' | 'market';
@@ -196,8 +216,7 @@ export const CAMP_SLOTS: Record<Building | 'campfire', [number, number, number, 
 
 const ART_REGION: Record<RegionId, string> = {
   vale: 'valley', bones: 'bones', ash: 'ash', frost: 'frost', hisar: 'hisar', halic: 'halic', galata: 'galata', surlar: 'surlar',
-  // Alpler rozetleri gelene kadar
-  iber: 'bones', pirene: 'galata', zirve: 'frost', po: 'valley',
+  iber: 'iber', pirene: 'pirene', zirve: 'zirve', po: 'po',
 };
 
 export const MAP = {
@@ -226,8 +245,11 @@ export const REGION_BANNER = {
   halic: { key: add('banner.halic', 'ui/components/ui_banner_region_halic.svg', 640, 128), text: '#f4efe6' },
   galata: { key: add('banner.galata', 'ui/components/ui_banner_region_galata.svg', 640, 128), text: '#14121c' },
   surlar: { key: add('banner.surlar', 'ui/components/ui_banner_region_surlar.svg', 640, 128), text: '#f4efe6' },
-} as Record<RegionId, { key: string; text: string }>;
-Object.assign(REGION_BANNER, { iber: REGION_BANNER.bones, pirene: REGION_BANNER.galata, zirve: REGION_BANNER.frost, po: REGION_BANNER.vale });
+  iber: { key: add('banner.iber', 'ui/components/ui_banner_region_iber.svg', 640, 128), text: '#14121c' },
+  pirene: { key: add('banner.pirene', 'ui/components/ui_banner_region_pirene.svg', 640, 128), text: '#f4efe6' },
+  zirve: { key: add('banner.zirve', 'ui/components/ui_banner_region_zirve.svg', 640, 128), text: '#14121c' },
+  po: { key: add('banner.po', 'ui/components/ui_banner_region_po.svg', 640, 128), text: '#14121c' },
+} satisfies Record<RegionId, { key: string; text: string }>;
 
 // ---------- ganimet ----------
 
@@ -254,6 +276,7 @@ export const FX = {
   holy: add('fx.holy', 'fx/fx_holy.svg', 48),
   fireball: anim('fx.fireball', seq('fx', 'fx_fireball', 3, 48), 90),
   cannonball: add('fx.cannonball', 'fx/cannonball.svg', 24),
+  snowball: add('fx.snowball', 'fx/snowball_shot.svg', 24),
   cannonBlast: anim('fx.cannonBlast', seq('fx', 'cannon_blast', 4, 96), 80, 0),
   slash: anim('fx.slash', seq('fx', 'fx_slash', 3, 48), 60, 0),
   explosion: anim('fx.explosion', seq('fx', 'fx_explosion', 4, 96), 80, 0),

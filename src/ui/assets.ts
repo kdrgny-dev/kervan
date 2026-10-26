@@ -51,7 +51,7 @@ export type IconName = (typeof ICONS)[number];
 export const icon = (name: IconName) => `icon.${name}`;
 
 /** Ayrı portresi olmayan kahramanlar karakter çizimini, çizimi de olmayanlar ödünç aldıkları kahramanın portresini kullanır. */
-const SPRITE_PORTRAIT: HeroKind[] = ['fatih'];
+const SPRITE_PORTRAIT: HeroKind[] = ['fatih', 'hannibal', 'elephant'];
 export const portrait = (kind: HeroKind): string => {
   const look = HEROES[kind].look;
   if (look) return portrait(look.as);
