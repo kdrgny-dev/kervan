@@ -30,6 +30,8 @@ const SCENARIOS: Record<string, Partial<Loadout> & { campaign?: CampaignId }> = 
     secondHero: true,
     campaign: 'fetih',
   },
+  // Alpler Sv 8'de açılır; Fetih'i bitirmiş, Fatih'i alamamış orta oyuncu
+  'Alpler · orta (Sv4, 4 kahraman)': { unlocked: ['knight', 'archer', 'mage', 'priest'], upgrades: ups(4), campaign: 'alpler' },
 };
 
 const pct = (xs: number[], p: number) => {

@@ -15,7 +15,7 @@ import { drawArena } from '../render/arena';
 import { bossAt, journeyName, REGIONS } from '../data/regions';
 import type { CampaignId } from '../data/campaigns';
 import { Fx } from '../render/fx';
-import { ENEMY_SPRITES, FX, HERO_SPRITES, LOOT, POWER_ICONS } from '../render/sprites';
+import { ENEMY_SPRITES, FX, heroLook, LOOT, POWER_ICONS } from '../render/sprites';
 import type { ProjectileKind } from '../data/balance';
 import { UnitView } from '../render/UnitView';
 import { chebyshev, type Vec } from '../sim/grid';
@@ -469,13 +469,15 @@ export class GameScene extends Phaser.Scene {
       let view = this.heroViews.get(hero.id);
       if (!view) {
         const def = HEROES[hero.kind];
+        const look = heroLook(hero.kind);
         view = new UnitView(this, {
           color: def.color,
           glyph: def.glyph,
           size: CELL - 10,
           shape: 'square',
-          sprite: HERO_SPRITES[hero.kind],
-          spriteSize: CELL * 1.15,
+          sprite: look.sprite,
+          spriteSize: CELL * 1.15 * look.scale,
+          tint: look.tint,
         });
         this.heroViews.set(hero.id, view);
         this.tweens.add({ targets: view, scale: { from: 1.4, to: 1 }, duration: 220, ease: 'Back.Out' });
@@ -612,7 +614,7 @@ export class GameScene extends Phaser.Scene {
         const def = HEROES[loot.hero];
         c.add([
           this.add.circle(0, 0, CELL * 0.42, COLORS.leader, 0.18),
-          new UnitView(this, { color: def.color, glyph: def.glyph, size: CELL - 20, shape: 'square', sprite: HERO_SPRITES[loot.hero], spriteSize: CELL * 0.8 }),
+          new UnitView(this, { color: def.color, glyph: def.glyph, size: CELL - 20, shape: 'square', sprite: heroLook(loot.hero).sprite, spriteSize: CELL * 0.8, tint: heroLook(loot.hero).tint }),
           this.add.image(0, 0, LOOT.heroToken).setDisplaySize(CELL, CELL),
         ]);
         break;

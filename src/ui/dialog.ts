@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { audio } from '../audio/audio';
-import { DEDE, NARRATOR, STORY, type StoryBeat, type StoryId } from '../data/story';
-import { DEDE_ART, NARRATOR_ART } from '../render/sprites';
+import { ATA, DEDE, NARRATOR, STORY, type StoryBeat, type StoryId } from '../data/story';
+import { ATA_ART, DEDE_ART, NARRATOR_ART } from '../render/sprites';
 import { slice } from './kit';
 import { displayStyle, textStyle, UI } from './theme';
 import { view } from '../render/resolution';
@@ -89,10 +89,10 @@ export class StoryDialog {
     this.line = 0;
     this.title.setText(STORY[id].title);
     const beat: StoryBeat = STORY[id];
-    const art = beat.voice === 'dede' ? DEDE_ART : NARRATOR_ART;
+    const art = beat.voice === 'dede' ? DEDE_ART : beat.voice === 'ata' ? ATA_ART : NARRATOR_ART;
     const face = art[beat.mood ?? 'normal'];
     if (this.portrait && this.scene.textures.exists(face)) this.portrait.setTexture(face).setDisplaySize(150, 150);
-    this.nameTag.setText(beat.voice === 'dede' ? DEDE : NARRATOR);
+    this.nameTag.setText(beat.voice === 'dede' ? DEDE : beat.voice === 'ata' ? ATA : NARRATOR);
     if (!this.root.visible) {
       this.root.setVisible(true).setAlpha(0);
       this.scene.tweens.add({ targets: this.root, alpha: 1, duration: 200 });

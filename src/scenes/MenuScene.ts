@@ -3,7 +3,7 @@ import { HEROES, type HeroKind } from '../data/heroes';
 import { bindPad } from '../input/gamepad';
 import { profile } from '../meta/profile';
 import { isDesktop, quitApp } from '../platform';
-import { HERO_SPRITES } from '../render/sprites';
+import { heroLook } from '../render/sprites';
 import { UnitView } from '../render/UnitView';
 import { titleFor, xpForLevel } from '../data/progression';
 import { campaignUnlocked, ensureQuests } from '../meta/progression';
@@ -122,7 +122,7 @@ export class MenuScene extends Phaser.Scene {
     const spacing = 96;
     const views = PARADE.map((k) => {
       const def = HEROES[k];
-      return new UnitView(this, { color: def.color, glyph: def.glyph, size: 60, shape: 'square', sprite: HERO_SPRITES[k], spriteSize: 92 });
+      return new UnitView(this, { color: def.color, glyph: def.glyph, size: 60, shape: 'square', sprite: heroLook(k).sprite, spriteSize: 92, tint: heroLook(k).tint });
     });
     const span = width + 480 + spacing * views.length;
     let x = -480;

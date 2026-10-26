@@ -96,7 +96,7 @@ export class HeroSelectScene extends Phaser.Scene {
     const face = this.add.image(0, -58, portrait(kind)).setDisplaySize(148, 148);
     root.add(face);
     const name = this.add.text(0, 30, def.name, displayStyle(26)).setOrigin(0.5);
-    const role = this.add.text(0, 54, def.role, textStyle(13, { color: UI.muted })).setOrigin(0.5);
+    const role = this.add.text(0, 46, def.role, textStyle(13, { color: UI.muted, align: 'center', wordWrap: { width: this.cardW - 14 } })).setOrigin(0.5, 0);
     root.add([name, role]);
 
     if (locked) {
@@ -151,7 +151,10 @@ export class HeroSelectScene extends Phaser.Scene {
       parts.push(img, txt);
       cx += 24 + txt.width + 9;
     }
-    return this.add.container(x - (cx - 9) / 2, y, parts);
+    // Kahraman sayısı arttıkça kartlar daralıyor; satır kartın içinde kalsın
+    const total = cx - 9;
+    const k = Math.min(1, (this.cardW - 14) / total);
+    return this.add.container(x - (total * k) / 2, y, parts).setScale(k);
   }
 
   private step(dir: number) {

@@ -304,6 +304,12 @@ F6 paralel yürüyebilir: grafik üretimi F0'dan itibaren başlayabilir.
 - Fetih: Hisar yavaş başlar (yarasa + zincir yılanı; mazgal 3., iskelet 4., mancınık 5. dalgadan); mazgal 26 can ve biraz daha yavaş; Taş Nöbetçi 260 can, en fazla 2 mazgal, 8 sn'de bir çağırır.
 - Bot ölçümü (60 oyun, medyan dalga): yeni oyuncu 15, Yol·orta 22, Fetih·orta 22 (önce 8), güçlü ~20 (bot duvar hatası sınırı). Fetih·orta kafile 35 (önce 14), silinme 10/60 (önce 18).
 
+### Destan II · Alpler
+
+- Rota İber kıyısı → Pireneler → Karlı Alpler → Po ovası, Sv 8'de açılır, ödül Hannibal. Her bölgenin ilk dalgasında fil jetonu düşer; fil yalnızca destana özel yoldaş (`companion`), kahraman seçiminde ve mağazada yok.
+- Kafilede fil ya da Hannibal varken lider çarptığında hasar almaz; düşman canının %60'ını (boss'ta %8'ini) kaybeder, 0,5 sn bekleme. Fil ve Hannibal yakın dövüşte çevreye de %60 hasar verir.
+- Çizimler gelene kadar yer tutucu: düşman ve kahramanlar mevcut sprite'ların renklendirilmişi, karolar en yakın setler. Çizim istemi: `docs/claude-design-prompt-stage7.md`. Bot: Alpler·orta medyan dalga 19.
+
 ### Yol olayları
 
 - Dalga sonu %40 ihtimalle (2. dalgadan itibaren, iki olay arasında en az 2 dalga, son 4 olay tekrarlanmaz) kart seçiminden sonra Hüsnü bir olay anlatır: tüccar, kuyu, zar, falcı, demirci, haydut, kervansaray, lanetli sandık (`src/sim/roadEvents.ts`). Bedeller dalgayla büyür; her olayda bedava bir seçenek var. Olay ve sonuç ekranında oyun bekler.

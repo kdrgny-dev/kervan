@@ -66,6 +66,8 @@ export function startWave(w: World) {
   s.pending = rollWave(w, s.n);
   const region = regionAt(s.n, w.route);
   if (region.local === 1 && s.n > 1) w.events.push({ type: 'regionEnter', region: region.id, journey: region.journey });
+  const companion = CAMPAIGNS[w.campaign].companion;
+  if (companion && region.local === 1) spawnHeroToken(w, companion);
   w.tally.furthestRegion = Math.max(w.tally.furthestRegion, Math.floor((s.n - 1) / 10));
   w.events.push({ type: 'waveStart', n: s.n });
   if (CAMPAIGNS[w.campaign].ships && s.n % BOSS_EVERY === 0) {

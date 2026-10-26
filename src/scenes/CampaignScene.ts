@@ -33,6 +33,8 @@ export class CampaignScene extends Phaser.Scene {
   /** Telefonda görünür yükseklik 600; kartlar ve butonlar ona göre sıkışır. */
   private cardH = 430;
   private cardY = 350;
+  /** Destan sayısı arttıkça kartlar ekrana sığacak kadar küçülür. */
+  private cardScale = 1;
 
   constructor() {
     super('campaigns');
@@ -55,9 +57,12 @@ export class CampaignScene extends Phaser.Scene {
     ribbon(this, width / 2, tight ? 46 : 68, 'Yolculuk seç', { width: 400 });
 
     const gap = 26;
-    const x0 = width / 2 - CARD_W - gap;
-    CAMPAIGN_IDS.forEach((id, i) => this.card(id, x0 + i * (CARD_W + gap), this.cardY, i));
-    this.upcoming(x0 + CAMPAIGN_IDS.length * (CARD_W + gap), this.cardY);
+    const count = CAMPAIGN_IDS.length + 1;
+    this.cardScale = Math.min(1, (width - 48) / (count * CARD_W + (count - 1) * gap));
+    const step = (CARD_W + gap) * this.cardScale;
+    const x0 = width / 2 - ((count - 1) * step) / 2;
+    CAMPAIGN_IDS.forEach((id, i) => this.card(id, x0 + i * step, this.cardY, i));
+    this.upcoming(x0 + CAMPAIGN_IDS.length * step, this.cardY);
 
     const footY = tight ? height - 48 : height - 70;
     new Button(this, 145, footY, 'Geri', () => this.scene.start('menu'), { width: 196, height: 64, icon: 'back' });
@@ -83,7 +88,7 @@ export class CampaignScene extends Phaser.Scene {
     const save = profile.data;
     const def = CAMPAIGNS[id];
     const locked = !campaignUnlocked(save, id);
-    const root = this.add.container(x, y);
+    const root = this.add.container(x, y).setScale(this.cardScale);
 
     const glow = this.add.graphics().setAlpha(0);
     glow.lineStyle(8, UI.goldNum, 1).strokeRoundedRect(-CARD_W / 2 - 6, -this.cardH / 2 - 6, CARD_W + 12, this.cardH + 12, 22);
@@ -151,7 +156,7 @@ export class CampaignScene extends Phaser.Scene {
   }
 
   private upcoming(x: number, y: number) {
-    const root = this.add.container(x, y);
+    const root = this.add.container(x, y).setScale(this.cardScale);
     root.add(slice(this, 'ui.panel', 0, 0, CARD_W, this.cardH).setAlpha(0.6));
     const top = -this.cardH / 2 + 18;
     root.add(this.cover(CAMPAIGN_ART.locked, 0, top + COVER_H / 2));
@@ -176,7 +181,7 @@ export class CampaignScene extends Phaser.Scene {
     for (const [id, c] of this.cards) {
       const on = id === this.selected;
       this.tweens.killTweensOf([c.root, c.glow]);
-      this.tweens.add({ targets: c.root, y: this.cardY + (on ? -10 : 0), scale: on ? 1.03 : 1, alpha: 1, duration: 180, ease: 'Back.Out' });
+      this.tweens.add({ targets: c.root, y: this.cardY + (on ? -10 : 0), scale: (on ? 1.03 : 1) * this.cardScale, alpha: 1, duration: 180, ease: 'Back.Out' });
       c.glow.setAlpha(0);
       if (on) this.tweens.add({ targets: c.glow, alpha: { from: 0.35, to: 0.7 }, duration: 800, ease: 'Sine.InOut', yoyo: true, repeat: -1 });
     }

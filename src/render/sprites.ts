@@ -1,7 +1,7 @@
 import type Phaser from 'phaser';
 import { RASTER } from './resolution';
 import type { EnemyKind } from '../data/enemies';
-import type { HeroKind } from '../data/heroes';
+import { HEROES, type HeroKind } from '../data/heroes';
 import type { PowerKind } from '../data/loot';
 import type { CampaignId } from '../data/campaigns';
 import type { RegionId, RoadRegion } from '../data/regions';
@@ -74,6 +74,13 @@ export const HERO_SPRITES: Partial<Record<HeroKind, SpriteSet>> = {
   fatih: unit('fatih', 'walk'),
 };
 
+/** Kahramanın çizimi; yoksa ödünç alınan çizim, rengi ve boy çarpanı. */
+export function heroLook(kind: HeroKind): { sprite?: SpriteSet; tint?: number; scale: number } {
+  const look = HEROES[kind].look;
+  if (HERO_SPRITES[kind] || !look) return { sprite: HERO_SPRITES[kind], scale: 1 };
+  return { sprite: HERO_SPRITES[look.as], tint: look.tint, scale: look.scale ?? 1 };
+}
+
 export const ENEMY_SPRITES: Partial<Record<EnemyKind, SpriteSet>> = {
   slime: unit('slime', 'move', 3, 150),
   bat: unit('bat', 'move', 4, 80),
@@ -126,7 +133,9 @@ export const REGION_TILES = {
   halic: tileSet('halic'),
   galata: tileSet('galata'),
   surlar: tileSet('surlar'),
-} satisfies Record<RegionId, TileSet>;
+} as Record<RegionId, TileSet>;
+// Alpler çizimleri gelene kadar en yakın setler
+Object.assign(REGION_TILES, { iber: REGION_TILES.bones, pirene: REGION_TILES.galata, zirve: REGION_TILES.frost, po: REGION_TILES.vale });
 
 /** Eski çağrılar için Yeşil Vadi seti. */
 export const TILES = REGION_TILES.vale;
@@ -150,10 +159,15 @@ export const DEDE_ART = {
   surprised: add('dede.surprised', 'ui/narrator/dede_husnu_portrait_surprised.svg', 256),
 } satisfies Record<Mood, string>;
 
+/** Alpler anlarını anlatan Ata Hüsnü (MÖ 218); portresi gelene kadar Dede Hüsnü'nün yüzü. */
+export const ATA_ART = DEDE_ART;
+
 export const CAMPAIGN_ART = {
   covers: {
     road: add('campaign.road', 'ui/campaign/campaign_cover_road.svg', 480, 270),
     fetih: add('campaign.fetih', 'ui/campaign/campaign_cover_fetih.svg', 480, 270),
+    // Alpler kapağı gelene kadar yolun kapağı
+    alpler: add('campaign.alpler', 'ui/campaign/campaign_cover_road.svg', 480, 270),
   } satisfies Record<CampaignId, string>,
   locked: add('campaign.locked', 'ui/campaign/campaign_cover_locked.svg', 480, 270),
   ship: add('campaign.ship', 'ui/campaign/ship_icon.svg', 64),
@@ -182,6 +196,8 @@ export const CAMP_SLOTS: Record<Building | 'campfire', [number, number, number, 
 
 const ART_REGION: Record<RegionId, string> = {
   vale: 'valley', bones: 'bones', ash: 'ash', frost: 'frost', hisar: 'hisar', halic: 'halic', galata: 'galata', surlar: 'surlar',
+  // Alpler rozetleri gelene kadar
+  iber: 'bones', pirene: 'galata', zirve: 'frost', po: 'valley',
 };
 
 export const MAP = {
@@ -210,7 +226,8 @@ export const REGION_BANNER = {
   halic: { key: add('banner.halic', 'ui/components/ui_banner_region_halic.svg', 640, 128), text: '#f4efe6' },
   galata: { key: add('banner.galata', 'ui/components/ui_banner_region_galata.svg', 640, 128), text: '#14121c' },
   surlar: { key: add('banner.surlar', 'ui/components/ui_banner_region_surlar.svg', 640, 128), text: '#f4efe6' },
-} satisfies Record<RegionId, { key: string; text: string }>;
+} as Record<RegionId, { key: string; text: string }>;
+Object.assign(REGION_BANNER, { iber: REGION_BANNER.bones, pirene: REGION_BANNER.galata, zirve: REGION_BANNER.frost, po: REGION_BANNER.vale });
 
 // ---------- ganimet ----------
 

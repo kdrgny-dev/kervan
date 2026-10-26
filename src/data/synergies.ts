@@ -9,6 +9,8 @@ export const HERO_CLASS: Record<HeroKind, HeroClass> = {
   priest: 'holy',
   rogue: 'shadow',
   fatih: 'warrior',
+  hannibal: 'warrior',
+  elephant: 'warrior',
 };
 
 export const SYNERGY_TIERS = [2, 4] as const;
