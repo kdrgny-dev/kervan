@@ -15,6 +15,8 @@
 
 ## Bitenler (son)
 
+- Hüsnü'nün yol olayları: dalga aralarında seçimli küçük olaylar
+- Menü ve oyun müziği (CC0), masaüstünde boss çubuğu üst şeritte
 - Mobil web (PWA), telefonda tam ekran oyun alanı + yakın kamera, ayrı gösterge şeridi
 - Duvarda son an payı; kafile oyunun önünde çiziliyor (geç görme hissi)
 - Ölü düşman görüntülerinin kalması (bomba + mıknatıs; duraklat/devam)
