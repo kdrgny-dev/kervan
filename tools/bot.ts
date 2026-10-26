@@ -2,6 +2,7 @@ import { GRID_H, GRID_W } from '../src/config';
 import { SIM_DT } from '../src/data/balance';
 import { DIR_VEC, type Dir, OPPOSITE, type Vec } from '../src/sim/grid';
 import { pickCard } from '../src/sim/cards';
+import type { CampaignId } from '../src/data/campaigns';
 import { createWorld, stepWorld, turn, type GameOverReason, type Loadout, type World } from '../src/sim/world';
 
 const DIRS = Object.keys(DIR_VEC) as Dir[];
@@ -74,8 +75,8 @@ export interface RunReport {
   reason: GameOverReason | 'timeout';
 }
 
-export function playRun(seed: number, loadout: Partial<Loadout>, maxSeconds = 900, drafts = true): RunReport {
-  const w = createWorld({ seed, loadout, drafts });
+export function playRun(seed: number, loadout: Partial<Loadout>, maxSeconds = 900, drafts = true, campaign: CampaignId = 'road'): RunReport {
+  const w = createWorld({ seed, loadout, drafts, campaign });
   let reason: RunReport['reason'] = 'timeout';
   let lastTick = -1;
   let maxParty = 1;
