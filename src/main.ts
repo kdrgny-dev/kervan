@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { CELL, GRID_H, GRID_W } from './config';
+import { RES } from './render/resolution';
 import { audio } from './audio/audio';
 import { profile } from './meta/profile';
 import { isDesktop, toggleFullscreen } from './platform';
@@ -19,8 +20,8 @@ audio.unlockOnGesture();
 const game = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'game',
-  width: GRID_W * CELL,
-  height: GRID_H * CELL,
+  width: GRID_W * CELL * RES,
+  height: GRID_H * CELL * RES,
   backgroundColor: '#14121c',
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
   audio: { noAudio: true },

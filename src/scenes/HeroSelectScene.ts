@@ -9,6 +9,7 @@ import { icon, type IconName, portrait } from '../ui/assets';
 import { Button, enter, fmt, ribbon, shake, slice } from '../ui/kit';
 import { backdrop, fadeIn, wallet } from '../ui/screen';
 import { displayStyle, textStyle, UI } from '../ui/theme';
+import { sharpen, view } from '../render/resolution';
 
 const CARD_W = 168;
 const CARD_H = 280;
@@ -37,7 +38,8 @@ export class HeroSelectScene extends Phaser.Scene {
   }
 
   create() {
-    const { width, height } = this.scale;
+    sharpen(this.cameras.main);
+    const { width, height } = view(this);
     const save = profile.data;
     this.cards = new Map();
     this.selected = save.unlocked.includes(save.lastHero) ? save.lastHero : save.unlocked[0];

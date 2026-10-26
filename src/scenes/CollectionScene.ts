@@ -7,6 +7,7 @@ import { icon } from '../ui/assets';
 import { Button, enter, slice } from '../ui/kit';
 import { backdrop, fadeIn, wallet } from '../ui/screen';
 import { displayStyle, textStyle, UI } from '../ui/theme';
+import { sharpen, view } from '../render/resolution';
 
 const TILE_W = 212;
 const TILE_H = 104;
@@ -20,7 +21,8 @@ export class CollectionScene extends Phaser.Scene {
   }
 
   create() {
-    const { width } = this.scale;
+    sharpen(this.cameras.main);
+    const { width } = view(this);
     const owned = profile.data.cardsUnlocked;
     fadeIn(this);
     backdrop(this);

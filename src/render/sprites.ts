@@ -1,4 +1,5 @@
 import type Phaser from 'phaser';
+import { RASTER } from './resolution';
 import type { EnemyKind } from '../data/enemies';
 import type { HeroKind } from '../data/heroes';
 import type { PowerKind } from '../data/loot';
@@ -247,7 +248,7 @@ export const FX = {
 /** SVG'leri 2x çözünürlükte rasterleştirir; ekranda küçültülerek keskin kalır. */
 export function preloadSprites(scene: Phaser.Scene) {
   for (const [key, { file, w, h }] of Object.entries(FILES)) {
-    scene.load.svg(key, file, { width: w * 2, height: h * 2 });
+    scene.load.svg(key, file, { width: w * RASTER, height: h * RASTER });
   }
 }
 

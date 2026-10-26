@@ -1,5 +1,6 @@
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import type Phaser from 'phaser';
+import { cssPerUnit } from './render/resolution';
 
 export const isDesktop = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
 export const isTouch = typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches;
@@ -8,7 +9,7 @@ export const isTouch = typeof matchMedia !== 'undefined' && matchMedia('(pointer
 export const isPhone = () => isTouch && Math.min(window.innerWidth, window.innerHeight) < 500;
 
 /** Dokunmatik ekranda bir hedefin en az 44 pt olması için gereken oyun pikseli. */
-export const minTouchPx = (scale: Phaser.Scale.ScaleManager) => (isTouch ? 44 / (scale.displaySize.width / scale.width) : 0);
+export const minTouchPx = (scene: Phaser.Scene) => (isTouch ? 44 / cssPerUnit(scene) : 0);
 
 export async function quitApp() {
   if (isDesktop) await getCurrentWindow().close();

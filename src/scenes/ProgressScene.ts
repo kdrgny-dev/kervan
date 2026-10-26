@@ -13,6 +13,7 @@ import { icon } from '../ui/assets';
 import { Bar, Button, enter, fmt, panel, tab } from '../ui/kit';
 import { backdrop, fadeIn, rewardChip, rewardRow, wallet } from '../ui/screen';
 import { displayStyle, textStyle, UI } from '../ui/theme';
+import { sharpen } from '../render/resolution';
 
 type Tab = 'quests' | 'track' | 'achievements' | 'map' | 'journal';
 
@@ -38,6 +39,7 @@ export class ProgressScene extends Phaser.Scene {
   }
 
   create() {
+    sharpen(this.cameras.main);
     ensureQuests(profile.data);
     fadeIn(this);
     backdrop(this);

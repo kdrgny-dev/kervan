@@ -297,6 +297,12 @@ F6 paralel yürüyebilir: grafik üretimi F0'dan itibaren başlayabilir.
 - Hikaye: `destans`, `fetih_intro`, bölge/boss anları, `fetih_done`. Kayıt şeması v4 (`campaigns`, `lastCampaign`).
 - Çizimler: Claude Design Aşama 6 (`docs/design/stage6/manifest.json`); bölge/boss anlarını Dede Hüsnü kendi ağzından anlatır.
 
+### Keskin görüntü
+
+- Sahneler mantıksal 1152×720'de yerleşir; tuval ekranın gerçek piksel yoğunluğunda açılır (`RES`, 1–2,5) ve kameralar bu oranda büyütür (`src/render/resolution.ts`). Yazılar aynı çözünürlükte üretilir, çizimler RES ≥ 2 iken 3 kat rasterleştirilir.
+- Yerleşimde `scale.width/height` yerine `view(scene)` kullanılır; telefonda oyun sahnesi daha geniş olabilir.
+- Geliştirmede düşük yoğunluklu ekranda denemek için `?res=2`.
+
 ### Mobil web (PWA)
 
 - `public/manifest.webmanifest` + ikonlar (`public/icons/`): ana ekrana eklenince tam ekran, yatay açılır.

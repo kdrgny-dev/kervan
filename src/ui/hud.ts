@@ -10,6 +10,7 @@ import type { World } from '../sim/world';
 import { icon, portrait } from './assets';
 import { Bar, Button, fmt, Pill, slice } from './kit';
 import { displayStyle, textStyle, UI } from './theme';
+import { view } from '../render/resolution';
 
 const DEPTH = 40;
 /** Telefonda göstergelerin oturduğu üst şeridin yüksekliği; oyun dünyası bunun altında başlar. */
@@ -40,7 +41,7 @@ export class Hud {
     onPause: () => void,
     private readonly compact = false,
   ) {
-    const { width, height } = scene.scale;
+    const { width, height } = view(scene);
     // Aynı derinlikte ilk eklenen en altta kalır; 40'ın altına inerse dünya kamerasına düşer
     if (compact) scene.add.rectangle(0, 0, width, HUD_BAND, UI.bg).setOrigin(0).setDepth(DEPTH);
     const pill = (caption: string, color?: string) => new Pill(scene, 16, 34, { caption, height: 42, color }).setDepth(DEPTH);
@@ -145,7 +146,7 @@ export class Hud {
   /** Telefonda şeritte yan yana küçük rozetler: yüz + sayaç. */
   private compactSynergies(active: typeof HERO_CLASSES, counts: ReturnType<typeof classCounts>) {
     // Para sayaçlarına çarpmadan sığan kadar rozet
-    const room = Math.max(0, Math.floor((this.scene.scale.width - 340 - this.synergies.x) / 92));
+    const room = Math.max(0, Math.floor((view(this.scene).width - 340 - this.synergies.x) / 92));
     active.slice(0, Math.min(3, room)).forEach((c, i) => {
       const n = counts[c];
       const tier = n >= SYNERGY_TIERS[1] ? 2 : n >= SYNERGY_TIERS[0] ? 1 : 0;
@@ -204,7 +205,7 @@ export class Hud {
 
   /** Dalga afişi: boss için kırmızı, temizlendi için ödüllü sarı. */
   banner(kind: 'wave' | 'boss' | 'clear' | 'region', title: string, bonus?: number, sub?: string, region?: RegionId) {
-    const { width, height } = this.scene.scale;
+    const { width, height } = view(this.scene);
     const danger = kind === 'boss';
     const y = kind === 'wave' ? 170 : height / 2 - 40;
     const c = this.scene.add.container(width / 2, y).setDepth(DEPTH + 3);
