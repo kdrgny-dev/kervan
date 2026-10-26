@@ -18,12 +18,13 @@ import { Fx } from '../render/fx';
 import { ENEMY_SPRITES, FX, HERO_SPRITES, LOOT, POWER_ICONS } from '../render/sprites';
 import type { ProjectileKind } from '../data/balance';
 import { UnitView } from '../render/UnitView';
-import { chebyshev, type Vec } from '../sim/grid';
+import type { Vec } from '../sim/grid';
 import {
   createWorld,
   enemyAlpha,
   type GameOverReason,
   type Loot,
+  nextCells,
   stepWorld,
   tickAlpha,
   turn,
@@ -449,6 +450,8 @@ export class GameScene extends Phaser.Scene {
     const w = this.world;
     const alpha = tickAlpha(w);
     const t = this.time.now;
+    const next = nextCells(w);
+    this.dropStale(this.heroViews, new Set(w.party.map((h) => h.id)));
     w.party.forEach((hero, i) => {
       let view = this.heroViews.get(hero.id);
       if (!view) {
@@ -464,12 +467,20 @@ export class GameScene extends Phaser.Scene {
         this.heroViews.set(hero.id, view);
         this.tweens.add({ targets: view, scale: { from: 1.4, to: 1 }, duration: 220, ease: 'Back.Out' });
       }
-      // Gemiyle duvardan geçince ekranın öbür ucuna kaymasın, ışınlansın
-      const p = chebyshev(hero.prev, hero.pos) > 1 ? hero.pos : lerp(hero.prev, hero.pos, alpha);
+      // Şimdiki kareden gideceği kareye: ekran oyunun önünde kalır, geride değil
+      const p = lerp(hero.pos, next[i], alpha);
       const bob = w.alive && !this.halted ? Math.abs(Math.sin(t / 90 + i * 0.7)) * -4 : 0;
-      view.setPosition(px(p.x), px(p.y) + bob);
+      let x = px(p.x);
+      let y = px(p.y);
+      // Dönüşte hedef yana sıçrar; birkaç karede yetiş (gemiyle ışınlanma hariç)
+      const jump = Math.hypot(x - view.x, y - bob - view.y);
+      if (jump > CELL * 0.3 && jump < CELL * 2) {
+        x = view.x + (x - view.x) * 0.5;
+        y = view.y - bob + (y - (view.y - bob)) * 0.5;
+      }
+      view.setPosition(x, y + bob);
       view.setDepth(10 + p.y * 0.01 + (i === 0 ? 0.005 : 0));
-      view.face(hero.pos.x - hero.prev.x);
+      view.face(next[i].x - hero.pos.x || hero.pos.x - hero.prev.x);
       view.animate(t, w.alive && !this.halted);
       view.setMarker(w.powers.shield ? COLORS.shield : i === 0 ? COLORS.leader : null);
       const sailing = w.time < w.wallPassUntil;
@@ -481,7 +492,10 @@ export class GameScene extends Phaser.Scene {
 
   private renderEnemies() {
     const w = this.world;
-    for (const enemy of w.enemies) {
+    // Görüntüler olaylara değil duruma bağlı: listede olmayan ya da ölmüş düşmanın görüntüsü kalmaz
+    const alive = w.enemies.filter((e) => e.hp > 0);
+    this.dropStale(this.enemyViews, new Set(alive.map((e) => e.id)));
+    for (const enemy of alive) {
       let view = this.enemyViews.get(enemy.id);
       if (!view) {
         const def = ENEMIES[enemy.kind];
@@ -650,6 +664,10 @@ export class GameScene extends Phaser.Scene {
   // ---------- HUD ----------
 
   // ---------- efektler ----------
+
+  private dropStale(map: Map<number, UnitView>, live: Set<number>) {
+    for (const id of [...map.keys()]) if (!live.has(id)) this.killView(map, id);
+  }
 
   private killView(map: Map<number, UnitView>, id: number) {
     const view = map.get(id);

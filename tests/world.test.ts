@@ -2,8 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { BASE_TICK_MS } from '../src/config';
 import { SIM_DT } from '../src/data/balance';
 import { InputQueue } from '../src/sim/inputQueue';
-import { createWorld, stepWorld, turn } from '../src/sim/world';
+import { createWorld, nextCells, stepWorld, turn } from '../src/sim/world';
 import { arena, tick } from './helpers';
+import { spawnEnemy } from '../src/sim/enemies';
 
 describe('InputQueue', () => {
   it('rejects reversing into current direction', () => {
@@ -145,5 +146,50 @@ describe('world', () => {
     const a = createWorld({ seed: 42 });
     const b = createWorld({ seed: 42 });
     expect(a.loot).toEqual(b.loot);
+  });
+});
+
+describe('dead enemies', () => {
+  it('never outlive the step they died in, even when a magnet-pulled bomb kills them', () => {
+    const w = createWorld({ seed: 5, waves: false, drafts: false });
+    w.loot = [];
+    w.party[0].pos = { x: 5, y: 5 };
+    w.party[0].prev = { x: 5, y: 5 };
+    w.tickMs = 1e9;
+    for (const pos of [{ x: 15, y: 10 }, { x: 18, y: 3 }]) spawnEnemy(w, 'skeleton', pos);
+    w.powers.magnet = 10_000;
+    w.loot.push({ id: w.nextId++, type: 'power', power: 'bomb', pos: { x: 7, y: 5 }, expiresAt: 1e9 });
+    const events = stepWorld(w, SIM_DT);
+    expect(events.filter((e) => e.type === 'enemyDied')).toHaveLength(2);
+    expect(w.enemies).toHaveLength(0);
+  });
+});
+
+describe('nextCells (drawing ahead of the step)', () => {
+  it('leader heads to the next cell, each body part to the one in front', () => {
+    const w = arena([{ x: 5, y: 5 }, { x: 4, y: 5 }, { x: 3, y: 5 }]);
+    expect(nextCells(w)).toEqual([{ x: 6, y: 5 }, { x: 5, y: 5 }, { x: 4, y: 5 }]);
+  });
+
+  it('a queued turn is shown right away', () => {
+    const w = arena([{ x: 5, y: 5 }, { x: 4, y: 5 }]);
+    turn(w, 'down');
+    expect(nextCells(w)[0]).toEqual({ x: 5, y: 6 });
+  });
+
+  it('nobody moves forward when the leader faces a wall or its own body', () => {
+    const wall = arena([{ x: 22, y: 5 }, { x: 21, y: 5 }]);
+    expect(nextCells(wall)).toEqual([{ x: 22, y: 5 }, { x: 21, y: 5 }]);
+    const coil = arena([{ x: 5, y: 5 }, { x: 6, y: 5 }, { x: 6, y: 6 }, { x: 5, y: 6 }, { x: 4, y: 6 }]);
+    coil.dir = 'down';
+    expect(nextCells(coil)[0]).toEqual({ x: 5, y: 5 });
+  });
+
+  it('matches where the step actually goes', () => {
+    const w = arena([{ x: 5, y: 5 }, { x: 4, y: 5 }, { x: 3, y: 5 }]);
+    turn(w, 'up');
+    const predicted = nextCells(w);
+    tick(w);
+    expect(w.party.map((h) => h.pos)).toEqual(predicted);
   });
 });
