@@ -11,7 +11,6 @@ import { backdrop, fadeIn, wallet } from '../ui/screen';
 import { displayStyle, textStyle, UI } from '../ui/theme';
 import { sharpen, view } from '../render/resolution';
 
-const CARD_W = 168;
 const CARD_H = 280;
 const GAP = 14;
 
@@ -28,6 +27,8 @@ export class HeroSelectScene extends Phaser.Scene {
   private selected: HeroKind = 'knight';
   private cards = new Map<HeroKind, Card>();
   private campaign: CampaignId = 'road';
+  /** Ekran genişledikçe kartlar da genişler (masaüstünde 168, telefonda 190'a kadar). */
+  private cardW = 168;
 
   constructor() {
     super('heroSelect');
@@ -53,8 +54,9 @@ export class HeroSelectScene extends Phaser.Scene {
       this.add.text(width / 2, 122, `${c.name} · ${c.era}`, displayStyle(20, { color: UI.gold })).setOrigin(0.5);
     }
 
-    const total = HERO_KINDS.length * CARD_W + (HERO_KINDS.length - 1) * GAP;
-    HERO_KINDS.forEach((kind, i) => this.card(kind, width / 2 - total / 2 + CARD_W / 2 + i * (CARD_W + GAP), 320, i));
+    this.cardW = Math.min(190, Math.floor((width - 60) / HERO_KINDS.length - GAP));
+    const total = HERO_KINDS.length * this.cardW + (HERO_KINDS.length - 1) * GAP;
+    HERO_KINDS.forEach((kind, i) => this.card(kind, width / 2 - total / 2 + this.cardW / 2 + i * (this.cardW + GAP), 320, i));
 
     new Button(this, 145, height - 90, 'Geri', () => this.back(), { width: 196, height: 64, icon: 'back' });
     new Button(this, width - 195, height - 86, 'Yola çık', () => this.start(), { variant: 'primary', width: 296, height: 76, fontSize: 34 });
@@ -83,12 +85,12 @@ export class HeroSelectScene extends Phaser.Scene {
     let glow: Phaser.GameObjects.Graphics | undefined;
     if (!locked) {
       glow = this.add.graphics().setAlpha(0);
-      glow.lineStyle(8, UI.goldNum, 1).strokeRoundedRect(-CARD_W / 2 - 6, -CARD_H / 2 - 6, CARD_W + 12, CARD_H + 12, 22);
+      glow.lineStyle(8, UI.goldNum, 1).strokeRoundedRect(-this.cardW / 2 - 6, -CARD_H / 2 - 6, this.cardW + 12, CARD_H + 12, 22);
     }
     if (glow) root.add(glow);
-    const frame = slice(this, locked ? 'ui.card_locked' : 'ui.card', 0, 0, CARD_W, CARD_H);
+    const frame = slice(this, locked ? 'ui.card_locked' : 'ui.card', 0, 0, this.cardW, CARD_H);
     root.add(frame);
-    const selectedFrame = locked ? undefined : slice(this, 'ui.card_selected', 0, 0, CARD_W, CARD_H).setVisible(false);
+    const selectedFrame = locked ? undefined : slice(this, 'ui.card_selected', 0, 0, this.cardW, CARD_H).setVisible(false);
     if (selectedFrame) root.add(selectedFrame);
 
     const face = this.add.image(0, -58, portrait(kind)).setDisplaySize(148, 148);
@@ -114,11 +116,11 @@ export class HeroSelectScene extends Phaser.Scene {
       const bg = this.add.graphics();
       bg.fillStyle(UI.goldNum).fillRoundedRect(-label.width / 2 - 8, -12, label.width + 16, 24, 6);
       bg.lineStyle(2, 0x7a4f19).strokeRoundedRect(-label.width / 2 - 8, -12, label.width + 16, 24, 6);
-      tag = this.add.container(CARD_W / 2 - 34, -CARD_H / 2 - 4, [bg, label]).setVisible(false);
+      tag = this.add.container(this.cardW / 2 - 34, -CARD_H / 2 - 4, [bg, label]).setVisible(false);
       root.add(tag);
     }
 
-    const zone = this.add.zone(0, 0, CARD_W, CARD_H).setInteractive({ useHandCursor: !locked });
+    const zone = this.add.zone(0, 0, this.cardW, CARD_H).setInteractive({ useHandCursor: !locked });
     zone.on('pointerup', () => {
       if (locked) return shake(this, root);
       if (this.selected === kind) return this.start();

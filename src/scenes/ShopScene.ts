@@ -12,7 +12,7 @@ import { icon } from '../ui/assets';
 import { Button, enter, fmt, panel, pips, shake, slice, tab } from '../ui/kit';
 import { backdrop, fadeIn, heroBadge, wallet } from '../ui/screen';
 import { displayStyle, textStyle, UI } from '../ui/theme';
-import { sharpen, view } from '../render/resolution';
+import { sharpen, view, visibleArea } from '../render/resolution';
 
 type Tab = 'camp' | 'heroes' | 'general' | 'market';
 
@@ -52,7 +52,8 @@ export class ShopScene extends Phaser.Scene {
   }
 
   create() {
-    sharpen(this.cameras.main);
+    // Kamp manzarası ve uzun listeler 1152×720 için çizildi; telefonda kutu ekrana sığar
+    sharpen(this.cameras.main, 'fit');
     fadeIn(this);
     if (this.tab === 'camp') return this.campView();
     backdrop(this);
@@ -85,8 +86,14 @@ export class ShopScene extends Phaser.Scene {
   private campView() {
     const { width, height } = view(this);
     const save = profile.data;
-    if (this.textures.exists(CAMP.bg)) this.add.image(0, 0, CAMP.bg).setOrigin(0).setDisplaySize(width, height);
-    else backdrop(this);
+    if (this.textures.exists(CAMP.bg)) {
+      // Kutu dışında kalan kenarlar (telefon) aynı manzaranın kararmış, büyütülmüş hâliyle dolar
+      const area = visibleArea(this);
+      const cover = Math.max(area.width / width, area.height / height);
+      const sides = this.add.image(width / 2, height / 2, CAMP.bg).setDisplaySize(width * cover, height * cover).setTint(0x3e3a4c);
+      sides.postFX?.addBlur(1, 3, 3, 2);
+      this.add.image(0, 0, CAMP.bg).setOrigin(0).setDisplaySize(width, height);
+    } else backdrop(this);
     wallet(this);
     new Button(this, 78, 60, '', () => this.back(), { width: 64, height: 64, icon: 'back', iconOnly: true });
     this.add.text(126, 58, 'Kamp', displayStyle(46)).setOrigin(0, 0.5).setStroke(UI.ink, 8);

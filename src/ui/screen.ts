@@ -8,17 +8,20 @@ import type { Reward } from '../data/progression';
 import { icon, portrait } from './assets';
 import { fmt, Pill } from './kit';
 import { displayStyle, UI } from './theme';
-import { view } from '../render/resolution';
+import { LOGICAL_H, LOGICAL_W, view, visibleArea } from '../render/resolution';
 
 /** Menü ekranlarının arkasındaki bulanık, karartılmış arena. */
 export function backdrop(scene: Phaser.Scene, dim = 0.6) {
-  const { width, height } = view(scene);
+  const area = visibleArea(scene);
   const arena = drawArena(scene);
-  const rt = scene.add.renderTexture(0, 0, width, height).setOrigin(0);
+  const rt = scene.add.renderTexture(0, 0, LOGICAL_W, LOGICAL_H).setOrigin(0);
   rt.draw(arena);
   arena.destroy();
+  // Telefonda görünür alan arenadan farklı oranda; kaplayacak kadar büyüt, ortala
+  const cover = Math.max(area.width / LOGICAL_W, area.height / LOGICAL_H);
+  rt.setScale(cover).setPosition(area.x + (area.width - LOGICAL_W * cover) / 2, area.y + (area.height - LOGICAL_H * cover) / 2);
   rt.postFX?.addBlur(1, 2, 2, 1.4);
-  scene.add.rectangle(0, 0, width, height, UI.bg, dim).setOrigin(0);
+  scene.add.rectangle(area.x, area.y, area.width, area.height, UI.bg, dim).setOrigin(0);
   return rt;
 }
 
