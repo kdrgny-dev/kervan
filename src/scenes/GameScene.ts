@@ -33,6 +33,8 @@ import {
 import { CARDS } from '../data/cards';
 import { nextRerollCost, pickCard, rerollDraft } from '../sim/cards';
 import { DraftOverlay } from '../ui/draft';
+import { RoadEventOverlay } from '../ui/roadEvent';
+import { chooseRoadOption } from '../sim/roadEvents';
 import { Hud, HUD_BAND } from '../ui/hud';
 import { Bar, Button, fmt, panel, ribbon, slice } from '../ui/kit';
 import { displayStyle, FONT_DISPLAY, textStyle, UI } from '../ui/theme';
@@ -80,6 +82,7 @@ export class GameScene extends Phaser.Scene {
   private slowToastAt = 0;
   private hud!: Hud;
   private draftUi!: DraftOverlay;
+  private roadUi!: RoadEventOverlay;
   private pauseMenu!: Phaser.GameObjects.Container;
   private overlay!: Phaser.GameObjects.Container;
 
@@ -109,11 +112,23 @@ export class GameScene extends Phaser.Scene {
     this.hud = new Hud(this, () => this.togglePause(), this.phone);
     this.draftUi = new DraftOverlay(this, {
       pick: (id) => {
-        if (pickCard(this.world, id)) this.countdown();
+        if (!pickCard(this.world, id)) return;
+        // Sırada yol olayı varsa geri sayım olaydan sonra
+        if (this.world.roadEventQueued) for (const e of stepWorld(this.world, 0)) this.handle(e);
+        else this.countdown();
       },
       reroll: () => {
         if (rerollDraft(this.world)) this.showDraft();
       },
+    });
+    this.roadUi = new RoadEventOverlay(this, {
+      choose: (i) => {
+        const line = chooseRoadOption(this.world, i);
+        // İyileşme, kart gibi sonuçlar geri sayımı beklemeden görünsün
+        for (const e of this.world.events.splice(0)) this.handle(e);
+        return line;
+      },
+      done: () => this.countdown(),
     });
     this.overlay = this.add.container(0, 0).setDepth(60).setVisible(false);
     this.pauseMenu = this.buildPauseMenu();
@@ -122,10 +137,12 @@ export class GameScene extends Phaser.Scene {
     bindControls(this, {
       onDir: (d) => {
         if (this.draftUi.open) return this.draftUi.move(d === 'left' ? -1 : d === 'right' ? 1 : 0);
+        if (this.roadUi.open) return;
         if (!this.paused) turn(this.world, d);
       },
       onConfirm: () => {
         if (this.draftUi.open) return this.draftUi.confirm();
+        if (this.roadUi.open) return this.roadUi.confirm();
         if (!this.world.alive) this.restart();
       },
       onPause: () => this.togglePause(),
@@ -193,7 +210,7 @@ export class GameScene extends Phaser.Scene {
 
   update(_time: number, delta: number) {
     if (!this.paused && this.countdownLeft > 0) this.tickCountdown(delta);
-    else if (!this.paused) {
+    else if (!this.paused && !this.roadUi.open) {
       // Sekme arka plana düşünce dev bir delta gelmesin
       for (const e of stepWorld(this.world, Math.min(delta, 100))) this.handle(e);
     }
@@ -229,13 +246,14 @@ export class GameScene extends Phaser.Scene {
     this.pauseMenu.setVisible(false);
     this.overlay.removeAll(true).setVisible(false);
     this.draftUi.hide();
+    this.roadUi.hide();
     this.countdown();
     this.renderParty();
     this.followLeader(true);
   }
 
   private get halted() {
-    return this.paused || this.countdownLeft > 0;
+    return this.paused || this.countdownLeft > 0 || this.roadUi.open;
   }
 
   /** Oyun durup yeniden akmadan önce 3-2-1; bu sırada yön seçilebilir. */
@@ -407,6 +425,9 @@ export class GameScene extends Phaser.Scene {
         break;
       case 'draftOpen':
         this.time.delayedCall(1300, () => this.showDraft());
+        break;
+      case 'roadEventOpen':
+        this.roadUi.show(this.world, e.id);
         break;
       case 'draftRerolled':
         audio.play('click');
@@ -744,7 +765,7 @@ export class GameScene extends Phaser.Scene {
 
   private togglePause() {
     // Menü açılıp kapanırken gelen ikinci basış dondurulmuş animasyonları kaybettiriyordu
-    if (!this.world?.alive || this.world.draft || this.pauseBusy) return;
+    if (!this.world?.alive || this.world.draft || this.world.roadEvent || this.pauseBusy) return;
     this.paused = !this.paused;
     this.pauseBusy = true;
     const shade = this.pauseMenu.getByName('shade') as Phaser.GameObjects.Rectangle;

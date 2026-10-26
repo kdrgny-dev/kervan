@@ -2,6 +2,7 @@ import { GRID_H, GRID_W } from '../src/config';
 import { SIM_DT } from '../src/data/balance';
 import { DIR_VEC, type Dir, OPPOSITE, type Vec } from '../src/sim/grid';
 import { pickCard } from '../src/sim/cards';
+import { canChoose, chooseRoadOption, ROAD_EVENTS } from '../src/sim/roadEvents';
 import type { CampaignId } from '../src/data/campaigns';
 import { createWorld, stepWorld, turn, type GameOverReason, type Loadout, type World } from '../src/sim/world';
 
@@ -86,6 +87,7 @@ export function playRun(seed: number, loadout: Partial<Loadout>, maxSeconds = 90
   let lost = 0;
   while (w.time < maxSeconds * 1000) {
     if (w.draft) pickCard(w, w.draft.options[0]);
+    if (w.roadEvent) chooseRoadOption(w, ROAD_EVENTS[w.roadEvent].options.findIndex((o) => canChoose(w, o)));
     if (w.ticks !== lastTick) {
       lastTick = w.ticks;
       const d = decide(w);

@@ -11,6 +11,7 @@ import { collect, spawnHeroToken, updateLoot } from './loot';
 import { endGame, enemyAt, isFree, makeHero } from './state';
 import { computeSynergies, emptySynergies } from './synergy';
 import type { Enemy, GameOverReason, Loadout, World, WorldEvent } from './types';
+import { openQueuedRoadEvent } from './roadEvents';
 import { updateWaves } from './waves';
 
 export type * from './types';
@@ -21,6 +22,8 @@ export interface WorldOptions {
   waves?: boolean;
   /** Dalga sonu kart seçimi; testlerde kapatılabilir. */
   drafts?: boolean;
+  /** Hüsnü'nün yol olayları; verilmezse kart seçimiyle aynı. */
+  roadEvents?: boolean;
   loadout?: Partial<Loadout>;
   campaign?: CampaignId;
 }
@@ -37,7 +40,7 @@ export const DEFAULT_LOADOUT: Loadout = {
   cards: [...CARD_IDS],
 };
 
-export function createWorld({ seed = Date.now(), waves = true, drafts = true, loadout = {}, campaign = 'road' }: WorldOptions = {}): World {
+export function createWorld({ seed = Date.now(), waves = true, drafts = true, roadEvents = drafts, loadout = {}, campaign = 'road' }: WorldOptions = {}): World {
   const w: World = {
     campaign,
     route: CAMPAIGNS[campaign].route,
@@ -48,6 +51,11 @@ export function createWorld({ seed = Date.now(), waves = true, drafts = true, lo
     cards: {},
     draft: null,
     draftsEnabled: drafts,
+    roadEvent: null,
+    roadEventQueued: null,
+    roadEventsEnabled: roadEvents,
+    lastRoadEvent: 0,
+    recentRoadEvents: [],
     syn: emptySynergies(),
     tally: { killsByKind: {}, bosses: 0, recruited: 0, cardsPicked: 0, cursedPicked: 0, maxParty: 1, maxTier: {}, furthestRegion: 0, bossKinds: {}, campaignCleared: false },
     party: [],
@@ -92,11 +100,14 @@ export function turn(w: World, dir: Dir) {
 }
 
 export function stepWorld(w: World, dtMs: number): WorldEvent[] {
-  if (w.alive && !w.draft) {
+  const halted = () => !w.alive || !!w.draft || !!w.roadEvent;
+  openQueuedRoadEvent(w);
+  if (!halted()) {
     w.simAcc += dtMs;
-    while (w.alive && !w.draft && w.simAcc >= SIM_DT) {
+    while (!halted() && w.simAcc >= SIM_DT) {
       w.simAcc -= SIM_DT;
       simStep(w, SIM_DT);
+      openQueuedRoadEvent(w);
     }
   }
   return w.events.splice(0);

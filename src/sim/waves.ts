@@ -17,6 +17,7 @@ import { chebyshev, eq, type Vec } from './grid';
 import { spawnEnemy } from './enemies';
 import { pick } from './rng';
 import { openDraft } from './cards';
+import { rollRoadEvent } from './roadEvents';
 import { activatePower, hasHeroToken, spawnHeroToken } from './loot';
 import { freeCells, isFree } from './state';
 import type { PendingSpawn, World } from './types';
@@ -54,6 +55,7 @@ export function updateWaves(w: World, dt: number) {
     s.timer = WAVE_BREAK_MS;
     if (!hasHeroToken(w)) spawnHeroToken(w);
     if (w.draftsEnabled) openDraft(w);
+    rollRoadEvent(w);
   }
 }
 
