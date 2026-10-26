@@ -69,7 +69,7 @@ export class Button extends Phaser.GameObjects.Container {
     this.layout();
     this.add(this.content);
 
-    const min = minTouchPx(scene.scale);
+    const min = minTouchPx(scene);
     const zone = scene.add.zone(0, 0, Math.max(w, min), Math.max(h, min)).setInteractive({ useHandCursor: true });
     this.add(zone);
     zone.on('pointerover', () => {
@@ -321,8 +321,8 @@ export class Toggle extends Phaser.GameObjects.Image {
     // Dokunmatikte görünenden büyük dokunma alanı (doku koordinatlarında); ayar listeleri
     // sık dizildiği için dikeyde az büyür, yoksa alttaki satırın düğmesi tıklamayı kapar
     const { width: fw, height: fh } = this.frame;
-    const padX = Math.max(0, (minTouchPx(scene.scale) - 96) / 2) / this.scaleX;
-    const padY = Math.min(12, Math.max(0, (minTouchPx(scene.scale) - 48) / 2)) / this.scaleY;
+    const padX = Math.max(0, (minTouchPx(scene) - 96) / 2) / this.scaleX;
+    const padY = Math.min(12, Math.max(0, (minTouchPx(scene) - 48) / 2)) / this.scaleY;
     this.setInteractive({
       hitArea: new Phaser.Geom.Rectangle(-padX, -padY, fw + padX * 2, fh + padY * 2),
       hitAreaCallback: Phaser.Geom.Rectangle.Contains,
@@ -349,7 +349,7 @@ export function tab(scene: Phaser.Scene, x: number, y: number, w: number, text: 
   c.add(slice(scene, active ? 'ui.tab_active' : 'ui.tab_idle', 0, 0, w));
   c.add(scene.add.text(0, 2, text, displayStyle(22, { color: active ? UI.text : UI.muted })).setOrigin(0.5));
   if (!active) {
-    const zone = scene.add.zone(0, 0, w, Math.max(56, minTouchPx(scene.scale))).setInteractive({ useHandCursor: true });
+    const zone = scene.add.zone(0, 0, w, Math.max(56, minTouchPx(scene))).setInteractive({ useHandCursor: true });
     zone.on('pointerup', onClick);
     c.add(zone);
   }

@@ -1,4 +1,5 @@
 import type Phaser from 'phaser';
+import { RES } from '../render/resolution';
 
 export const FONT = '"Nunito", system-ui, -apple-system, "Segoe UI", sans-serif';
 export const FONT_DISPLAY = '"Grandstander", "Nunito", system-ui, sans-serif';
@@ -36,6 +37,7 @@ export const textStyle = (size: number, extra: Phaser.Types.GameObjects.Text.Tex
   fontSize: `${size}px`,
   fontStyle: '700',
   color: UI.text,
+  resolution: RES,
   ...extra,
 });
 
@@ -44,5 +46,6 @@ export const displayStyle = (size: number, extra: Phaser.Types.GameObjects.Text.
   fontSize: `${size}px`,
   fontStyle: '900',
   color: UI.text,
+  resolution: RES,
   ...extra,
 });

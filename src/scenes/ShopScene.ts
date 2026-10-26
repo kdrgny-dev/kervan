@@ -12,6 +12,7 @@ import { icon } from '../ui/assets';
 import { Button, enter, fmt, panel, pips, shake, slice, tab } from '../ui/kit';
 import { backdrop, fadeIn, heroBadge, wallet } from '../ui/screen';
 import { displayStyle, textStyle, UI } from '../ui/theme';
+import { sharpen, view } from '../render/resolution';
 
 type Tab = 'camp' | 'heroes' | 'general' | 'market';
 
@@ -51,6 +52,7 @@ export class ShopScene extends Phaser.Scene {
   }
 
   create() {
+    sharpen(this.cameras.main);
     fadeIn(this);
     if (this.tab === 'camp') return this.campView();
     backdrop(this);
@@ -81,9 +83,9 @@ export class ShopScene extends Phaser.Scene {
 
   /** Kamp sahnesi: binalar ilerlemeye göre büyür, tıklanınca o binanın paneli açılır. */
   private campView() {
-    const { width } = this.scale;
+    const { width, height } = view(this);
     const save = profile.data;
-    if (this.textures.exists(CAMP.bg)) this.add.image(0, 0, CAMP.bg).setOrigin(0).setDisplaySize(width, this.scale.height);
+    if (this.textures.exists(CAMP.bg)) this.add.image(0, 0, CAMP.bg).setOrigin(0).setDisplaySize(width, height);
     else backdrop(this);
     wallet(this);
     new Button(this, 78, 60, '', () => this.back(), { width: 64, height: 64, icon: 'back', iconOnly: true });
@@ -134,7 +136,7 @@ export class ShopScene extends Phaser.Scene {
       this.tweens.add({ targets: bubble, alpha: 1, duration: 300, delay: 600 });
     }
 
-    this.add.text(width / 2, this.scale.height - 24, 'Bir binaya tıkla', textStyle(15, { color: UI.text })).setOrigin(0.5).setStroke(UI.ink, 4);
+    this.add.text(width / 2, height - 24, 'Bir binaya tıkla', textStyle(15, { color: UI.text })).setOrigin(0.5).setStroke(UI.ink, 4);
     this.input.keyboard?.on('keydown-ESC', () => this.back());
     bindPad(this, { back: () => this.back() });
   }

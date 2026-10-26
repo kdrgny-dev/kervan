@@ -3,6 +3,7 @@ import { isTouch } from '../platform';
 import { CARDS, type CardId, RARITY_NAME, type Rarity } from '../data/cards';
 import { Button, fmt, ribbon, slice } from './kit';
 import { displayStyle, textStyle, UI } from './theme';
+import { view } from '../render/resolution';
 
 const CARD_W = 250;
 const CARD_H = 340;
@@ -31,7 +32,7 @@ export class DraftOverlay {
   private cardViews: Phaser.GameObjects.Container[] = [];
 
   constructor(private readonly scene: Phaser.Scene, private readonly h: DraftHandlers) {
-    const { width, height } = scene.scale;
+    const { width, height } = view(scene);
     this.root = scene.add.container(0, 0).setDepth(55).setVisible(false);
     const shade = scene.add.rectangle(0, 0, width, height, UI.bg, 0.78).setOrigin(0).setInteractive();
     this.root.add(shade);
@@ -53,7 +54,7 @@ export class DraftOverlay {
     this.focus = Math.min(this.focus, options.length - 1);
     this.root.setVisible(true);
     this.cardsLayer.removeAll(true);
-    const { width } = this.scene.scale;
+    const { width } = view(this.scene);
     const total = options.length * CARD_W + (options.length - 1) * GAP;
     this.cardViews = options.map((id, i) => {
       const x = width / 2 - total / 2 + CARD_W / 2 + i * (CARD_W + GAP);

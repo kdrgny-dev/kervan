@@ -4,6 +4,7 @@ import { DEDE, NARRATOR, STORY, type StoryBeat, type StoryId } from '../data/sto
 import { DEDE_ART, NARRATOR_ART } from '../render/sprites';
 import { slice } from './kit';
 import { displayStyle, textStyle, UI } from './theme';
+import { view } from '../render/resolution';
 
 const TYPE_MS = 18;
 
@@ -24,7 +25,7 @@ export class StoryDialog {
   private current?: StoryId;
 
   constructor(private readonly scene: Phaser.Scene) {
-    const { width, height } = scene.scale;
+    const { width, height } = view(scene);
     this.root = scene.add.container(0, 0).setDepth(80).setVisible(false);
     const shade = scene.add.rectangle(0, 0, width, height, UI.bg, 0.55).setOrigin(0).setInteractive();
     shade.on('pointerup', () => this.advance());

@@ -8,6 +8,7 @@ import { icon, type IconName } from '../ui/assets';
 import { Button, enter, panel, ribbon, Toggle } from '../ui/kit';
 import { backdrop, fadeIn } from '../ui/screen';
 import { textStyle, UI } from '../ui/theme';
+import { sharpen, view } from '../render/resolution';
 
 const ROWS: { key: keyof Settings | 'fullscreen'; label: string; icon?: IconName }[] = [
   { key: 'shake', label: 'Ekran sarsıntısı' },
@@ -23,7 +24,8 @@ export class SettingsScene extends Phaser.Scene {
   }
 
   create() {
-    const { width, height } = this.scale;
+    sharpen(this.cameras.main);
+    const { width, height } = view(this);
     const settings = profile.data.settings;
     fadeIn(this);
     backdrop(this);

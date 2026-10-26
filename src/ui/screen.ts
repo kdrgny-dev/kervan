@@ -8,10 +8,11 @@ import type { Reward } from '../data/progression';
 import { icon, portrait } from './assets';
 import { fmt, Pill } from './kit';
 import { displayStyle, UI } from './theme';
+import { view } from '../render/resolution';
 
 /** Menü ekranlarının arkasındaki bulanık, karartılmış arena. */
 export function backdrop(scene: Phaser.Scene, dim = 0.6) {
-  const { width, height } = scene.scale;
+  const { width, height } = view(scene);
   const arena = drawArena(scene);
   const rt = scene.add.renderTexture(0, 0, width, height).setOrigin(0);
   rt.draw(arena);
@@ -23,7 +24,7 @@ export function backdrop(scene: Phaser.Scene, dim = 0.6) {
 
 /** Sağ üstte altın ve mücevher hapları. */
 export function wallet(scene: Phaser.Scene, gold = profile.data.gold, gems = profile.data.gems) {
-  const right = scene.scale.width - 24;
+  const right = view(scene).width - 24;
   const gem = new Pill(scene, right, 40, { icon: 'gem', align: 'right', height: 44 }).setValue(gems).setDepth(40);
   const coin = new Pill(scene, gem.x - 14, 40, { icon: 'coin', align: 'right', height: 44 }).setValue(gold).setDepth(40);
   return { coin, gem };

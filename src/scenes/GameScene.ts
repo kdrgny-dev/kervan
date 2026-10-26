@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { CELL, GRID_H, GRID_W } from '../config';
 import { isPhone } from '../platform';
+import { RES, sharpen, view } from '../render/resolution';
 import { SPAWN_WARN_MS } from '../data/balance';
 import { ENEMIES } from '../data/enemies';
 import { HEROES, type HeroKind } from '../data/heroes';
@@ -96,6 +97,7 @@ export class GameScene extends Phaser.Scene {
   create() {
     this.phone = isPhone();
     if (this.phone) this.fitPhone();
+    sharpen(this.cameras.main);
     this.heroViews = new Map();
     this.enemyViews = new Map();
     this.projectileViews = new Map();
@@ -116,7 +118,7 @@ export class GameScene extends Phaser.Scene {
     });
     this.overlay = this.add.container(0, 0).setDepth(60).setVisible(false);
     this.pauseMenu = this.buildPauseMenu();
-    this.countdownText = this.add.text(this.scale.width / 2, this.scale.height / 2, '', displayStyle(140, { color: UI.gold, stroke: '#14121c', strokeThickness: 12 })).setOrigin(0.5).setDepth(70);
+    this.countdownText = this.add.text(view(this).width / 2, view(this).height / 2, '', displayStyle(140, { color: UI.gold, stroke: '#14121c', strokeThickness: 12 })).setOrigin(0.5).setDepth(70);
 
     bindControls(this, {
       onDir: (d) => {
@@ -143,18 +145,18 @@ export class GameScene extends Phaser.Scene {
     const { width, height } = this.scale.parentSize;
     const base = GRID_W * CELL;
     const w = Math.round(Phaser.Math.Clamp(GRID_H * CELL * (width / height), base, base * 1.6));
-    this.scale.setGameSize(w, GRID_H * CELL);
-    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.scale.setGameSize(base, GRID_H * CELL));
+    this.scale.setGameSize(w * RES, GRID_H * CELL * RES);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.scale.setGameSize(base * RES, GRID_H * CELL * RES));
   }
 
   /** Dünya yakınlaşır ve kafileyi izler; arayüz ayrı kamerada sabit kalır. */
   private phoneCameras() {
     const world = this.cameras.main;
     // Dünya göstergelerin altında başlar; şerit hiçbir zaman oyun alanını örtmez
-    world.setViewport(0, HUD_BAND, this.scale.width, this.scale.height - HUD_BAND);
-    const ui = this.cameras.add(0, 0, this.scale.width, this.scale.height);
-    const ptPerPx = this.scale.displaySize.height / this.scale.height;
-    world.setZoom(Phaser.Math.Clamp(PHONE_CELL_PT / (CELL * ptPerPx), 1, 1.6));
+    world.setViewport(0, HUD_BAND * RES, this.scale.width, this.scale.height - HUD_BAND * RES);
+    const ui = sharpen(this.cameras.add(0, 0, this.scale.width, this.scale.height));
+    const ptPerUnit = this.scale.displaySize.height / view(this).height;
+    world.setZoom(RES * Phaser.Math.Clamp(PHONE_CELL_PT / (CELL * ptPerUnit), 1, 1.6));
     this.events.on(Phaser.Scenes.Events.PRE_RENDER, () => {
       for (const o of this.children.list) {
         const depth = (o as Phaser.GameObjects.GameObject & { depth: number }).depth;
@@ -166,7 +168,7 @@ export class GameScene extends Phaser.Scene {
   private followLeader(snap = false) {
     const cam = this.cameras.main;
     const leader = this.world.party[0];
-    if (cam.zoom === 1 || !leader) return;
+    if (!this.phone || !leader) return;
     const view = this.heroViews.get(leader.id);
     const tx = view?.x ?? px(leader.pos.x);
     const ty = view?.y ?? px(leader.pos.y);
@@ -684,7 +686,7 @@ export class GameScene extends Phaser.Scene {
 
   private popText(x: number, y: number, text: string, color: string, size = 18) {
     const t = this.add
-      .text(x, y, text, { fontFamily: FONT_DISPLAY, fontSize: `${size}px`, color, fontStyle: '900' })
+      .text(x, y, text, { fontFamily: FONT_DISPLAY, fontSize: `${size}px`, color, fontStyle: '900', resolution: RES * (this.phone ? 1.5 : 1) })
       .setOrigin(0.5)
       .setStroke('#14121c', 4)
       .setDepth(30);
@@ -744,7 +746,7 @@ export class GameScene extends Phaser.Scene {
   // ---------- duraklatma / oyun sonu ----------
 
   private buildPauseMenu() {
-    const { width, height } = this.scale;
+    const { width, height } = view(this);
     const c = this.add.container(0, 0).setDepth(60).setVisible(false);
     const shade = this.add.rectangle(0, 0, width, height, UI.bg, 0.72).setOrigin(0).setName('shade');
     shade.setInteractive();
@@ -765,7 +767,7 @@ export class GameScene extends Phaser.Scene {
     this.pauseBusy = true;
     const shade = this.pauseMenu.getByName('shade') as Phaser.GameObjects.Rectangle;
     const box = this.pauseMenu.getByName('box') as Phaser.GameObjects.Container;
-    const cy = this.scale.height / 2;
+    const cy = view(this).height / 2;
     if (this.paused) {
       this.freeze();
       this.pauseMenu.setVisible(true);
@@ -846,7 +848,7 @@ export class GameScene extends Phaser.Scene {
     const before = { ...profile.data.account };
     const report = this.bankRun();
     const rank = report?.rank ?? -1;
-    const { width, height } = this.scale;
+    const { width, height } = view(this);
     const { stats, wave } = this.world;
     const n = Math.max(wave.n, 1);
     const why = { wall: 'Duvara çarptın', self: 'Kuyruğuna çarptın', wiped: 'Kafile düştü' }[reason];

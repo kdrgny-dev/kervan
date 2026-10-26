@@ -3,6 +3,7 @@ import { makeFxTextures } from '../render/fx';
 import { createAnims, preloadSprites } from '../render/sprites';
 import { LOGO, loadFonts, preloadUi, SLICES, UI_RASTER } from '../ui/assets';
 import { Bar } from '../ui/kit';
+import { sharpen, view } from '../render/resolution';
 
 /** Logo, çubuk ve fontları yükler; asıl yükleme ekranı bunlarla çizilir. */
 export class BootScene extends Phaser.Scene {
@@ -11,6 +12,7 @@ export class BootScene extends Phaser.Scene {
   }
 
   preload() {
+    sharpen(this.cameras.main);
     this.load.svg(LOGO, 'assets/ui/brand/logo_kervan.svg', { width: 1024, height: 512 });
     for (const key of ['ui.bar_frame', 'ui.bar_fill_xp'] as const) {
       const sl = SLICES[key];
@@ -30,7 +32,8 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   preload() {
-    const { width, height } = this.scale;
+    sharpen(this.cameras.main);
+    const { width, height } = view(this);
     this.cameras.main.setBackgroundColor('#14121c');
     const logo = this.add.image(width / 2, height / 2 - 40, LOGO).setDisplaySize(520, 260);
     const base = logo.scale;

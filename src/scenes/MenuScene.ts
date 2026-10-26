@@ -14,6 +14,7 @@ import { LOGO } from '../ui/assets';
 import { Bar, Button, enter, fmt, panel, ribbon } from '../ui/kit';
 import { backdrop, fadeIn, heroBadge, wallet } from '../ui/screen';
 import { displayStyle, textStyle, UI } from '../ui/theme';
+import { sharpen, view } from '../render/resolution';
 
 const PARADE: HeroKind[] = ['knight', 'rogue', 'archer', 'mage', 'priest'];
 
@@ -23,6 +24,7 @@ export class MenuScene extends Phaser.Scene {
   }
 
   create() {
+    sharpen(this.cameras.main);
     fadeIn(this);
     backdrop(this);
     wallet(this);
@@ -50,7 +52,7 @@ export class MenuScene extends Phaser.Scene {
     this.tweens.add({ targets: play, scale: 1.03, duration: 900, delay: 800, ease: 'Sine.InOut', yoyo: true, repeat: -1 });
 
     this.records(905, 325);
-    this.parade(this.scale.height - 62);
+    this.parade(view(this).height - 62);
 
     const story = new StoryDialog(this);
     this.input.keyboard?.on('keydown-ENTER', () => !story.open && this.play());
@@ -115,7 +117,7 @@ export class MenuScene extends Phaser.Scene {
 
   /** Ekran altında soldan sağa yürüyen kafile. */
   private parade(y: number) {
-    const { width } = this.scale;
+    const { width } = view(this);
     const spacing = 96;
     const views = PARADE.map((k) => {
       const def = HEROES[k];

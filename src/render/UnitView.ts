@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { RES } from './resolution';
 import type { SpriteSet } from './sprites';
 
 const OUTLINE = 0x14121c;
@@ -54,7 +55,7 @@ export class UnitView extends Phaser.GameObjects.Container {
       this.inner = this.shape;
       this.baseScale = 1;
       const label = scene.add
-        .text(0, 0, style.glyph, { fontFamily: 'system-ui, sans-serif', fontSize: `${Math.round(size * 0.42)}px`, color: '#14121c', fontStyle: 'bold' })
+        .text(0, 0, style.glyph, { fontFamily: 'system-ui, sans-serif', fontSize: `${Math.round(size * 0.42)}px`, color: '#14121c', fontStyle: 'bold', resolution: RES })
         .setOrigin(0.5);
       children.push(this.shape, label);
     }

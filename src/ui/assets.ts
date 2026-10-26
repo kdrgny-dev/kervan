@@ -1,4 +1,5 @@
 import type Phaser from 'phaser';
+import { RASTER } from '../render/resolution';
 import type { HeroKind } from '../data/heroes';
 
 /** 9-slice kenar payları, docs/design/stage4/components.json'dan (1x px). */
@@ -56,7 +57,7 @@ export const LOGO = 'brand.logo';
 export const TOGGLE = { on: 'ui.toggle_on', off: 'ui.toggle_off' };
 
 /** Bileşenler 2x rasterleştirilir; NineSlice bunu bilip yarı ölçekle çizer. */
-export const UI_RASTER = 2;
+export const UI_RASTER = RASTER;
 
 export function preloadUi(scene: Phaser.Scene) {
   for (const [key, sl] of Object.entries(SLICES)) {

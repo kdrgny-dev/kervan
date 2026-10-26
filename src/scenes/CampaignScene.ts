@@ -13,6 +13,7 @@ import { icon } from '../ui/assets';
 import { Button, enter, ribbon, shake, slice } from '../ui/kit';
 import { backdrop, fadeIn, heroBadge, wallet } from '../ui/screen';
 import { displayStyle, textStyle, UI } from '../ui/theme';
+import { sharpen, view } from '../render/resolution';
 
 const CARD_W = 330;
 const CARD_H = 430;
@@ -36,7 +37,8 @@ export class CampaignScene extends Phaser.Scene {
   }
 
   create() {
-    const { width, height } = this.scale;
+    sharpen(this.cameras.main);
+    const { width, height } = view(this);
     const save = profile.data;
     this.cards = new Map();
     this.leaving = false;
