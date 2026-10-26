@@ -304,6 +304,12 @@ F6 paralel yürüyebilir: grafik üretimi F0'dan itibaren başlayabilir.
 - Fetih: Hisar yavaş başlar (yarasa + zincir yılanı; mazgal 3., iskelet 4., mancınık 5. dalgadan); mazgal 26 can ve biraz daha yavaş; Taş Nöbetçi 260 can, en fazla 2 mazgal, 8 sn'de bir çağırır.
 - Bot ölçümü (60 oyun, medyan dalga): yeni oyuncu 15, Yol·orta 22, Fetih·orta 22 (önce 8), güçlü ~20 (bot duvar hatası sınırı). Fetih·orta kafile 35 (önce 14), silinme 10/60 (önce 18).
 
+### Sesler
+
+- Ses motoru dosya tabanlı: `public/assets/audio/<olay>_<n>.mp3` dosyaları `src/audio/sounds.ts`'te listelenince sentez yerine onlar çalar (varyantlar rastgele, sık seslerde hafif ton farkı). Dosyası olmayan olaylar sentezde kalır.
+- Kenney CC0 paketleri denendi, beğenilmedi; efektler yapay zekâyla üretilecek: `docs/ses-istemleri.md`.
+- Müzik: menülerde "Desert theme" (yd), oyunda "Happy Adventure" (TinyWorlds); ikisi de OpenGameArt CC0. Oyuna girip çıkınca parça kısılarak değişir.
+
 ### Keskin görüntü
 
 - Sahneler mantıksal 1152×720'de yerleşir; tuval ekranın gerçek piksel yoğunluğunda açılır (`RES`, 1–2,5) ve kameralar bu oranda büyütür (`src/render/resolution.ts`). Yazılar aynı çözünürlükte üretilir, çizimler RES ≥ 2 iken 3 kat rasterleştirilir.

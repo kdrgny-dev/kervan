@@ -1,10 +1,12 @@
 import { notesAt, STEP_SEC } from './music';
 import { SFX, type SfxName, type Tone } from './sfx';
+import { MUSIC_TRACKS, type MusicTrack, SOUND_FILES } from './sounds';
 
 const SFX_VOLUME = 0.5;
 const MUSIC_VOLUME = 0.16;
 const THROTTLE_MS = 40;
 const LOOKAHEAD_SEC = 0.15;
+const FADE_SEC = 0.8;
 
 class AudioEngine {
   private ctx: AudioContext | null = null;
@@ -17,6 +19,10 @@ class AudioEngine {
   private musicTimer: number | null = null;
   private musicStep = 0;
   private nextNoteAt = 0;
+  private buffers = new Map<SfxName, AudioBuffer[]>();
+  private musicBuffers = new Map<MusicTrack, AudioBuffer>();
+  private track: MusicTrack = 'menu';
+  private song: { src: AudioBufferSourceNode; gain: GainNode } | null = null;
 
   /** Tarayıcılar ses bağlamını ilk kullanıcı etkileşimine kadar açmaz. */
   unlockOnGesture() {
@@ -42,6 +48,41 @@ class AudioEngine {
     }
   }
 
+  /** Ses dosyalarını arka planda çözer; bitene kadar (ya da dosyası olmayan olaylarda) sentez çalar. */
+  preload() {
+    const ctx = this.ensure();
+    if (!ctx) return;
+    for (const [name, def] of Object.entries(SOUND_FILES) as [SfxName, { variants: number }][]) {
+      const urls = Array.from({ length: def.variants }, (_, i) => `assets/audio/${name}_${i + 1}.mp3`);
+      void Promise.all(urls.map((u) => fetch(u).then((r) => r.arrayBuffer()).then((b) => ctx.decodeAudioData(b))))
+        .then((list) => this.buffers.set(name, list))
+        .catch(() => undefined);
+    }
+    for (const [name, def] of Object.entries(MUSIC_TRACKS) as [MusicTrack, { file: string }][]) {
+      void fetch(`assets/audio/${def.file}`)
+        .then((r) => r.arrayBuffer())
+        .then((b) => ctx.decodeAudioData(b))
+        .then((buf) => {
+          this.musicBuffers.set(name, buf);
+          // Sentez müzik çalıyorsa dosyaya geç
+          if (name === this.track && this.musicTimer !== null) {
+            this.stopMusic();
+            this.startMusic();
+          }
+        })
+        .catch(() => undefined);
+    }
+  }
+
+  /** Menüde ve oyunda ayrı parça; geçişte eskisi kısılarak biter. */
+  setTrack(track: MusicTrack) {
+    if (track === this.track) return;
+    this.track = track;
+    if (!this.musicOn || this.ctx?.state !== 'running') return;
+    this.stopMusic(FADE_SEC);
+    this.startMusic();
+  }
+
   play(name: SfxName) {
     if (!this.sfxOn) return;
     const ctx = this.ensure();
@@ -49,7 +90,21 @@ class AudioEngine {
     const now = performance.now();
     if (now - (this.lastPlayed.get(name) ?? 0) < THROTTLE_MS) return;
     this.lastPlayed.set(name, now);
+    const list = this.buffers.get(name);
+    if (list?.length) return this.sample(name, list[Math.floor(Math.random() * list.length)]);
     for (const tone of SFX[name]) this.tone(tone, ctx.currentTime + (tone.delay ?? 0), this.sfxBus);
+  }
+
+  private sample(name: SfxName, buffer: AudioBuffer) {
+    const ctx = this.ctx!;
+    const def = SOUND_FILES[name]!;
+    const src = ctx.createBufferSource();
+    src.buffer = buffer;
+    if (def.jitter) src.playbackRate.value = 0.94 + Math.random() * 0.12;
+    const gain = ctx.createGain();
+    gain.gain.value = def.gain;
+    src.connect(gain).connect(this.sfxBus);
+    src.start();
   }
 
   private ensure(): AudioContext | null {
@@ -106,7 +161,21 @@ class AudioEngine {
 
   private startMusic() {
     const ctx = this.ensure();
-    if (!ctx || ctx.state !== 'running' || this.musicTimer !== null) return;
+    if (!ctx || ctx.state !== 'running' || this.musicTimer !== null || this.song) return;
+    const buffer = this.musicBuffers.get(this.track);
+    const def = MUSIC_TRACKS[this.track];
+    if (buffer && def) {
+      const src = ctx.createBufferSource();
+      src.buffer = buffer;
+      src.loop = true;
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(def.gain, ctx.currentTime + 1.5);
+      src.connect(gain).connect(ctx.destination);
+      src.start();
+      this.song = { src, gain };
+      return;
+    }
     this.nextNoteAt = ctx.currentTime + 0.05;
     this.musicTimer = window.setInterval(() => {
       while (this.nextNoteAt < ctx.currentTime + LOOKAHEAD_SEC) {
@@ -117,9 +186,18 @@ class AudioEngine {
     }, 25);
   }
 
-  private stopMusic() {
+  private stopMusic(fadeSec = 0) {
     if (this.musicTimer !== null) window.clearInterval(this.musicTimer);
     this.musicTimer = null;
+    if (this.song && this.ctx) {
+      const { src, gain } = this.song;
+      const now = this.ctx.currentTime;
+      gain.gain.cancelScheduledValues(now);
+      gain.gain.setValueAtTime(gain.gain.value, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + Math.max(fadeSec, 0.02));
+      src.stop(now + Math.max(fadeSec, 0.02));
+    }
+    this.song = null;
   }
 }
 
