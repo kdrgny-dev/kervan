@@ -2,3 +2,9 @@
 # will have compiled files and executables
 /target/
 /gen/schemas
+
+# iOS derleme çıktıları ve kişisel imza dosyaları (gen/apple/.gitignore yalnızca iOS dalında var)
+/gen/apple/build/
+/gen/apple/Externals/
+xcuserdata/
+*.mobileprovision
