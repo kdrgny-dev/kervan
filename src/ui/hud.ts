@@ -9,7 +9,7 @@ import { classCounts } from '../sim/synergy';
 import type { World } from '../sim/world';
 import { icon, portrait } from './assets';
 import { Bar, Button, fmt, Pill, slice } from './kit';
-import { displayStyle, textStyle, UI } from './theme';
+import { displayStyle, UI } from './theme';
 import { view } from '../render/resolution';
 
 const DEPTH = 40;
@@ -61,15 +61,16 @@ export class Hud {
     this.gem = new Pill(scene, width - 76, 34, { icon: 'gem', align: 'right', height: 42 }).setDepth(DEPTH);
     this.coin = new Pill(scene, width - 200, 34, { icon: 'coin', align: 'right', height: 42 }).setDepth(DEPTH);
 
-    // Telefonda boss çubuğu seviye çubuğunun yerine geçer, adı solunda durur
+    // Boss çubuğu seviye çubuğunun yerine geçer; oyun alanına taşmasın
     const bossName = compact
       ? scene.add.text(-196, 0, '', displayStyle(15)).setOrigin(1, 0.5).setStroke(UI.ink, 4).setName('bossName')
-      : scene.add.text(0, -26, '', displayStyle(18)).setOrigin(0.5).setStroke(UI.ink, 5).setName('bossName');
-    this.bossBar = new Bar(scene, 0, 0, compact ? 380 : 580, 'boss');
-    this.boss = scene.add.container(compact ? width / 2 + 60 : width / 2, compact ? 34 : 104, [bossName, this.bossBar]).setDepth(DEPTH).setVisible(false);
+      : scene.add.text(0, 0, '', displayStyle(15)).setOrigin(0.5).setStroke(UI.ink, 4).setName('bossName');
+    this.bossBar = new Bar(scene, 0, 0, compact ? 380 : 310, 'boss');
+    const bossParts = compact ? [bossName, this.bossBar] : [this.bossBar, bossName];
+    this.boss = scene.add.container(compact ? width / 2 + 60 : xpX, 34, bossParts).setDepth(DEPTH).setVisible(false);
 
     this.powers = scene.add.container(width / 2, height - 40).setDepth(DEPTH);
-    this.synergies = scene.add.container(compact ? xpX + 180 : 16, compact ? 34 : 78).setDepth(DEPTH);
+    this.synergies = scene.add.container(compact ? xpX + 180 : 16, compact ? 34 : 84).setDepth(DEPTH);
     this.toastText = scene.add.text(width / 2, 200, '', displayStyle(42)).setOrigin(0.5).setDepth(DEPTH + 2).setStroke(UI.ink, 8).setAlpha(0);
   }
 
@@ -105,14 +106,11 @@ export class Hud {
       (this.boss.getByName('bossName') as Phaser.GameObjects.Text).setText(ENEMIES[boss.kind].name.toLocaleUpperCase('tr-TR'));
       this.boss.setVisible(true).setAlpha(0);
       this.bossBar.setRatio(1, false);
-      if (this.compact) this.scene.tweens.add({ targets: this.boss, alpha: 1, duration: 300 });
-      else this.scene.tweens.add({ targets: this.boss, y: { from: 74, to: 104 }, alpha: 1, duration: 300, ease: 'Back.Out' });
+      this.scene.tweens.add({ targets: this.boss, alpha: 1, duration: 300 });
     } else if (!boss && this.boss.visible) this.boss.setVisible(false);
-    if (this.compact) {
-      this.xp.setVisible(!boss);
-      this.level.setVisible(!boss);
-      this.synergies.setVisible(!boss);
-    }
+    this.xp.setVisible(!boss);
+    this.level.setVisible(!boss);
+    if (this.compact) this.synergies.setVisible(!boss);
     if (boss) this.bossBar.setRatio(boss.hp / boss.maxHp);
 
     this.renderPowers(w, now);
@@ -127,36 +125,19 @@ export class Hud {
     if (key === this.synergyKey) return;
     this.synergyKey = key;
     this.synergies.removeAll(true);
-    if (this.compact) return this.compactSynergies(active, counts);
-    active.forEach((c, i) => {
+    // Telefonda şeritte yan yana, masaüstünde sol kenarda dar sütun
+    const room = this.compact ? Math.max(0, Math.floor((view(this.scene).width - 340 - this.synergies.x) / 92)) : active.length;
+    active.slice(0, this.compact ? Math.min(3, room) : room).forEach((c, i) => {
       const n = counts[c];
       const tier = n >= SYNERGY_TIERS[1] ? 2 : n >= SYNERGY_TIERS[0] ? 1 : 0;
-      const next = SYNERGY_TIERS[Math.min(tier, 1)];
-      const y = i * 34;
+      const x = this.compact ? i * 92 : 0;
+      const y = this.compact ? 0 : i * 40;
       const bg = this.scene.add.graphics();
-      bg.fillStyle(UI.bg, 0.85).fillRoundedRect(0, y - 14, 156, 28, 14);
-      bg.lineStyle(2, tier > 0 ? UI.goldNum : UI.panelEdge).strokeRoundedRect(0, y - 14, 156, 28, 14);
-      const face = this.scene.add.image(15, y, portrait(SYNERGIES[c].hero)).setDisplaySize(26, 26);
-      const label = this.scene.add.text(32, y, SYNERGIES[c].name, textStyle(13, { color: tier > 0 ? UI.gold : UI.muted, fontStyle: '800' })).setOrigin(0, 0.5);
-      const count = this.scene.add.text(146, y, tier === 2 ? `${n} ★` : `${n}/${next}`, displayStyle(14, { color: tier > 0 ? UI.gold : UI.text })).setOrigin(1, 0.5);
-      this.synergies.add([bg, face, label, count]);
-    });
-  }
-
-  /** Telefonda şeritte yan yana küçük rozetler: yüz + sayaç. */
-  private compactSynergies(active: typeof HERO_CLASSES, counts: ReturnType<typeof classCounts>) {
-    // Para sayaçlarına çarpmadan sığan kadar rozet
-    const room = Math.max(0, Math.floor((view(this.scene).width - 340 - this.synergies.x) / 92));
-    active.slice(0, Math.min(3, room)).forEach((c, i) => {
-      const n = counts[c];
-      const tier = n >= SYNERGY_TIERS[1] ? 2 : n >= SYNERGY_TIERS[0] ? 1 : 0;
-      const x = i * 92;
-      const bg = this.scene.add.graphics();
-      bg.fillStyle(UI.panel2, 1).fillRoundedRect(x, -17, 84, 34, 17);
-      bg.lineStyle(2, tier > 0 ? UI.goldNum : UI.panelEdge).strokeRoundedRect(x, -17, 84, 34, 17);
-      const face = this.scene.add.image(x + 18, 0, portrait(SYNERGIES[c].hero)).setDisplaySize(28, 28);
+      bg.fillStyle(UI.panel2, this.compact ? 1 : 0.85).fillRoundedRect(x, y - 17, 84, 34, 17);
+      bg.lineStyle(2, tier > 0 ? UI.goldNum : UI.panelEdge).strokeRoundedRect(x, y - 17, 84, 34, 17);
+      const face = this.scene.add.image(x + 18, y, portrait(SYNERGIES[c].hero)).setDisplaySize(28, 28);
       const label = tier === 2 ? `${n}★` : `${n}/${SYNERGY_TIERS[Math.min(tier, 1)]}`;
-      const count = this.scene.add.text(x + 74, 0, label, displayStyle(16, { color: tier > 0 ? UI.gold : UI.text })).setOrigin(1, 0.5);
+      const count = this.scene.add.text(x + 74, y, label, displayStyle(16, { color: tier > 0 ? UI.gold : UI.text })).setOrigin(1, 0.5);
       this.synergies.add([bg, face, count]);
     });
   }

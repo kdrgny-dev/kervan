@@ -93,6 +93,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   create() {
+    audio.setTrack('game');
+    this.events.once('shutdown', () => audio.setTrack('menu'));
     this.phone = PHONE_LAYOUT;
     sharpen(this.cameras.main);
     this.heroViews = new Map();

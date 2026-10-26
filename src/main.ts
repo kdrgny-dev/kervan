@@ -15,6 +15,7 @@ import { ShopScene } from './scenes/ShopScene';
 
 audio.configure(profile.data.settings);
 audio.unlockOnGesture();
+audio.preload();
 
 const game = new Phaser.Game({
   type: Phaser.AUTO,
