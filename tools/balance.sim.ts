@@ -50,6 +50,7 @@ function summarize(name: string, runs: RunReport[]) {
     'ort. altın': avg((r) => r.gold),
     'ort. mücevher': (runs.reduce((a, r) => a + r.gems, 0) / runs.length).toFixed(1),
     'ort. maks kafile': avg((r) => r.maxParty),
+    'katılan/düşen': `${avg((r) => r.recruited)}/${avg((r) => r.lost)}`,
     ölüm: Object.entries(reasons)
       .map(([k, v]) => `${k}:${v}`)
       .join(' '),
