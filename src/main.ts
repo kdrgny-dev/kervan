@@ -41,4 +41,9 @@ if (import.meta.env.DEV) Object.assign(window, { __kervan: game, __profile: prof
 // Web sürümü ana ekrana eklenip çevrimdışı oynanabilsin; masaüstü paketi dosyaları zaten taşır
 if (import.meta.env.PROD && !isDesktop && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => void navigator.serviceWorker.register('./sw.js').catch(() => undefined));
+  // Yeni sürüm inince açık sayfa eski kodda kalıyor; oyun ortasında değilse yenile
+  const hadController = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (hadController && !game.scene.isActive('game')) location.reload();
+  });
 }
