@@ -12,6 +12,8 @@ import { Bar, Button, fmt, Pill, slice } from './kit';
 import { displayStyle, textStyle, UI } from './theme';
 
 const DEPTH = 40;
+/** Telefonda göstergelerin oturduğu üst şeridin yüksekliği; oyun dünyası bunun altında başlar. */
+export const HUD_BAND = 68;
 
 /** Oyun içi gösterge katmanı (docs/design/stage4/mockups/hud.png). */
 export class Hud {
@@ -32,30 +34,41 @@ export class Hud {
   private powerKeys = '';
   private last = { gold: -1, gems: -1, level: -1 };
 
-  constructor(private readonly scene: Phaser.Scene, onPause: () => void) {
+  /** compact: telefon düzeni; her şey üst şeritte, oyun alanının üstüne binmez. */
+  constructor(
+    private readonly scene: Phaser.Scene,
+    onPause: () => void,
+    private readonly compact = false,
+  ) {
     const { width, height } = scene.scale;
+    // Aynı derinlikte ilk eklenen en altta kalır; 40'ın altına inerse dünya kamerasına düşer
+    if (compact) scene.add.rectangle(0, 0, width, HUD_BAND, UI.bg).setOrigin(0).setDepth(DEPTH);
     const pill = (caption: string, color?: string) => new Pill(scene, 16, 34, { caption, height: 42, color }).setDepth(DEPTH);
     this.wave = pill('Dalga');
     this.party = pill('Kafile');
     this.foes = pill('Düşman', UI.danger);
 
-    this.xp = new Bar(scene, 602, 34, 310, 'xp').setDepth(DEPTH);
+    const xpX = compact ? width / 2 : 602;
+    this.xp = new Bar(scene, xpX, 34, 310, 'xp').setDepth(DEPTH);
     this.levelText = scene.add.text(0, 1, '1', displayStyle(20)).setOrigin(0.5);
     const disc = scene.add.graphics();
     disc.fillStyle(0x3d74c9).fillCircle(0, 0, 21).lineStyle(3, 0x14121c).strokeCircle(0, 0, 21);
     disc.lineStyle(2, 0x7fb3ec, 0.8).strokeCircle(0, 0, 17);
-    this.level = scene.add.container(430, 34, [disc, this.levelText]).setDepth(DEPTH + 1);
+    this.level = scene.add.container(xpX - 172, 34, [disc, this.levelText]).setDepth(DEPTH + 1);
 
     new Button(scene, width - 38, 34, '', onPause, { width: 52, height: 52, icon: 'pause', iconOnly: true }).setDepth(DEPTH);
     this.gem = new Pill(scene, width - 76, 34, { icon: 'gem', align: 'right', height: 42 }).setDepth(DEPTH);
     this.coin = new Pill(scene, width - 200, 34, { icon: 'coin', align: 'right', height: 42 }).setDepth(DEPTH);
 
-    const bossName = scene.add.text(0, -26, '', displayStyle(18)).setOrigin(0.5).setStroke(UI.ink, 5).setName('bossName');
-    this.bossBar = new Bar(scene, 0, 0, 580, 'boss');
-    this.boss = scene.add.container(width / 2, 104, [bossName, this.bossBar]).setDepth(DEPTH).setVisible(false);
+    // Telefonda boss çubuğu seviye çubuğunun yerine geçer, adı solunda durur
+    const bossName = compact
+      ? scene.add.text(-196, 0, '', displayStyle(15)).setOrigin(1, 0.5).setStroke(UI.ink, 4).setName('bossName')
+      : scene.add.text(0, -26, '', displayStyle(18)).setOrigin(0.5).setStroke(UI.ink, 5).setName('bossName');
+    this.bossBar = new Bar(scene, 0, 0, compact ? 380 : 580, 'boss');
+    this.boss = scene.add.container(compact ? width / 2 + 60 : width / 2, compact ? 34 : 104, [bossName, this.bossBar]).setDepth(DEPTH).setVisible(false);
 
     this.powers = scene.add.container(width / 2, height - 40).setDepth(DEPTH);
-    this.synergies = scene.add.container(16, 78).setDepth(DEPTH);
+    this.synergies = scene.add.container(compact ? xpX + 180 : 16, compact ? 34 : 78).setDepth(DEPTH);
     this.toastText = scene.add.text(width / 2, 200, '', displayStyle(42)).setOrigin(0.5).setDepth(DEPTH + 2).setStroke(UI.ink, 8).setAlpha(0);
   }
 
@@ -89,10 +102,16 @@ export class Hud {
     const boss = w.enemies.find((e) => ENEMIES[e.kind].boss);
     if (boss && !this.boss.visible) {
       (this.boss.getByName('bossName') as Phaser.GameObjects.Text).setText(ENEMIES[boss.kind].name.toLocaleUpperCase('tr-TR'));
-      this.boss.setVisible(true).setAlpha(0).setY(74);
+      this.boss.setVisible(true).setAlpha(0);
       this.bossBar.setRatio(1, false);
-      this.scene.tweens.add({ targets: this.boss, y: 104, alpha: 1, duration: 300, ease: 'Back.Out' });
+      if (this.compact) this.scene.tweens.add({ targets: this.boss, alpha: 1, duration: 300 });
+      else this.scene.tweens.add({ targets: this.boss, y: { from: 74, to: 104 }, alpha: 1, duration: 300, ease: 'Back.Out' });
     } else if (!boss && this.boss.visible) this.boss.setVisible(false);
+    if (this.compact) {
+      this.xp.setVisible(!boss);
+      this.level.setVisible(!boss);
+      this.synergies.setVisible(!boss);
+    }
     if (boss) this.bossBar.setRatio(boss.hp / boss.maxHp);
 
     this.renderPowers(w, now);
@@ -107,6 +126,7 @@ export class Hud {
     if (key === this.synergyKey) return;
     this.synergyKey = key;
     this.synergies.removeAll(true);
+    if (this.compact) return this.compactSynergies(active, counts);
     active.forEach((c, i) => {
       const n = counts[c];
       const tier = n >= SYNERGY_TIERS[1] ? 2 : n >= SYNERGY_TIERS[0] ? 1 : 0;
@@ -119,6 +139,24 @@ export class Hud {
       const label = this.scene.add.text(32, y, SYNERGIES[c].name, textStyle(13, { color: tier > 0 ? UI.gold : UI.muted, fontStyle: '800' })).setOrigin(0, 0.5);
       const count = this.scene.add.text(146, y, tier === 2 ? `${n} ★` : `${n}/${next}`, displayStyle(14, { color: tier > 0 ? UI.gold : UI.text })).setOrigin(1, 0.5);
       this.synergies.add([bg, face, label, count]);
+    });
+  }
+
+  /** Telefonda şeritte yan yana küçük rozetler: yüz + sayaç. */
+  private compactSynergies(active: typeof HERO_CLASSES, counts: ReturnType<typeof classCounts>) {
+    // Para sayaçlarına çarpmadan sığan kadar rozet
+    const room = Math.max(0, Math.floor((this.scene.scale.width - 340 - this.synergies.x) / 92));
+    active.slice(0, Math.min(3, room)).forEach((c, i) => {
+      const n = counts[c];
+      const tier = n >= SYNERGY_TIERS[1] ? 2 : n >= SYNERGY_TIERS[0] ? 1 : 0;
+      const x = i * 92;
+      const bg = this.scene.add.graphics();
+      bg.fillStyle(UI.panel2, 1).fillRoundedRect(x, -17, 84, 34, 17);
+      bg.lineStyle(2, tier > 0 ? UI.goldNum : UI.panelEdge).strokeRoundedRect(x, -17, 84, 34, 17);
+      const face = this.scene.add.image(x + 18, 0, portrait(SYNERGIES[c].hero)).setDisplaySize(28, 28);
+      const label = tier === 2 ? `${n}★` : `${n}/${SYNERGY_TIERS[Math.min(tier, 1)]}`;
+      const count = this.scene.add.text(x + 74, 0, label, displayStyle(16, { color: tier > 0 ? UI.gold : UI.text })).setOrigin(1, 0.5);
+      this.synergies.add([bg, face, count]);
     });
   }
 

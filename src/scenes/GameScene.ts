@@ -33,7 +33,7 @@ import {
 import { CARDS } from '../data/cards';
 import { nextRerollCost, pickCard, rerollDraft } from '../sim/cards';
 import { DraftOverlay } from '../ui/draft';
-import { Hud } from '../ui/hud';
+import { Hud, HUD_BAND } from '../ui/hud';
 import { Bar, Button, fmt, panel, ribbon, slice } from '../ui/kit';
 import { displayStyle, FONT_DISPLAY, textStyle, UI } from '../ui/theme';
 import { icon } from '../ui/assets';
@@ -104,7 +104,7 @@ export class GameScene extends Phaser.Scene {
     this.arena = drawArena(this).setDepth(-10);
     this.markers = new Map();
     this.fx = new Fx(this);
-    this.hud = new Hud(this, () => this.togglePause());
+    this.hud = new Hud(this, () => this.togglePause(), this.phone);
     this.draftUi = new DraftOverlay(this, {
       pick: (id) => {
         if (pickCard(this.world, id)) this.countdown();
@@ -149,6 +149,8 @@ export class GameScene extends Phaser.Scene {
   /** Dünya yakınlaşır ve kafileyi izler; arayüz ayrı kamerada sabit kalır. */
   private phoneCameras() {
     const world = this.cameras.main;
+    // Dünya göstergelerin altında başlar; şerit hiçbir zaman oyun alanını örtmez
+    world.setViewport(0, HUD_BAND, this.scale.width, this.scale.height - HUD_BAND);
     const ui = this.cameras.add(0, 0, this.scale.width, this.scale.height);
     const ptPerPx = this.scale.displaySize.height / this.scale.height;
     world.setZoom(Phaser.Math.Clamp(PHONE_CELL_PT / (CELL * ptPerPx), 1, 1.6));
@@ -169,12 +171,9 @@ export class GameScene extends Phaser.Scene {
     const ty = view?.y ?? px(leader.pos.y);
     const vw = cam.width / cam.zoom;
     const vh = cam.height / cam.zoom;
-    // Üstteki HUD şeridi arenanın ilk sırasını örtmesin diye dikeyde biraz pay
-    const hud = 70 / cam.zoom;
-    const along = (t: number, view: number, size: number, top = 0) =>
-      view >= size + top ? (size - top) / 2 : Phaser.Math.Clamp(t, view / 2 - top, size - view / 2);
+    const along = (t: number, view: number, size: number) => (view >= size ? size / 2 : Phaser.Math.Clamp(t, view / 2, size - view / 2));
     const cx = along(tx, vw, GRID_W * CELL);
-    const cy = along(ty, vh, GRID_H * CELL, hud);
+    const cy = along(ty, vh, GRID_H * CELL);
     const m = cam.midPoint;
     const k = snap ? 1 : 0.12;
     cam.centerOn(m.x + (cx - m.x) * k, m.y + (cy - m.y) * k);
