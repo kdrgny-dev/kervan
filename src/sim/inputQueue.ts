@@ -13,11 +13,6 @@ export class InputQueue {
     this.queue.push(dir);
   }
 
-  /** Bir sonraki adımda uygulanacak yön, kuyruktan çıkarmadan. */
-  peek(current: Dir): Dir {
-    return this.queue[0] ?? current;
-  }
-
   next(current: Dir): Dir {
     return this.queue.shift() ?? current;
   }

@@ -10,7 +10,7 @@ import { createRng, pick } from './rng';
 import { collect, spawnHeroToken, updateLoot } from './loot';
 import { endGame, enemyAt, isFree, makeHero } from './state';
 import { computeSynergies, emptySynergies } from './synergy';
-import type { Enemy, Loadout, World, WorldEvent } from './types';
+import type { Enemy, GameOverReason, Loadout, World, WorldEvent } from './types';
 import { updateWaves } from './waves';
 
 export type * from './types';
@@ -42,7 +42,7 @@ export function createWorld({ seed = Date.now(), waves = true, drafts = true, lo
     campaign,
     route: CAMPAIGNS[campaign].route,
     wallPassUntil: 0,
-    wallGrace: false,
+    grace: false,
     loadout: { ...DEFAULT_LOADOUT, ...loadout },
     mods: defaultMods(),
     cards: {},
@@ -87,8 +87,8 @@ export function turn(w: World, dir: Dir) {
   if (!w.alive) return;
   const before = w.input.size;
   w.input.push(dir, w.dir);
-  // Duvar önünde bekleyen kafile yeni yönü bir sonraki adımı beklemeden alır
-  if (w.wallGrace && w.input.size > before) w.moveAcc = effectiveTick(w);
+  // Son an payında bekleyen kafile yeni yönü bir sonraki adımı beklemeden alır
+  if (w.grace && w.input.size > before) w.moveAcc = effectiveTick(w);
 }
 
 export function stepWorld(w: World, dtMs: number): WorldEvent[] {
@@ -100,19 +100,6 @@ export function stepWorld(w: World, dtMs: number): WorldEvent[] {
     }
   }
   return w.events.splice(0);
-}
-
-/**
- * Kafilenin bir sonraki adımda gireceği kareler. Çizim bunlara doğru yapılır; geçmiş kareden şimdikine
- * çizmek ekranı bir adım geride bırakıyor, oyuncu duvarı ve gövdeyi geç görüyordu. Lider duvara ya da
- * gövdeye bakıyorsa kimse ilerlemiyor gibi gösterilir.
- */
-export function nextCells(w: World): Vec[] {
-  const head = w.party[0];
-  if (!head) return [];
-  const target = add(head.pos, DIR_VEC[w.input.peek(w.dir)]);
-  const blocked = !w.alive || isWall(target) || w.party.slice(0, -1).some((h) => eq(h.pos, target));
-  return w.party.map((h, i) => (blocked ? h.pos : i === 0 ? target : w.party[i - 1].pos));
 }
 
 /** Son lider adımından bu yana geçen oran (0..1), çizim interpolasyonu için. */
@@ -155,16 +142,8 @@ function moveTick(w: World) {
 
   if (isWall(target)) {
     if (w.time < w.wallPassUntil) target = wrapAround(target);
-    else if (w.wallGrace) return endGame(w, 'wall');
-    else {
-      // Çizim bir adım geriden geldiği için oyuncu duvarı geç görür: bir adımlık son an payı
-      w.wallGrace = true;
-      for (const h of w.party) h.prev = h.pos;
-      w.events.push({ type: 'wallGrace' });
-      return;
-    }
+    else return lastMoment(w, 'wall');
   }
-  w.wallGrace = false;
 
   const enemy = enemyAt(w, target);
   if (enemy && !bump(w, enemy)) {
@@ -176,7 +155,8 @@ function moveTick(w: World) {
   const grows = token?.type === 'hero';
   // Kuyruk ucu bu tick'te boşalacağı için, büyümüyorsak çarpışmaya dahil değil.
   const blockers = grows ? w.party : w.party.slice(0, -1);
-  if (blockers.some((h) => eq(h.pos, target))) return endGame(w, 'self');
+  if (blockers.some((h) => eq(h.pos, target))) return lastMoment(w, 'self');
+  w.grace = false;
 
   const old = w.party.map((h) => h.pos);
   w.party.forEach((h, i) => {
@@ -192,6 +172,17 @@ function moveTick(w: World) {
     w.tally.recruited++;
     w.events.push({ type: 'recruited', hero });
   }
+}
+
+/**
+ * Çizim bir adım geriden geldiği için oyuncu duvarı ve gövdeyi geç görür. Çarpacak adımda kafile
+ * bir adım bekler (lider kırmızı yanar); bu sırada dönülmezse sonraki adımda çarpar.
+ */
+function lastMoment(w: World, reason: GameOverReason) {
+  if (w.grace) return endGame(w, reason);
+  w.grace = true;
+  for (const h of w.party) h.prev = h.pos;
+  w.events.push({ type: 'grace' });
 }
 
 /** Duvarın ötesindeki hücre: arenanın karşı kenarındaki ilk boş sıra. */
