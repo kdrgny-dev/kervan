@@ -5,7 +5,7 @@
 | # | İş | Neden | Durum |
 |---|---|---|---|
 | 1 | **Keskin görüntü:** oyunu ekranın gerçek piksel yoğunluğunda çiz | Oyun sabit 1152×720 tuvale çiziliyor, tarayıcı/telefon bunu büyütüyor; retina ve büyük ekranda yazılar ve çizimler bulanık | Bitti |
-| 2 | **Fetih dengesi:** erken bölgelerde düşmanlar yumuşar, kahraman jetonu sıklaşır | Bot ölçümü: orta seviye oyuncu Fetih'te medyan dalga 8 (Yol'da 17), kafile 14 (Yol'da 24), kafilenin silinmesi 4,5 kat fazla | Bekliyor |
+| 2 | **Fetih dengesi:** erken bölgelerde düşmanlar yumuşar, kahraman jetonu sıklaşır | Bot ölçümü: orta seviye oyuncu Fetih'te medyan dalga 8 (Yol'da 17), kafile 14 (Yol'da 24), kafilenin silinmesi 4,5 kat fazla | Bitti — Fetih·orta medyan 22, kafile 35 |
 | 3 | **Telefonda menüler:** ana menü, kamp, kart ekranları telefonda büyük ve tam ekran | Oyun içi telefona uyarlandı, menüler hâlâ küçük ve ortada | Bekliyor |
 | 4 | **Kahraman çeşidi:** yeni kahramanlar (destanlarla ve altınla açılan) | Kadro 5 + Fatih; uzun oyunda çeşit az | Bekliyor |
 | 5 | **Başkalarına dağıtım:** TestFlight (Apple Developer 99$/yıl), Android APK | Kendi iPhone'unda çalışıyor (`docs/ios.md`); başkası kuramıyor | Bekliyor |

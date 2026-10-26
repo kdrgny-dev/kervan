@@ -297,6 +297,13 @@ F6 paralel yürüyebilir: grafik üretimi F0'dan itibaren başlayabilir.
 - Hikaye: `destans`, `fetih_intro`, bölge/boss anları, `fetih_done`. Kayıt şeması v4 (`campaigns`, `lastCampaign`).
 - Çizimler: Claude Design Aşama 6 (`docs/design/stage6/manifest.json`); bölge/boss anlarını Dede Hüsnü kendi ağzından anlatır.
 
+### Denge notları (Ekim 2026)
+
+- Duvar ve gövde için bir adımlık son an payı (lider kırmızı yanar, o sırada dönülürse kurtulunur).
+- Her boss kaybolmayan bir kahraman jetonu düşürür (tüm modlar).
+- Fetih: Hisar yavaş başlar (yarasa + zincir yılanı; mazgal 3., iskelet 4., mancınık 5. dalgadan); mazgal 26 can ve biraz daha yavaş; Taş Nöbetçi 260 can, en fazla 2 mazgal, 8 sn'de bir çağırır.
+- Bot ölçümü (60 oyun, medyan dalga): yeni oyuncu 15, Yol·orta 22, Fetih·orta 22 (önce 8), güçlü ~20 (bot duvar hatası sınırı). Fetih·orta kafile 35 (önce 14), silinme 10/60 (önce 18).
+
 ### Keskin görüntü
 
 - Sahneler mantıksal 1152×720'de yerleşir; tuval ekranın gerçek piksel yoğunluğunda açılır (`RES`, 1–2,5) ve kameralar bu oranda büyütür (`src/render/resolution.ts`). Yazılar aynı çözünürlükte üretilir, çizimler RES ≥ 2 iken 3 kat rasterleştirilir.

@@ -72,6 +72,9 @@ export interface RunReport {
   gold: number;
   gems: number;
   maxParty: number;
+  /** Kafileye katılan ve savaşta düşen kahraman sayısı. */
+  recruited: number;
+  lost: number;
   reason: GameOverReason | 'timeout';
 }
 
@@ -80,6 +83,7 @@ export function playRun(seed: number, loadout: Partial<Loadout>, maxSeconds = 90
   let reason: RunReport['reason'] = 'timeout';
   let lastTick = -1;
   let maxParty = 1;
+  let lost = 0;
   while (w.time < maxSeconds * 1000) {
     if (w.draft) pickCard(w, w.draft.options[0]);
     if (w.ticks !== lastTick) {
@@ -87,7 +91,10 @@ export function playRun(seed: number, loadout: Partial<Loadout>, maxSeconds = 90
       const d = decide(w);
       if (d && d !== w.dir) turn(w, d);
     }
-    for (const e of stepWorld(w, SIM_DT)) if (e.type === 'gameOver') reason = e.reason;
+    for (const e of stepWorld(w, SIM_DT)) {
+      if (e.type === 'gameOver') reason = e.reason;
+      else if (e.type === 'heroDied') lost++;
+    }
     maxParty = Math.max(maxParty, w.party.length);
     if (!w.alive) break;
   }
@@ -98,6 +105,8 @@ export function playRun(seed: number, loadout: Partial<Loadout>, maxSeconds = 90
     gold: w.stats.gold,
     gems: w.stats.gems,
     maxParty,
+    recruited: w.tally.recruited,
+    lost,
     reason,
   };
 }

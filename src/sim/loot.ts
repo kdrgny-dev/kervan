@@ -128,8 +128,10 @@ export function onEnemyKilled(w: World, e: Enemy) {
     w.tally.bosses++;
     w.tally.bossKinds[e.kind] = (w.tally.bossKinds[e.kind] ?? 0) + 1;
     dropLoot(w, { type: 'coin', value: def.gold }, e.pos);
-    const spot = freeCells(w, (p) => chebyshev(p, e.pos) === 1)[0];
-    if (spot) dropLoot(w, { type: 'gem' }, spot);
+    const [gemSpot, heroSpot] = freeCells(w, (p) => chebyshev(p, e.pos) === 1);
+    if (gemSpot) dropLoot(w, { type: 'gem' }, gemSpot);
+    // Boss kesmenin ödülü: kaybolmayan bir kahraman jetonu
+    if (heroSpot) dropLoot(w, { type: 'hero', hero: pick(w.rng, w.loadout.unlocked) }, heroSpot, Infinity);
     return;
   }
   const drop = rollDrop(w.rng, e.kind, w.loadout.unlocked, { hero: w.mods.heroDropMult, gem: w.mods.gemMult });

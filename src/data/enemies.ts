@@ -102,7 +102,7 @@ export const ENEMIES: Record<EnemyKind, EnemyDef> = {
 
   // Fetih destanı
   mazgal: {
-    name: 'Canlı Mazgal', color: 0x9a9488, glyph: 'Mz', hp: 30, dmg: 10, moveMs: 260, attackMs: 1100, brain: 'charge', cost: 4, firstWave: Infinity, gold: 2,
+    name: 'Canlı Mazgal', color: 0x9a9488, glyph: 'Mz', hp: 26, dmg: 10, moveMs: 280, attackMs: 1100, brain: 'charge', cost: 4, firstWave: Infinity, gold: 2,
   },
   chainSerpent: {
     name: 'Zincir Yılanı', color: 0x8a8f99, glyph: 'Zy', hp: 26, dmg: 9, moveMs: 320, attackMs: 1000, brain: 'wander', cost: 3, firstWave: Infinity, gold: 2,
@@ -115,9 +115,9 @@ export const ENEMIES: Record<EnemyKind, EnemyDef> = {
     range: 5,
   },
   stoneSentinel: {
-    name: 'Taş Nöbetçi', color: 0xb8b0a0, glyph: 'TN', hp: 290, dmg: 20, moveMs: 460, attackMs: 1500, brain: 'charge',
+    name: 'Taş Nöbetçi', color: 0xb8b0a0, glyph: 'TN', hp: 260, dmg: 20, moveMs: 460, attackMs: 1500, brain: 'charge',
     cost: 0, firstWave: Infinity, gold: 30, xp: 40,
-    boss: { summon: 'mazgal', summonEveryMs: 6500, maxMinions: 3, shockEveryMs: 5000, shockWarnMs: 800, shockRadius: 3, shockDmg: 12 },
+    boss: { summon: 'mazgal', summonEveryMs: 8000, maxMinions: 2, shockEveryMs: 5000, shockWarnMs: 800, shockRadius: 3, shockDmg: 12 },
   },
   harborKraken: {
     name: 'Liman Ahtapotu', color: 0x4a7ab0, glyph: 'LA', hp: 340, dmg: 18, moveMs: 440, attackMs: 1500, brain: 'kite', range: 5,

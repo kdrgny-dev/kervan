@@ -72,10 +72,12 @@ export const REGIONS: Record<RegionId, RegionDef> = {
     color: 0xc9b48a,
     name: 'Rumeli Hisarı',
     desc: 'Hisar üç ayda yükseldi. Taşları dedemin develeri taşıdı, develer hâlâ şikâyet eder.',
+    // Destanın ilk bölgesi: yavaş başlar, kovalayan mazgal üçüncü dalgada gelir
     roster: [
       { kind: 'bat', from: 1 },
-      { kind: 'mazgal', from: 1 },
-      { kind: 'skeleton', from: 3 },
+      { kind: 'chainSerpent', from: 1 },
+      { kind: 'mazgal', from: 3 },
+      { kind: 'skeleton', from: 4 },
       { kind: 'catapultGolem', from: 5 },
     ],
     boss: 'stoneSentinel',
