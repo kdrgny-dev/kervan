@@ -1,6 +1,7 @@
 import { test } from 'vitest';
 import type { Loadout } from '../src/sim/world';
 import { playRun, type RunReport } from './bot';
+import type { CampaignId } from '../src/data/campaigns';
 
 declare const process: { env: Record<string, string | undefined> };
 
@@ -9,7 +10,7 @@ const RUNS = Number(process.env.RUNS ?? 40);
 const all = ['knight', 'archer', 'mage', 'priest', 'rogue'] as const;
 const ups = (lvl: number) => Object.fromEntries(all.map((k) => [k, { hp: lvl, dmg: lvl }]));
 
-const SCENARIOS: Record<string, Partial<Loadout>> = {
+const SCENARIOS: Record<string, Partial<Loadout> & { campaign?: CampaignId }> = {
   'yeni oyuncu': {},
   'orta (Sv3, Büyücü)': { unlocked: ['knight', 'archer', 'mage'], upgrades: ups(3) },
   'güçlü (hepsi Sv6 + perkler)': {
@@ -18,6 +19,16 @@ const SCENARIOS: Record<string, Partial<Loadout>> = {
     startPower: true,
     powerBonusMs: 4000,
     secondHero: true,
+  },
+  // Fetih hesap Sv 6'da açılır; o noktadaki tipik oyuncu ve tam güçlü oyuncu
+  'Fetih · orta (Sv3, 3 kahraman)': { unlocked: ['knight', 'archer', 'mage'], upgrades: ups(3), campaign: 'fetih' },
+  'Fetih · güçlü (hepsi Sv6 + perkler)': {
+    unlocked: [...all],
+    upgrades: ups(6),
+    startPower: true,
+    powerBonusMs: 4000,
+    secondHero: true,
+    campaign: 'fetih',
   },
 };
 
@@ -34,7 +45,7 @@ function summarize(name: string, runs: RunReport[]) {
   const avg = (f: (r: RunReport) => number) => Math.round(runs.reduce((a, r) => a + f(r), 0) / runs.length);
   return {
     senaryo: name,
-    'dalga p25/p50/p75': `${pct(waves, 0.25)}/${pct(waves, 0.5)}/${pct(waves, 0.75)}`,
+    'dalga p25/p50/p75/p90': `${pct(waves, 0.25)}/${pct(waves, 0.5)}/${pct(waves, 0.75)}/${pct(waves, 0.9)}`,
     'süre p50 (sn)': pct(secs, 0.5),
     'ort. altın': avg((r) => r.gold),
     'ort. mücevher': (runs.reduce((a, r) => a + r.gems, 0) / runs.length).toFixed(1),
@@ -46,8 +57,8 @@ function summarize(name: string, runs: RunReport[]) {
 }
 
 test('denge raporu', () => {
-  const rows = Object.entries(SCENARIOS).map(([name, loadout]) =>
-    summarize(name, Array.from({ length: RUNS }, (_, i) => playRun(1000 + i, loadout))),
+  const rows = Object.entries(SCENARIOS).map(([name, { campaign, ...loadout }]) =>
+    summarize(name, Array.from({ length: RUNS }, (_, i) => playRun(1000 + i, loadout, 900, true, campaign))),
   );
   console.table(rows);
 });

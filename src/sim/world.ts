@@ -102,6 +102,19 @@ export function stepWorld(w: World, dtMs: number): WorldEvent[] {
   return w.events.splice(0);
 }
 
+/**
+ * Kafilenin bir sonraki adımda gireceği kareler. Çizim bunlara doğru yapılır; geçmiş kareden şimdikine
+ * çizmek ekranı bir adım geride bırakıyor, oyuncu duvarı ve gövdeyi geç görüyordu. Lider duvara ya da
+ * gövdeye bakıyorsa kimse ilerlemiyor gibi gösterilir.
+ */
+export function nextCells(w: World): Vec[] {
+  const head = w.party[0];
+  if (!head) return [];
+  const target = add(head.pos, DIR_VEC[w.input.peek(w.dir)]);
+  const blocked = !w.alive || isWall(target) || w.party.slice(0, -1).some((h) => eq(h.pos, target));
+  return w.party.map((h, i) => (blocked ? h.pos : i === 0 ? target : w.party[i - 1].pos));
+}
+
 /** Son lider adımından bu yana geçen oran (0..1), çizim interpolasyonu için. */
 /** Buz yavaşlatması dahil gerçek adım süresi. */
 export const effectiveTick = (w: World) => w.tickMs * (w.time < w.slowUntil ? SLOW_FACTOR : 1);
@@ -131,6 +144,8 @@ function simStep(w: World, dt: number) {
   w.enemies = w.enemies.filter((e) => e.hp > 0);
   updateLoot(w, dt);
   if (w.wavesEnabled) updateWaves(w, dt);
+  // Mıknatısla toplanan bomba yukarıdaki temizlikten sonra öldürebilir; adım ölüsüz bitsin
+  w.enemies = w.enemies.filter((e) => e.hp > 0);
 }
 
 function moveTick(w: World) {

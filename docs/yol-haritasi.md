@@ -2,16 +2,26 @@
 
 Öncelik sırasıyla. Her madde kendi dalında yapılır, onayla `main`'e birleşir.
 
-| # | İş | Neden şimdi | Durum |
+| # | İş | Neden | Durum |
 |---|---|---|---|
-| 1 | **Mobil web (PWA):** ana ekrana ekleme, tam ekran, çevrimdışı oynama, yan çevir uyarısı, iOS ses/güvenli alan düzeltmeleri, dokunma alanları | Oyunu iPhone'da hemen oynanır kılar; App Store yolunun da ön koşulu | Bitti — gerçek iPhone'da denenecek; küçük metinler telefonda sınırda |
-| 2 | **Fetih dengesi:** denge botunu destanlara genişlet, zorluğu ve final boss'u ölç; rekorları yolculuğa göre ayır | Destan hiç ölçülmedi; çok zor ya da çok kolay olabilir | Bekliyor |
-| 3 | **iOS / Android uygulaması (Tauri 2):** simülatörde ve telefonda çalışan paket | 1. madde bitince kod hazır; Xcode ayarı gerekiyor (`sudo xcode-select -s /Applications/Xcode.app`) | Bekliyor |
-| 4 | **Faz 10 · Günlük sefer + çevrimiçi skor tablosu** | Oyuncuyu her gün geri getirir; arka uç kararı gerekir (Supabase / Cloudflare) | Bekliyor |
-| 5 | **Destan II · İpek Yolu:** ticaret mekaniği, Marco Polo, Claude Design Aşama 7 | İskelet hazır; çoğunlukla içerik işi | Bekliyor |
-| 6 | **Küçükler:** menü geçidinde Fatih; macOS/Windows imzalama (Apple Developer 99$/yıl) | Satışa çıkmadan önce | Bekliyor |
+| 1 | **Keskin görüntü:** oyunu ekranın gerçek piksel yoğunluğunda çiz | Oyun sabit 1152×720 tuvale çiziliyor, tarayıcı/telefon bunu büyütüyor; retina ve büyük ekranda yazılar ve çizimler bulanık | Bekliyor |
+| 2 | **Fetih dengesi:** erken bölgelerde düşmanlar yumuşar, kahraman jetonu sıklaşır | Bot ölçümü: orta seviye oyuncu Fetih'te medyan dalga 8 (Yol'da 17), kafile 14 (Yol'da 24), kafilenin silinmesi 4,5 kat fazla | Bekliyor |
+| 3 | **Telefonda menüler:** ana menü, kamp, kart ekranları telefonda büyük ve tam ekran | Oyun içi telefona uyarlandı, menüler hâlâ küçük ve ortada | Bekliyor |
+| 4 | **Kahraman çeşidi:** yeni kahramanlar (destanlarla ve altınla açılan) | Kadro 5 + Fatih; uzun oyunda çeşit az | Bekliyor |
+| 5 | **Başkalarına dağıtım:** TestFlight (Apple Developer 99$/yıl), Android APK | Kendi iPhone'unda çalışıyor (`docs/ios.md`); başkası kuramıyor | Bekliyor |
+| 6 | **Faz 10 · Günlük sefer + çevrimiçi skor tablosu** | Oyuncuyu her gün geri getirir; arka uç kararı gerekir | Bekliyor |
+| 7 | **Destan II · İpek Yolu** | İskelet hazır; çoğunlukla içerik | Bekliyor |
+| 8 | **Küçükler:** menü geçidinde Fatih; macOS/Windows imzalama | Satıştan önce | Bekliyor |
+
+## Bitenler (son)
+
+- Mobil web (PWA), telefonda tam ekran oyun alanı + yakın kamera, ayrı gösterge şeridi
+- Duvarda son an payı; kafile oyunun önünde çiziliyor (geç görme hissi)
+- Ölü düşman görüntülerinin kalması (bomba + mıknatıs; duraklat/devam)
+- iOS uygulaması kendi iPhone'unda
 
 ## Notlar
 
 - itch.io bilinçli olarak ertelendi; oyun yeterince gelişince açılacak.
 - Gelir modeli: tek seferlik ücret, reklamsız, güce para yok.
+- Denge ölçümü: `RUNS=60 npm run balance` (bot duvara/kuyruğa insandan sık çarpar; mutlak değil, senaryolar arası karşılaştırma için).
