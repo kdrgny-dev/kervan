@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="128" viewBox="0 0 640 128" role="img" aria-label="iber region banner">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M1.5 18 H34 V122 H1.5 L12 70.0 Z" fill="#e5533d"/><path d="M638.5 18 H606 V122 H638.5 L628 70.0 Z" fill="#e5533d"/><rect x="22" y="12" width="596" height="106" rx="8" fill="#8a5532"/><rect x="22" y="8" width="596" height="106" rx="8" fill="#f28a3b"/><path d="M34 15 H606" stroke="#f7d978" stroke-width="3" stroke-opacity="0.9"/><path d="M34 108 H606" stroke="#8a5532" stroke-width="2" stroke-dasharray="6 6" stroke-opacity="0.8"/>
+</g>
+</svg>

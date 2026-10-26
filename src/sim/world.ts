@@ -1,8 +1,10 @@
 import { BASE_TICK_MS, GRID_H, GRID_W } from '../config';
 import { CARD_IDS, defaultMods } from '../data/cards';
 import { CAMPAIGNS, type CampaignId } from '../data/campaigns';
-import { BUMP_DMG_RATIO, BUMP_INVULN_MS, FIRST_BREAK_MS, SIM_DT, SLOW_FACTOR } from '../data/balance';
-import { damageHero, updateHeroes, updateProjectiles } from './combat';
+import { BUMP_DMG_RATIO, BUMP_INVULN_MS, CRUSH_BOSS_RATIO, CRUSH_RATIO, FIRST_BREAK_MS, SIM_DT, SLOW_FACTOR } from '../data/balance';
+import { ENEMIES } from '../data/enemies';
+import { HEROES } from '../data/heroes';
+import { damageEnemy, damageHero, updateHeroes, updateProjectiles } from './combat';
 import { updateEnemies } from './enemies';
 import { add, DIR_VEC, type Dir, eq, isWall, type Vec } from './grid';
 import { InputQueue } from './inputQueue';
@@ -211,10 +213,21 @@ function trackTally(w: World) {
 }
 
 /** Lider düşmana çarptı. Düşman itilebildiyse true (lider o hücreye ilerler). */
+/** Kafilede fil ya da Hannibal varsa çarpışma lideri değil düşmanı yaralar. */
+export const crushes = (w: World) => w.party.some((h) => HEROES[h.kind].crush);
+
 function bump(w: World, enemy: Enemy): boolean {
   const leader = w.party[0];
   w.events.push({ type: 'bump', pos: enemy.pos });
-  if (w.bumpInvuln === 0) {
+  if (crushes(w)) {
+    if (w.bumpInvuln === 0) {
+      w.bumpInvuln = BUMP_INVULN_MS;
+      const ratio = ENEMIES[enemy.kind].boss ? CRUSH_BOSS_RATIO : CRUSH_RATIO;
+      damageEnemy(w, enemy, Math.ceil(enemy.maxHp * ratio));
+      w.events.push({ type: 'slash', pos: enemy.pos });
+      if (enemy.hp <= 0) return true;
+    }
+  } else if (w.bumpInvuln === 0) {
     w.bumpInvuln = BUMP_INVULN_MS;
     damageHero(w, leader, Math.ceil(leader.maxHp * BUMP_DMG_RATIO * w.mods.bumpMult));
     if (!w.alive || w.party[0] !== leader) return false;

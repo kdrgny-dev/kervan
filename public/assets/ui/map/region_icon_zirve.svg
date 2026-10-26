@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" role="img" aria-label="zirve region icon">
+<g stroke="#14121c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<circle cx="48" cy="48" r="44" fill="#f0c23b"/><circle cx="48" cy="48" r="34" fill="#7fb3ec"/><circle cx="48" cy="48" r="34" fill="none" stroke-width="3"/><path d="M16 72 L40 30 L52 48 L60 38 L80 72 Z" fill="#6b6478"/><path d="M40 30 L48 44 L42 42 L36 48 L32 44 Z M60 38 L66 48 L60 46 L56 50 Z" fill="#f0e6d2" stroke-width="2.5"/><path d="M20 72 Q48 62 78 72 Z" fill="#f0e6d2" stroke-width="2.5"/><path d="M66 24 L68 30 L74 31 L69 34 L70 40 L66 36 L62 40 L63 34 L58 31 L64 30 Z" fill="#f0e6d2" stroke-width="1.8"/><path d="M14 36 Q20 18 38 10" stroke="#f0e6d2" stroke-opacity="0.75" stroke-width="3.5" fill="none"/>
+</g>
+</svg>

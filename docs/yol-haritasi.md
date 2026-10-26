@@ -10,7 +10,7 @@
 | 4 | **Kahraman çeşidi:** yeni kahramanlar (destanlarla ve altınla açılan) | Kadro 5 + Fatih; uzun oyunda çeşit az | Bekliyor |
 | 5 | **Başkalarına dağıtım:** TestFlight (Apple Developer 99$/yıl), Android APK | Kendi iPhone'unda çalışıyor (`docs/ios.md`); başkası kuramıyor | Bekliyor |
 | 6 | **Faz 10 · Günlük sefer + çevrimiçi skor tablosu** | Oyuncuyu her gün geri getirir; arka uç kararı gerekir | Bekliyor |
-| 7 | **Destan II · İpek Yolu** | İskelet hazır; çoğunlukla içerik | Bekliyor |
+| 7 | **Destan II · Alpler** (MÖ 218, fil) | Fetih'ten farklı oynanış: çarpışma silaha dönüşür | İskelet bitti; çizimler bekleniyor (`docs/claude-design-prompt-stage7.md`) |
 | 8 | **Küçükler:** menü geçidinde Fatih; macOS/Windows imzalama | Satıştan önce | Bekliyor |
 
 ## Bitenler (son)

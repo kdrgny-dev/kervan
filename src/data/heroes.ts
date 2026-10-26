@@ -1,4 +1,4 @@
-export type HeroKind = 'knight' | 'archer' | 'mage' | 'priest' | 'rogue' | 'fatih';
+export type HeroKind = 'knight' | 'archer' | 'mage' | 'priest' | 'rogue' | 'fatih' | 'hannibal' | 'elephant';
 
 export type AttackKind = 'melee' | 'arrow' | 'fireball' | 'holy' | 'cannon';
 
@@ -17,6 +17,12 @@ export interface HeroDef {
   crit?: { chance: number; mult: number };
   /** Destan ödülü; altınla açılmaz. */
   legendary?: boolean;
+  /** Yalnızca destanda katılan yoldaş: kahraman seçiminde, mağazada, kayıtta yok. */
+  companion?: boolean;
+  /** Kafilede varken lider çarpışmada hasar almaz, düşmanı ezer. */
+  crush?: boolean;
+  /** Çizimi gelene kadar başka kahramanın sprite'ı renklendirilerek kullanılır. */
+  look?: { as: HeroKind; tint: number; scale?: number };
 }
 
 export const HEROES: Record<HeroKind, HeroDef> = {
@@ -44,6 +50,15 @@ export const HEROES: Record<HeroKind, HeroDef> = {
     name: 'Fatih', role: 'Şahi topu, alan hasarı', color: 0xc8402a, glyph: 'F',
     hp: 55, dmg: 16, cooldownMs: 1900, range: 5, attack: 'cannon', splash: 1, legendary: true,
   },
+  hannibal: {
+    name: 'Hannibal', role: 'Fil binicisi, çarpışma ezer', color: 0x9a6a3a, glyph: 'Hn',
+    hp: 85, dmg: 13, cooldownMs: 1200, range: 1, attack: 'melee', splash: 1, legendary: true, crush: true,
+  },
+  elephant: {
+    name: 'Fil', role: 'Tank, çarpışma ezer', color: 0x9a9aa8, glyph: 'Fl',
+    hp: 140, dmg: 9, cooldownMs: 1500, range: 1, attack: 'melee', splash: 1, companion: true, crush: true,
+  },
 };
 
-export const HERO_KINDS = Object.keys(HEROES) as HeroKind[];
+/** Oyuncunun açıp seçebildiği kahramanlar (destan yoldaşları hariç). */
+export const HERO_KINDS = (Object.keys(HEROES) as HeroKind[]).filter((k) => !HEROES[k].companion);

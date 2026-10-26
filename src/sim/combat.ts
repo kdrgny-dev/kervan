@@ -7,6 +7,8 @@ import { endGame, levelMult, upgradeMult } from './state';
 import type { Enemy, Hero, Projectile, World } from './types';
 
 const MIN_HIT = 1;
+/** Yakın dövüş alan hasarında çevredekilere giden pay. */
+const MELEE_SPLASH = 0.6;
 
 export function damageEnemy(w: World, e: Enemy, dmg: number, crit = false) {
   if (e.hp <= 0) return;
@@ -157,6 +159,12 @@ export function updateHeroes(w: World, dt: number) {
       const crit = chance > 0 && w.rng() < chance;
       damageEnemy(w, target, crit ? Math.round(dmg * mult) : dmg, crit);
       w.events.push({ type: 'slash', pos: target.pos });
+      // Fil ve Hannibal yere basınca hedefin çevresi de sarsılır
+      if (def.splash) {
+        for (const e of w.enemies) {
+          if (e !== target && e.hp > 0 && chebyshev(e.pos, target.pos) <= def.splash) damageEnemy(w, e, Math.round(dmg * MELEE_SPLASH));
+        }
+      }
       continue;
     }
     fire(w, def.attack, 'hero', h.pos, target, dmg, heroSplash(w, h.kind));

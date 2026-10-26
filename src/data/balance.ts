@@ -24,11 +24,14 @@ export const SLOW_FACTOR = 1.35;
 
 export const BUMP_DMG_RATIO = 0.4;
 export const BUMP_INVULN_MS = 500;
+/** Fil kafiledeyken çarpışmada düşman canından giden pay (boss'ta daha az). */
+export const CRUSH_RATIO = 0.6;
+export const CRUSH_BOSS_RATIO = 0.08;
 
 export const CHARGE_DIST = 3;
 export const CHARGE_SPEEDUP = 0.5;
 
-export type ProjectileKind = Exclude<AttackKind, 'melee'> | 'bone';
+export type ProjectileKind = Exclude<AttackKind, 'melee'> | 'bone' | 'snow';
 
 /** hücre / saniye */
 export const PROJECTILE_SPEED: Record<ProjectileKind, number> = {
@@ -37,6 +40,7 @@ export const PROJECTILE_SPEED: Record<ProjectileKind, number> = {
   cannon: 10,
   holy: 11,
   bone: 8,
+  snow: 8,
 };
 
 export const HIT_RADIUS = 0.25;

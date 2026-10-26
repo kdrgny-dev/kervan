@@ -1,6 +1,6 @@
 import type Phaser from 'phaser';
 import { RASTER } from '../render/resolution';
-import type { HeroKind } from '../data/heroes';
+import { HEROES, type HeroKind } from '../data/heroes';
 
 /** 9-slice kenar payları, docs/design/stage4/components.json'dan (1x px). */
 export interface Slice {
@@ -50,9 +50,13 @@ export const ICONS = [
 export type IconName = (typeof ICONS)[number];
 export const icon = (name: IconName) => `icon.${name}`;
 
-/** Ayrı portresi olmayan kahramanlar karakter çizimini kullanır. */
-const SPRITE_PORTRAIT: HeroKind[] = ['fatih'];
-export const portrait = (kind: HeroKind) => (SPRITE_PORTRAIT.includes(kind) ? `${kind}.idle` : `portrait.${kind}`);
+/** Ayrı portresi olmayan kahramanlar karakter çizimini, çizimi de olmayanlar ödünç aldıkları kahramanın portresini kullanır. */
+const SPRITE_PORTRAIT: HeroKind[] = ['fatih', 'hannibal', 'elephant'];
+export const portrait = (kind: HeroKind): string => {
+  const look = HEROES[kind].look;
+  if (look) return portrait(look.as);
+  return SPRITE_PORTRAIT.includes(kind) ? `${kind}.idle` : `portrait.${kind}`;
+};
 export const LOGO = 'brand.logo';
 export const TOGGLE = { on: 'ui.toggle_on', off: 'ui.toggle_off' };
 

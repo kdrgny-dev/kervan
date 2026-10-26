@@ -34,7 +34,9 @@ Kervanbaşı Hüsnü, kervancı bir soyun son halkası. Dedesi, dedesinin dedesi
 | **İpek Yolu (1271)** | Dede Hüsnü'nün dedesi | Venedik limanı, Anadolu kervansarayları, Pamir, Han sarayı | **Ticaret:** dalgalar arası pazar; altın faizle büyür | **Marco Polo** — altın topladıkça güçlenir | Hazine Muhafızı Golem |
 | **Kış Seferi (1812)** | Büyük Dede Hüsnü | Neman kıyısı, Smolensk, Moskova, dönüş yolu | **Kış:** her dalga soğuk artar, kamp ateşleri ısıtır (üstünden geçince yavaşlama sıfırlanır) | **Napolyon** — topçu komutanı, kafileye hasar bonusu | General Ayaz (kışın kendisi) |
 
-Önerilen sıra: **Fetih → İpek Yolu → Bozkır → Alpler → Kış Seferi.** İlki tanıdık ve güçlü; İpek Yolu kervan temasının en saf hâli.
+Sıra: **Fetih → Alpler → İpek Yolu → Bozkır → Kış Seferi.** Alpler öne alındı: fil kervana çok yakışıyor ve Fetih'ten tamamen farklı bir oynanış getiriyor (çarpışmayı silaha çeviriyor).
+
+İleride eklenebilecek diğer adaylar: Dede Korkut (efsane; final boss Tepegöz, ozan kahraman), Mansa Musa'nın hac kervanı (1324; altın saçan kervan), Nasreddin Hoca (yön tuşlarının ters çalıştığı kısa ara destan), Evliya Çelebi (her bölge başka şehir).
 
 ## İlk destan detay: Fetih
 
@@ -53,6 +55,32 @@ Kervanbaşı Hüsnü, kervancı bir soyun son halkası. Dedesi, dedesinin dedesi
 - 40. dalga (final): "Surlar düştü! Fatih dedeme dönmüş, 'Hüsnü, sen olmasan…' demiş. Cümlenin devamını kimse duymamış. Dedem 'sen olmasan olmazdı' diye tamamlardı."
 
 **Efsanevi kahraman — Fatih:** Şahi topu; 2 saniyede bir menzilli gülle, düştüğü yerde alan hasarı. Sinerji: "Topçu" (Fatih + Napolyon).
+
+## İkinci destan detay: Alpler (MÖ 218)
+
+**Anlatıcı:** Ata Hüsnü (Hüsnü'nün "çok eski" dedesi). Kartaca ordusunun erzak kervanına fil bakıcısı olarak yazılmış; fillerden korkar, filler ona bayılır. Ad etiketi: *Ata Hüsnü · MÖ 218*.
+
+**Özel mekanik — Fil kiralama:** Her bölgenin ilk dalgasında haritaya bir **fil jetonu** düşer (Ata Hüsnü kiralar). Fil kafileye katılan bir yoldaştır: çok canlı, yavaş vuran, çevresine alan hasarı veren bir tank. **Kafilede fil (ya da Hannibal) varken lider düşmana çarptığında hasar almaz; düşman ezilir ve ağır hasar yer.** Böylece Yol'da kaçınılan çarpışma, Alpler'de bir silaha dönüşür. Fil yalnızca bu destanda çıkar; mağazada ve kahraman seçiminde yoktur.
+
+**Açılış (Ata Hüsnü):**
+1. "MÖ 218. Hannibal, 'Alpleri fillerle aşacağız' dedi. Herkes güldü. Ben gülmedim; fil bakıcısı bendim."
+2. "Fillerden korkarım. Filler benden korkmaz. Hatta beni çok severler. Hepsi arkamdan gelir. Sorun da bu."
+
+**Bölgeler:**
+1. **İber kıyısı** (`iber`) — sahil ve limanlar; filler gemiden iner. Düşmanlar: kum yengeçleri, martılar.
+2. **Pireneler** (`pirene`) — çam ormanları, dar patikalar. Düşmanlar: dağ keçileri, kartallar.
+3. **Karlı Alpler** (`zirve`) — kar, buz, geçitler. Düşmanlar: kartopları, yetiler.
+4. **Po ovası** (`po`) — inişten sonra yeşil ova; dağdan inen her şey peşimizde. Final: Çığ Devi.
+
+**Düşmanlar (yeni):** Kum Yengeci (yan yan zikzak), Martı (hızlı, uçarak kovalar), Dağ Keçisi (kafa atarak kovalar), Kartopu (yuvarlanır, ölünce iki küçük kartopuna bölünür), Yeti (yavaş, uzaktan kar topu atar, vurduğunu yavaşlatır).
+
+**Boss'lar:** Gelgit Yengeci (İber), Mağara Ayısı (Pireneler), Fırtına Kartalı (Zirve; Po'da da), **Çığ Devi** (final, 40. dalga).
+
+**Boss anları (taslak):**
+- Mağara Ayısı: "Ayı kaçtı! Fil bir kere hapşırdı, yeter. Ben de hapşırdım ama kimse kaçmadı."
+- Çığ Devi (final): "Çığ Devi'ni ovada yakaladık. Dağda dev, ovada kardan adam. Hannibal bana döndü, 'Hüsnü, filler…' dedi. 'Biliyorum, beni seviyorlar' dedim."
+
+**Efsanevi kahraman — Hannibal:** Fil binicisi; yakın dövüş, alan hasarı, çok dayanıklı. Kafilede Hannibal varsa çarpışmalar her modda ezer (filin etkisi). Sinerji: Savaşçı.
 
 ## Çizim ihtiyacı (destan başına, kabaca)
 

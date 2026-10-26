@@ -1,0 +1,976 @@
+{
+ "characters/avalanche_giant_charge_1.svg": {
+  "w": 160,
+  "h": 160,
+  "anim": "avalanche_giant_charge",
+  "frame": 1,
+  "frames": 2,
+  "ms": 200
+ },
+ "characters/avalanche_giant_charge_2.svg": {
+  "w": 160,
+  "h": 160,
+  "anim": "avalanche_giant_charge",
+  "frame": 2,
+  "frames": 2,
+  "ms": 200
+ },
+ "characters/avalanche_giant_hurt_1.svg": {
+  "w": 160,
+  "h": 160,
+  "anim": "avalanche_giant_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/avalanche_giant_idle_1.svg": {
+  "w": 160,
+  "h": 160,
+  "anim": "avalanche_giant_idle",
+  "frame": 1,
+  "frames": 2,
+  "ms": 400
+ },
+ "characters/avalanche_giant_idle_2.svg": {
+  "w": 160,
+  "h": 160,
+  "anim": "avalanche_giant_idle",
+  "frame": 2,
+  "frames": 2,
+  "ms": 400
+ },
+ "characters/avalanche_giant_summon_1.svg": {
+  "w": 160,
+  "h": 160,
+  "anim": "avalanche_giant_summon",
+  "frame": 1,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/avalanche_giant_summon_2.svg": {
+  "w": 160,
+  "h": 160,
+  "anim": "avalanche_giant_summon",
+  "frame": 2,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/cave_bear_charge_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "cave_bear_charge",
+  "frame": 1,
+  "frames": 2,
+  "ms": 200
+ },
+ "characters/cave_bear_charge_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "cave_bear_charge",
+  "frame": 2,
+  "frames": 2,
+  "ms": 200
+ },
+ "characters/cave_bear_hurt_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "cave_bear_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/cave_bear_idle_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "cave_bear_idle",
+  "frame": 1,
+  "frames": 2,
+  "ms": 400
+ },
+ "characters/cave_bear_idle_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "cave_bear_idle",
+  "frame": 2,
+  "frames": 2,
+  "ms": 400
+ },
+ "characters/cave_bear_summon_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "cave_bear_summon",
+  "frame": 1,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/cave_bear_summon_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "cave_bear_summon",
+  "frame": 2,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/elephant_attack_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "elephant_attack",
+  "frame": 1,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/elephant_attack_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "elephant_attack",
+  "frame": 2,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/elephant_hurt_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "elephant_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/elephant_idle_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "elephant_idle",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/elephant_walk_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "elephant_walk",
+  "frame": 1,
+  "frames": 4,
+  "ms": 140
+ },
+ "characters/elephant_walk_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "elephant_walk",
+  "frame": 2,
+  "frames": 4,
+  "ms": 140
+ },
+ "characters/elephant_walk_3.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "elephant_walk",
+  "frame": 3,
+  "frames": 4,
+  "ms": 140
+ },
+ "characters/elephant_walk_4.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "elephant_walk",
+  "frame": 4,
+  "frames": 4,
+  "ms": 140
+ },
+ "characters/goat_attack_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "goat_attack",
+  "frame": 1,
+  "frames": 2,
+  "ms": 130
+ },
+ "characters/goat_attack_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "goat_attack",
+  "frame": 2,
+  "frames": 2,
+  "ms": 130
+ },
+ "characters/goat_hurt_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "goat_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/goat_idle_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "goat_idle",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/goat_move_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "goat_move",
+  "frame": 1,
+  "frames": 4,
+  "ms": 100
+ },
+ "characters/goat_move_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "goat_move",
+  "frame": 2,
+  "frames": 4,
+  "ms": 100
+ },
+ "characters/goat_move_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "goat_move",
+  "frame": 3,
+  "frames": 4,
+  "ms": 100
+ },
+ "characters/goat_move_4.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "goat_move",
+  "frame": 4,
+  "frames": 4,
+  "ms": 100
+ },
+ "characters/gull_attack_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "gull_attack",
+  "frame": 1,
+  "frames": 2,
+  "ms": 120
+ },
+ "characters/gull_attack_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "gull_attack",
+  "frame": 2,
+  "frames": 2,
+  "ms": 120
+ },
+ "characters/gull_hurt_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "gull_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/gull_idle_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "gull_idle",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/gull_move_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "gull_move",
+  "frame": 1,
+  "frames": 4,
+  "ms": 100
+ },
+ "characters/gull_move_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "gull_move",
+  "frame": 2,
+  "frames": 4,
+  "ms": 100
+ },
+ "characters/gull_move_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "gull_move",
+  "frame": 3,
+  "frames": 4,
+  "ms": 100
+ },
+ "characters/gull_move_4.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "gull_move",
+  "frame": 4,
+  "frames": 4,
+  "ms": 100
+ },
+ "characters/hannibal_attack_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "hannibal_attack",
+  "frame": 1,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/hannibal_attack_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "hannibal_attack",
+  "frame": 2,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/hannibal_hurt_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "hannibal_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/hannibal_idle_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "hannibal_idle",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/hannibal_walk_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "hannibal_walk",
+  "frame": 1,
+  "frames": 4,
+  "ms": 140
+ },
+ "characters/hannibal_walk_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "hannibal_walk",
+  "frame": 2,
+  "frames": 4,
+  "ms": 140
+ },
+ "characters/hannibal_walk_3.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "hannibal_walk",
+  "frame": 3,
+  "frames": 4,
+  "ms": 140
+ },
+ "characters/hannibal_walk_4.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "hannibal_walk",
+  "frame": 4,
+  "frames": 4,
+  "ms": 140
+ },
+ "characters/sand_crab_attack_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "sand_crab_attack",
+  "frame": 1,
+  "frames": 2,
+  "ms": 120
+ },
+ "characters/sand_crab_attack_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "sand_crab_attack",
+  "frame": 2,
+  "frames": 2,
+  "ms": 120
+ },
+ "characters/sand_crab_hurt_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "sand_crab_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/sand_crab_idle_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "sand_crab_idle",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/sand_crab_move_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "sand_crab_move",
+  "frame": 1,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/sand_crab_move_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "sand_crab_move",
+  "frame": 2,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/sand_crab_move_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "sand_crab_move",
+  "frame": 3,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/sand_crab_move_4.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "sand_crab_move",
+  "frame": 4,
+  "frames": 4,
+  "ms": 110
+ },
+ "characters/snowball_attack_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "snowball_attack",
+  "frame": 1,
+  "frames": 2,
+  "ms": 120
+ },
+ "characters/snowball_attack_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "snowball_attack",
+  "frame": 2,
+  "frames": 2,
+  "ms": 120
+ },
+ "characters/snowball_hurt_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "snowball_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/snowball_idle_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "snowball_idle",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/snowball_move_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "snowball_move",
+  "frame": 1,
+  "frames": 4,
+  "ms": 90
+ },
+ "characters/snowball_move_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "snowball_move",
+  "frame": 2,
+  "frames": 4,
+  "ms": 90
+ },
+ "characters/snowball_move_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "snowball_move",
+  "frame": 3,
+  "frames": 4,
+  "ms": 90
+ },
+ "characters/snowball_move_4.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "snowball_move",
+  "frame": 4,
+  "frames": 4,
+  "ms": 90
+ },
+ "characters/storm_eagle_charge_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "storm_eagle_charge",
+  "frame": 1,
+  "frames": 2,
+  "ms": 200
+ },
+ "characters/storm_eagle_charge_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "storm_eagle_charge",
+  "frame": 2,
+  "frames": 2,
+  "ms": 200
+ },
+ "characters/storm_eagle_hurt_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "storm_eagle_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/storm_eagle_idle_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "storm_eagle_idle",
+  "frame": 1,
+  "frames": 2,
+  "ms": 400
+ },
+ "characters/storm_eagle_idle_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "storm_eagle_idle",
+  "frame": 2,
+  "frames": 2,
+  "ms": 400
+ },
+ "characters/storm_eagle_summon_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "storm_eagle_summon",
+  "frame": 1,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/storm_eagle_summon_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "storm_eagle_summon",
+  "frame": 2,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/tide_crab_charge_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "tide_crab_charge",
+  "frame": 1,
+  "frames": 2,
+  "ms": 200
+ },
+ "characters/tide_crab_charge_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "tide_crab_charge",
+  "frame": 2,
+  "frames": 2,
+  "ms": 200
+ },
+ "characters/tide_crab_hurt_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "tide_crab_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/tide_crab_idle_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "tide_crab_idle",
+  "frame": 1,
+  "frames": 2,
+  "ms": 400
+ },
+ "characters/tide_crab_idle_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "tide_crab_idle",
+  "frame": 2,
+  "frames": 2,
+  "ms": 400
+ },
+ "characters/tide_crab_summon_1.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "tide_crab_summon",
+  "frame": 1,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/tide_crab_summon_2.svg": {
+  "w": 128,
+  "h": 128,
+  "anim": "tide_crab_summon",
+  "frame": 2,
+  "frames": 2,
+  "ms": 150
+ },
+ "characters/yeti_attack_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "yeti_attack",
+  "frame": 1,
+  "frames": 2,
+  "ms": 160
+ },
+ "characters/yeti_attack_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "yeti_attack",
+  "frame": 2,
+  "frames": 2,
+  "ms": 160
+ },
+ "characters/yeti_hurt_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "yeti_hurt",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/yeti_idle_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "yeti_idle",
+  "frame": 1,
+  "frames": 1,
+  "ms": null
+ },
+ "characters/yeti_move_1.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "yeti_move",
+  "frame": 1,
+  "frames": 4,
+  "ms": 140
+ },
+ "characters/yeti_move_2.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "yeti_move",
+  "frame": 2,
+  "frames": 4,
+  "ms": 140
+ },
+ "characters/yeti_move_3.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "yeti_move",
+  "frame": 3,
+  "frames": 4,
+  "ms": 140
+ },
+ "characters/yeti_move_4.svg": {
+  "w": 96,
+  "h": 96,
+  "anim": "yeti_move",
+  "frame": 4,
+  "frames": 4,
+  "ms": 140
+ },
+ "decor/iber/decor_1.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/iber/decor_2.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/iber/decor_3.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/iber/decor_4.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/pirene/decor_1.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/pirene/decor_2.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/pirene/decor_3.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/pirene/decor_4.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/po/decor_1.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/po/decor_2.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/po/decor_3.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/po/decor_4.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/zirve/decor_1.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/zirve/decor_2.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/zirve/decor_3.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "decor/zirve/decor_4.svg": {
+  "w": 48,
+  "h": 48,
+  "frames": 1
+ },
+ "fx/snowball_shot.svg": {
+  "w": 24,
+  "h": 24,
+  "frames": 1
+ },
+ "tiles/iber/tile_floor_1.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/iber/tile_floor_2.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/iber/tile_floor_3.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/iber/tile_wall.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/iber/tile_wall_corner.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/iber/tile_wall_side.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/pirene/tile_floor_1.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/pirene/tile_floor_2.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/pirene/tile_floor_3.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/pirene/tile_wall.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/pirene/tile_wall_corner.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/pirene/tile_wall_side.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/po/tile_floor_1.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/po/tile_floor_2.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/po/tile_floor_3.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/po/tile_wall.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/po/tile_wall_corner.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/po/tile_wall_side.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/zirve/tile_floor_1.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/zirve/tile_floor_2.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/zirve/tile_floor_3.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/zirve/tile_wall.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/zirve/tile_wall_corner.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "tiles/zirve/tile_wall_side.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "ui/campaign/campaign_cover_alpler.svg": {
+  "w": 480,
+  "h": 270,
+  "frames": 1
+ },
+ "ui/campaign/elephant_icon.svg": {
+  "w": 64,
+  "h": 64,
+  "frames": 1
+ },
+ "ui/components/ui_banner_region_iber.svg": {
+  "w": 640,
+  "h": 128,
+  "frames": 1,
+  "slice": {
+   "top": 0,
+   "right": 60,
+   "bottom": 0,
+   "left": 60
+  },
+  "mode": "3-slice yatay",
+  "text_color": "#14121c"
+ },
+ "ui/components/ui_banner_region_pirene.svg": {
+  "w": 640,
+  "h": 128,
+  "frames": 1,
+  "slice": {
+   "top": 0,
+   "right": 60,
+   "bottom": 0,
+   "left": 60
+  },
+  "mode": "3-slice yatay",
+  "text_color": "#f4efe6"
+ },
+ "ui/components/ui_banner_region_po.svg": {
+  "w": 640,
+  "h": 128,
+  "frames": 1,
+  "slice": {
+   "top": 0,
+   "right": 60,
+   "bottom": 0,
+   "left": 60
+  },
+  "mode": "3-slice yatay",
+  "text_color": "#14121c"
+ },
+ "ui/components/ui_banner_region_zirve.svg": {
+  "w": 640,
+  "h": 128,
+  "frames": 1,
+  "slice": {
+   "top": 0,
+   "right": 60,
+   "bottom": 0,
+   "left": 60
+  },
+  "mode": "3-slice yatay",
+  "text_color": "#14121c"
+ },
+ "ui/map/region_icon_iber.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "ui/map/region_icon_pirene.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "ui/map/region_icon_po.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "ui/map/region_icon_zirve.svg": {
+  "w": 96,
+  "h": 96,
+  "frames": 1
+ },
+ "ui/narrator/ata_husnu_portrait_laugh.svg": {
+  "w": 256,
+  "h": 256,
+  "frames": 1
+ },
+ "ui/narrator/ata_husnu_portrait_normal.svg": {
+  "w": 256,
+  "h": 256,
+  "frames": 1
+ },
+ "ui/narrator/ata_husnu_portrait_surprised.svg": {
+  "w": 256,
+  "h": 256,
+  "frames": 1
+ }
+}

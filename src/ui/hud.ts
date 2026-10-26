@@ -6,7 +6,7 @@ import type { RegionId } from '../data/regions';
 import { CAMPAIGN_ART, POWER_ICONS, REGION_BANNER } from '../render/sprites';
 import { UI_RASTER } from './assets';
 import { classCounts } from '../sim/synergy';
-import type { World } from '../sim/world';
+import { crushes, type World } from '../sim/world';
 import { icon, portrait } from './assets';
 import { Bar, Button, fmt, Pill, slice } from './kit';
 import { displayStyle, UI } from './theme';
@@ -147,6 +147,7 @@ export class Hud {
     const timers: Record<string, { icon: string; left: number }> = {};
     for (const k of Object.keys(w.powers) as PowerKind[]) timers[k] = { icon: POWER_ICONS[k], left: w.powers[k] ?? 0 };
     if (w.time < w.wallPassUntil) timers.ship = { icon: CAMPAIGN_ART.ship, left: w.wallPassUntil - w.time };
+    if (crushes(w)) timers.elephant = { icon: CAMPAIGN_ART.elephant, left: Infinity };
     const active = Object.keys(timers).sort();
     const keys = active.join(',');
     if (keys !== this.powerKeys) {
@@ -166,7 +167,7 @@ export class Hud {
     }
     for (const k of active) {
       const { left } = timers[k];
-      (this.powers.getByName(`secs:${k}`) as Phaser.GameObjects.Text)?.setText(`${Math.ceil(left / 1000)}s`);
+      (this.powers.getByName(`secs:${k}`) as Phaser.GameObjects.Text)?.setText(left === Infinity ? '' : `${Math.ceil(left / 1000)}s`);
       const img = this.powers.getByName(`icon:${k}`) as Phaser.GameObjects.Image | null;
       img?.setAlpha(left < 3000 && Math.floor(now / 250) % 2 ? 0.4 : 1);
     }

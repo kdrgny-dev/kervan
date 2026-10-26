@@ -2,6 +2,7 @@ import type { RegionId } from './regions';
 
 export const NARRATOR = 'Kervanbaşı Hüsnü';
 export const DEDE = 'Dede Hüsnü · 1453';
+export const ATA = 'Ata Hüsnü · MÖ 218';
 
 export interface StoryBeat {
   title: string;
@@ -9,7 +10,7 @@ export interface StoryBeat {
   /** Hüsnü'nün yüz ifadesi. */
   mood?: 'normal' | 'laugh' | 'surprised';
   /** Destan anlarını o dönemin Hüsnü'sü kendi ağzından anlatır. */
-  voice?: 'dede';
+  voice?: 'dede' | 'ata';
 }
 
 /** Kervanbaşının anlattıkları; tetiklenince günlüğe yazılır. */
@@ -171,6 +172,73 @@ export const STORY = {
     lines: [
       'Şehir alındı! Fatih dedeme dönmüş, “Hüsnü, sen olmasan…” demiş. Cümlenin devamını kimse duymamış.',
       'Dedem “sen olmasan olmazdı” diye tamamlardı. Ben de öyle tamamlarım. Fatih artık kafilende, evlat. Saygıda kusur etme.',
+    ],
+  },
+
+  // ---------- Destan II · Alpler ----------
+  alpler_intro: {
+    title: 'Alpler · MÖ 218',
+    lines: [
+      'Dedemin dedesinin dedesini anlatayım. Kaç dede ettiğini sorma, ben de saymadım.',
+      'MÖ 218. Hannibal “Alpleri fillerle aşacağız” demiş. Herkes gülmüş. Ata Hüsnü gülmemiş; fil bakıcısı oymuş.',
+      'Her bölgenin başında bir fil kiralar. Fil kafiledeyken çarpışmaktan korkma evlat; çarptığın ezilir.',
+    ],
+  },
+  region_pirene: {
+    voice: 'ata',
+    title: 'Pireneler',
+    lines: [
+      'Fillerden korkarım. Filler benden korkmaz. Hatta beni çok severler, hepsi arkamdan gelir. Sorun da bu.',
+      'Patikada keçiler var. Keçiler inatçıdır ama fil daha inatçıdır. Ben de araya girmem.',
+    ],
+  },
+  region_zirve: {
+    voice: 'ata',
+    mood: 'surprised',
+    title: 'Karlı Alpler',
+    lines: [
+      'Kar dizimizde, fıstıklar bitmek üzere. Filler fıstıksız yürümez, ben de fıstıksız konuşamam.',
+      'Kartoplarına dikkat: vurunca ikiye bölünüyorlar. Yetiler de kar topu atıyor, ama nişanları kötü. Bana hep isabet ediyor.',
+    ],
+  },
+  region_po: {
+    voice: 'ata',
+    mood: 'laugh',
+    title: 'Po Ovası',
+    lines: [
+      'İndik! Ova yemyeşil, filler çimende yuvarlanıyor. Hannibal bile gülümsedi. Az gülümsedi ama gülümsedi.',
+      'Yalnız dağdan bir gürültü geliyor. Çığ mı, dev mi? Bence ikisi birden.',
+    ],
+  },
+  boss_tideCrab: {
+    voice: 'ata',
+    mood: 'laugh',
+    title: 'Gelgit Yengeci',
+    lines: ['Yengeç geri çekildi. Geri çekilmek dediysem, yan yan kaçtı. Yengeçler düz kaçamaz, biliyor muydun?'],
+  },
+  boss_caveBear: {
+    voice: 'ata',
+    mood: 'surprised',
+    title: 'Mağara Ayısı',
+    lines: ['Ayı kaçtı! Fil bir kere hapşırdı, yetti. Ben de hapşırdım ama kimse kaçmadı.'],
+  },
+  boss_stormEagle: {
+    voice: 'ata',
+    title: 'Fırtına Kartalı',
+    lines: ['Kartal yuvasına döndü. Giderken başlığımı da götürdü. Kartal, ahtapot… benim ailede herkesin başlığı bir hayvanda.'],
+  },
+  boss_avalancheGiant: {
+    voice: 'ata',
+    mood: 'laugh',
+    title: 'Çığ Devi',
+    lines: ['Çığ Devi’ni ovada yakaladık. Dağda dev, ovada kardan adam! Biraz da su birikintisi.'],
+  },
+  alpler_done: {
+    mood: 'laugh',
+    title: 'Alpler',
+    lines: [
+      'Alpleri fillerle aştık! Hannibal Ata Hüsnü’ye dönmüş, “Hüsnü, filler…” demiş. “Biliyorum, beni seviyorlar” demiş Ata.',
+      'Hannibal artık kafilende evlat. Filini de getirdi. Fıstık sende mi? Bende bitti.',
     ],
   },
 } satisfies Record<string, StoryBeat>;

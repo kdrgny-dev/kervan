@@ -2,7 +2,8 @@ import type { EnemyKind } from './enemies';
 
 export type RoadRegion = 'vale' | 'bones' | 'ash' | 'frost';
 export type FetihRegion = 'hisar' | 'halic' | 'galata' | 'surlar';
-export type RegionId = RoadRegion | FetihRegion;
+export type AlplerRegion = 'iber' | 'pirene' | 'zirve' | 'po';
+export type RegionId = RoadRegion | FetihRegion | AlplerRegion;
 
 export interface RegionDef {
   name: string;
@@ -118,6 +119,56 @@ export const REGIONS: Record<RegionId, RegionDef> = {
     ],
     boss: 'stoneSentinel',
     finalBoss: 'wallWarden',
+  },
+  iber: {
+    color: 0xe0a860,
+    name: 'İber Kıyısı',
+    desc: 'Filler gemiden indi, kumda yürümeyi beğenmedi. Yengeçler de filleri beğenmedi.',
+    // Fil ilk dalgada katılır; kovalayan martı ikinci dalgadan
+    roster: [
+      { kind: 'sandCrab', from: 1 },
+      { kind: 'slime', from: 1 },
+      { kind: 'gull', from: 2 },
+      { kind: 'goat', from: 5 },
+    ],
+    boss: 'tideCrab',
+  },
+  pirene: {
+    color: 0x4f8a4a,
+    name: 'Pireneler',
+    desc: 'Çam ormanları, dar patikalar, inatçı keçiler. Keçiler patikanın kendilerine ait olduğunu düşünür.',
+    roster: [
+      { kind: 'goat', from: 1 },
+      { kind: 'gull', from: 1 },
+      { kind: 'sandCrab', from: 2 },
+      { kind: 'snowball', from: 4 },
+    ],
+    boss: 'caveBear',
+  },
+  zirve: {
+    color: 0xcfe6ff,
+    name: 'Karlı Alpler',
+    desc: 'Kar dizden, rüzgâr kulaktan. Filler kardan adam yapmayı öğrendi, kimse öğretmedi.',
+    roster: [
+      { kind: 'snowball', from: 1 },
+      { kind: 'goat', from: 1 },
+      { kind: 'yeti', from: 2 },
+      { kind: 'gull', from: 4 },
+    ],
+    boss: 'stormEagle',
+  },
+  po: {
+    color: 0x8ccf5a,
+    name: 'Po Ovası',
+    desc: 'Dağdan indik, ova yemyeşil. Ama dağdan inen bir tek biz değiliz.',
+    roster: [
+      { kind: 'yeti', from: 1 },
+      { kind: 'snowball', from: 1 },
+      { kind: 'goat', from: 2 },
+      { kind: 'sandCrab', from: 3 },
+    ],
+    boss: 'stormEagle',
+    finalBoss: 'avalancheGiant',
   },
 };
 
