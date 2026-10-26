@@ -9,7 +9,9 @@ const hasWindow = typeof window !== 'undefined';
 
 /** Yatay tutulan telefon: kısa kenarı küçük dokunmatik ekran (tabletler hariç). Açılışta belirlenir. */
 export const PHONE_LAYOUT =
-  hasWindow && window.matchMedia('(pointer: coarse)').matches && Math.min(window.innerWidth, window.innerHeight) < 500;
+  hasWindow &&
+  ((import.meta.env?.DEV && new URLSearchParams(window.location.search).has('phone')) ||
+    (window.matchMedia('(pointer: coarse)').matches && Math.min(window.innerWidth, window.innerHeight) < 500));
 
 /**
  * Tuvalin mantıksal boyuta oranı. Tuval ekranın gerçek piksel yoğunluğunda açılır, sahneler

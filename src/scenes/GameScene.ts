@@ -51,8 +51,6 @@ const COLORS = {
 const MAX_DAMAGE_TEXTS = 24;
 /** Bu derinlik ve üstü arayüzdür; telefonda yakınlaşmayan ayrı kamerada çizilir. */
 const UI_DEPTH = 40;
-/** Telefonda bir karenin ekranda hedeflenen boyu (pt). */
-const PHONE_CELL_PT = 34;
 const COUNTDOWN_STEPS = 3;
 const COUNTDOWN_STEP_MS = 600;
 
@@ -156,38 +154,21 @@ export class GameScene extends Phaser.Scene {
 
   // ---------- telefon görünümü ----------
 
-  /** Dünya yakınlaşır ve kafileyi izler; arayüz ayrı kamerada sabit kalır. */
+  /** Arena göstergelerin altındaki alana bütünüyle sığar; arayüz ayrı kamerada sabit kalır. */
   private phoneCameras() {
     const world = this.cameras.main;
     // Dünya göstergelerin altında başlar; şerit hiçbir zaman oyun alanını örtmez
     world.setViewport(0, HUD_BAND * UNIT, this.scale.width, this.scale.height - HUD_BAND * UNIT);
     const ui = sharpen(this.cameras.add(0, 0, this.scale.width, this.scale.height));
-    // Dünya birimi arayüzden bağımsız: bir kare ekranda ~PHONE_CELL_PT olacak kadar
-    const ptPerPx = this.scale.displaySize.height / this.scale.height;
-    world.setZoom(Phaser.Math.Clamp(PHONE_CELL_PT / (CELL * ptPerPx), RES, RES * 1.6));
+    // Kamera kafileyi izlerse arenanın bir kısmı ekran dışında kalıyor ve yön duygusu kayboluyor
+    world.setZoom(Math.min(world.width / (GRID_W * CELL), world.height / (GRID_H * CELL)));
+    world.centerOn((GRID_W * CELL) / 2, (GRID_H * CELL) / 2);
     this.events.on(Phaser.Scenes.Events.PRE_RENDER, () => {
       for (const o of this.children.list) {
         const depth = (o as Phaser.GameObjects.GameObject & { depth: number }).depth;
         o.cameraFilter = depth >= UI_DEPTH ? world.id : ui.id;
       }
     });
-  }
-
-  private followLeader(snap = false) {
-    const cam = this.cameras.main;
-    const leader = this.world.party[0];
-    if (!this.phone || !leader) return;
-    const view = this.heroViews.get(leader.id);
-    const tx = view?.x ?? px(leader.pos.x);
-    const ty = view?.y ?? px(leader.pos.y);
-    const vw = cam.width / cam.zoom;
-    const vh = cam.height / cam.zoom;
-    const along = (t: number, view: number, size: number) => (view >= size ? size / 2 : Phaser.Math.Clamp(t, view / 2, size - view / 2));
-    const cx = along(tx, vw, GRID_W * CELL);
-    const cy = along(ty, vh, GRID_H * CELL);
-    const m = cam.midPoint;
-    const k = snap ? 1 : 0.12;
-    cam.centerOn(m.x + (cx - m.x) * k, m.y + (cy - m.y) * k);
   }
 
   private paintedRegion = '';
@@ -215,7 +196,6 @@ export class GameScene extends Phaser.Scene {
       for (const e of stepWorld(this.world, Math.min(delta, 100))) this.handle(e);
     }
     this.renderParty();
-    this.followLeader();
     this.renderEnemies();
     this.renderProjectiles();
     this.renderLoot();
@@ -249,7 +229,6 @@ export class GameScene extends Phaser.Scene {
     this.roadUi.hide();
     this.countdown();
     this.renderParty();
-    this.followLeader(true);
   }
 
   private get halted() {

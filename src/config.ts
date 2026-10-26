@@ -5,4 +5,4 @@ export const CELL = 48;
 export const BASE_TICK_MS = 200;
 export const INPUT_BUFFER = 2;
 /** Ekran (CSS) pikseli; kaydırma bu kadar ilerleyince yön sayılır. */
-export const SWIPE_MIN_PX = 20;
+export const SWIPE_MIN_PX = 12;
