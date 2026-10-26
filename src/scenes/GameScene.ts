@@ -19,13 +19,12 @@ import { Fx } from '../render/fx';
 import { ENEMY_SPRITES, FX, HERO_SPRITES, LOOT, POWER_ICONS } from '../render/sprites';
 import type { ProjectileKind } from '../data/balance';
 import { UnitView } from '../render/UnitView';
-import type { Vec } from '../sim/grid';
+import { chebyshev, type Vec } from '../sim/grid';
 import {
   createWorld,
   enemyAlpha,
   type GameOverReason,
   type Loot,
-  nextCells,
   stepWorld,
   tickAlpha,
   turn,
@@ -424,7 +423,7 @@ export class GameScene extends Phaser.Scene {
         audio.play('power');
         this.hud.toast(CARDS[e.id].name, UI.gold);
         break;
-      case 'wallGrace':
+      case 'grace':
         this.heroViews.get(this.world.party[0]?.id ?? -1)?.flash(0xff5a4a, 160, 'tint');
         break;
       case 'shipsStart':
@@ -452,7 +451,6 @@ export class GameScene extends Phaser.Scene {
     const w = this.world;
     const alpha = tickAlpha(w);
     const t = this.time.now;
-    const next = nextCells(w);
     this.dropStale(this.heroViews, new Set(w.party.map((h) => h.id)));
     w.party.forEach((hero, i) => {
       let view = this.heroViews.get(hero.id);
@@ -469,20 +467,12 @@ export class GameScene extends Phaser.Scene {
         this.heroViews.set(hero.id, view);
         this.tweens.add({ targets: view, scale: { from: 1.4, to: 1 }, duration: 220, ease: 'Back.Out' });
       }
-      // Şimdiki kareden gideceği kareye: ekran oyunun önünde kalır, geride değil
-      const p = lerp(hero.pos, next[i], alpha);
+      // Gemiyle duvardan geçince ekranın öbür ucuna kaymasın, ışınlansın
+      const p = chebyshev(hero.prev, hero.pos) > 1 ? hero.pos : lerp(hero.prev, hero.pos, alpha);
       const bob = w.alive && !this.halted ? Math.abs(Math.sin(t / 90 + i * 0.7)) * -4 : 0;
-      let x = px(p.x);
-      let y = px(p.y);
-      // Dönüşte hedef yana sıçrar; birkaç karede yetiş (gemiyle ışınlanma hariç)
-      const jump = Math.hypot(x - view.x, y - bob - view.y);
-      if (jump > CELL * 0.3 && jump < CELL * 2) {
-        x = view.x + (x - view.x) * 0.5;
-        y = view.y - bob + (y - (view.y - bob)) * 0.5;
-      }
-      view.setPosition(x, y + bob);
+      view.setPosition(px(p.x), px(p.y) + bob);
       view.setDepth(10 + p.y * 0.01 + (i === 0 ? 0.005 : 0));
-      view.face(next[i].x - hero.pos.x || hero.pos.x - hero.prev.x);
+      view.face(hero.pos.x - hero.prev.x);
       view.animate(t, w.alive && !this.halted);
       view.setMarker(w.powers.shield ? COLORS.shield : i === 0 ? COLORS.leader : null);
       const sailing = w.time < w.wallPassUntil;
