@@ -309,6 +309,7 @@ F6 paralel yürüyebilir: grafik üretimi F0'dan itibaren başlayabilir.
 - Sahneler mantıksal 1152×720'de yerleşir; tuval ekranın gerçek piksel yoğunluğunda açılır (`RES`, 1–2,5) ve kameralar bu oranda büyütür (`src/render/resolution.ts`). Yazılar aynı çözünürlükte üretilir, çizimler RES ≥ 2 iken 3 kat rasterleştirilir.
 - Yerleşimde `scale.width/height` yerine `view(scene)` kullanılır; telefonda oyun sahnesi daha geniş olabilir.
 - Geliştirmede düşük yoğunluklu ekranda denemek için `?res=2`.
+- **Telefon düzeni** (`PHONE_LAYOUT`, açılışta belirlenir): tuval baştan ekranın oranında açılır; arayüz %20 büyük (`UI_SCALE`), görünür yerleşim yüksekliği 600. Sade ekranlar (menü, destan/kahraman seçimi, ayarlar, kart seçimi, tur sonu) görünür alana göre yerleşir (`fill`); yoğun liste ekranları (Kamp, Kışla/Tapınak/Pazar, Yolculuk sekmeleri, Koleksiyon) 1152×720 kutusunu ekrana sığdırır (`fit`), kenarlar arka planla dolar.
 
 ### Mobil web (PWA)
 

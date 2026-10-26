@@ -1,7 +1,6 @@
 import Phaser from 'phaser';
 import { CELL, GRID_H, GRID_W } from '../config';
-import { isPhone } from '../platform';
-import { RES, sharpen, view } from '../render/resolution';
+import { PHONE_LAYOUT, RES, sharpen, UNIT, view } from '../render/resolution';
 import { SPAWN_WARN_MS } from '../data/balance';
 import { ENEMIES } from '../data/enemies';
 import { HEROES, type HeroKind } from '../data/heroes';
@@ -94,8 +93,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   create() {
-    this.phone = isPhone();
-    if (this.phone) this.fitPhone();
+    this.phone = PHONE_LAYOUT;
     sharpen(this.cameras.main);
     this.heroViews = new Map();
     this.enemyViews = new Map();
@@ -139,23 +137,15 @@ export class GameScene extends Phaser.Scene {
 
   // ---------- telefon görünümü ----------
 
-  /** Sahneyi ekranın oranına genişletir; menüler 1152×720'de kalır. */
-  private fitPhone() {
-    const { width, height } = this.scale.parentSize;
-    const base = GRID_W * CELL;
-    const w = Math.round(Phaser.Math.Clamp(GRID_H * CELL * (width / height), base, base * 1.6));
-    this.scale.setGameSize(w * RES, GRID_H * CELL * RES);
-    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.scale.setGameSize(base * RES, GRID_H * CELL * RES));
-  }
-
   /** Dünya yakınlaşır ve kafileyi izler; arayüz ayrı kamerada sabit kalır. */
   private phoneCameras() {
     const world = this.cameras.main;
     // Dünya göstergelerin altında başlar; şerit hiçbir zaman oyun alanını örtmez
-    world.setViewport(0, HUD_BAND * RES, this.scale.width, this.scale.height - HUD_BAND * RES);
+    world.setViewport(0, HUD_BAND * UNIT, this.scale.width, this.scale.height - HUD_BAND * UNIT);
     const ui = sharpen(this.cameras.add(0, 0, this.scale.width, this.scale.height));
-    const ptPerUnit = this.scale.displaySize.height / view(this).height;
-    world.setZoom(RES * Phaser.Math.Clamp(PHONE_CELL_PT / (CELL * ptPerUnit), 1, 1.6));
+    // Dünya birimi arayüzden bağımsız: bir kare ekranda ~PHONE_CELL_PT olacak kadar
+    const ptPerPx = this.scale.displaySize.height / this.scale.height;
+    world.setZoom(Phaser.Math.Clamp(PHONE_CELL_PT / (CELL * ptPerPx), RES, RES * 1.6));
     this.events.on(Phaser.Scenes.Events.PRE_RENDER, () => {
       for (const o of this.children.list) {
         const depth = (o as Phaser.GameObjects.GameObject & { depth: number }).depth;
@@ -843,6 +833,8 @@ export class GameScene extends Phaser.Scene {
     const n = Math.max(wave.n, 1);
     const why = { wall: 'Duvara çarptın', self: 'Kuyruğuna çarptın', wiped: 'Kafile düştü' }[reason];
     const cx = width / 2;
+    // Telefonda görünür yükseklik 600: dikey konumlar orantılı sıkışır
+    const Y = (v: number) => Math.round((v * height) / 720);
 
     const o = this.overlay.removeAll(true).setVisible(true);
     const shade = this.add.rectangle(0, 0, width, height, UI.bg, 0.78).setOrigin(0).setInteractive();
@@ -850,7 +842,7 @@ export class GameScene extends Phaser.Scene {
     shade.setAlpha(0);
     this.tweens.add({ targets: shade, alpha: 1, duration: 300 });
 
-    const title = this.add.container(cx, 102, [
+    const title = this.add.container(cx, Y(102), [
       slice(this, 'ui.banner_danger', 0, 0, 540),
       this.add.text(0, -6, why, displayStyle(48)).setOrigin(0.5),
     ]);
@@ -860,13 +852,13 @@ export class GameScene extends Phaser.Scene {
 
     const stat = (x: number, label: string, value: number, i: number) => {
       const valueText = this.add.text(0, 14, '0', displayStyle(36, { color: UI.gold })).setOrigin(0.5);
-      const card = this.add.container(x, 322, [
+      const card = this.add.container(x, Y(322), [
         slice(this, 'ui.card', 0, 0, 152, 104),
         this.add.text(0, -24, label.toLocaleUpperCase('tr-TR'), textStyle(14, { color: UI.muted, fontStyle: '800' })).setOrigin(0.5),
         valueText,
       ]);
       card.setAlpha(0).y += 40;
-      this.tweens.add({ targets: card, y: 322, alpha: 1, duration: 220, delay: 450 + i * 120, ease: 'Back.Out' });
+      this.tweens.add({ targets: card, y: Y(322), alpha: 1, duration: 220, delay: 450 + i * 120, ease: 'Back.Out' });
       const counter = { v: 0 };
       let lastTick = 0;
       this.tweens.add({
@@ -900,7 +892,7 @@ export class GameScene extends Phaser.Scene {
       bg.fillStyle(UI.goldNum).fillRoundedRect(-bw / 2, -22, bw, 44, 10);
       bg.lineStyle(3, 0x14121c).strokeRoundedRect(-bw / 2, -22, bw, 44, 10);
       const glow = this.add.graphics().lineStyle(6, UI.goldNum, 1).strokeRoundedRect(-bw / 2 - 10, -30, bw + 20, 64, 16);
-      const badge = this.add.container(cx, 208, [glow, bg, label]).setScale(0).setAngle(-12);
+      const badge = this.add.container(cx, Y(208), [glow, bg, label]).setScale(0).setAngle(-12);
       this.tweens.add({ targets: badge, scale: 1, angle: -4, duration: 420, delay: 1300, ease: 'Back.Out(2)' });
       this.tweens.add({ targets: glow, alpha: { from: 0.3, to: 0.8 }, duration: 700, ease: 'Sine.InOut', yoyo: true, repeat: -1 });
       o.add(badge);
@@ -921,17 +913,17 @@ export class GameScene extends Phaser.Scene {
     add(this.add.image(0, 0, icon('gem')).setDisplaySize(26, 26), 26, 18);
     const note = this.add.text(0, 0, 'kasaya eklendi', textStyle(18, { color: UI.muted })).setOrigin(0.5);
     add(note, note.width, 0);
-    const reward = this.add.container(cx - x / 2, 418, parts).setAlpha(0);
+    const reward = this.add.container(cx - x / 2, Y(418), parts).setAlpha(0);
     reward.y += 12;
-    this.tweens.add({ targets: reward, y: 418, alpha: 1, duration: 240, delay: 1500, ease: 'Quad.Out' });
+    this.tweens.add({ targets: reward, y: Y(418), alpha: 1, duration: 240, delay: 1500, ease: 'Quad.Out' });
     o.add(reward);
 
-    if (report) o.add(this.progressBlock(cx, 478, before, report));
+    if (report) o.add(this.progressBlock(cx, Y(478), before, report));
 
     const buttons = this.add.container(0, 0, [
-      new Button(this, cx - 268, 622, 'Kamp', () => this.scene.start('shop'), { width: 196, height: 60, icon: 'shop' }),
-      new Button(this, cx, 625, 'Tekrar', () => this.restart(), { variant: 'primary', width: 290, height: 76, fontSize: 34 }),
-      new Button(this, cx + 268, 622, 'Menü', () => this.scene.start('menu'), { width: 196, height: 60 }),
+      new Button(this, cx - 268, Y(622), 'Kamp', () => this.scene.start('shop'), { width: 196, height: 60, icon: 'shop' }),
+      new Button(this, cx, Y(625), 'Tekrar', () => this.restart(), { variant: 'primary', width: 290, height: 76, fontSize: 34 }),
+      new Button(this, cx + 268, Y(622), 'Menü', () => this.scene.start('menu'), { width: 196, height: 60 }),
     ]).setAlpha(0);
     this.tweens.add({ targets: buttons, alpha: 1, duration: 200, delay: 1700 });
     o.add(buttons);

@@ -51,8 +51,9 @@ export class MenuScene extends Phaser.Scene {
     buttons.forEach((b, i) => enter(this, b, { x: -60 }, 120 + i * 60, 240));
     this.tweens.add({ targets: play, scale: 1.03, duration: 900, delay: 800, ease: 'Sine.InOut', yoyo: true, repeat: -1 });
 
-    this.records(905, 325);
-    this.parade(view(this).height - 62);
+    this.records(view(this).width - 247, 325);
+    // Telefonda görünür yükseklik butonlara yer bırakmıyor
+    if (view(this).height >= 700) this.parade(view(this).height - 62);
 
     const story = new StoryDialog(this);
     this.input.keyboard?.on('keydown-ENTER', () => !story.open && this.play());

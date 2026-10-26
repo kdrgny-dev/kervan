@@ -30,7 +30,9 @@ export class SettingsScene extends Phaser.Scene {
     fadeIn(this);
     backdrop(this);
 
-    const box = this.add.container(width / 2, 318);
+    // Telefonda görünür yükseklik 600: panel yukarı, Geri butonu alt kenara
+    const tight = height < 700;
+    const box = this.add.container(width / 2, tight ? 262 : 318);
     box.add(panel(this, 0, 0, 516, 446));
     box.add(ribbon(this, 0, -222, 'Ayarlar', { icon: 'settings', width: 300 }));
     enter(this, box, { y: -48 }, 0, 200);
@@ -66,7 +68,7 @@ export class SettingsScene extends Phaser.Scene {
       this.tweens.add({ targets: line, alpha: 1, duration: 140, delay: 80 + i * 40, ease: 'Quad.Out' });
     });
 
-    new Button(this, width / 2, height - 86, 'Geri', () => this.scene.start('menu'), { width: 196, height: 64, icon: 'back' });
+    new Button(this, width / 2, tight ? height - 42 : height - 86, 'Geri', () => this.scene.start('menu'), { width: 196, height: 64, icon: 'back' });
     this.input.keyboard?.on('keydown-ESC', () => this.scene.start('menu'));
     bindPad(this, { back: () => this.scene.start('menu') });
   }

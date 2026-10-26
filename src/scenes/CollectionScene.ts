@@ -21,7 +21,7 @@ export class CollectionScene extends Phaser.Scene {
   }
 
   create() {
-    sharpen(this.cameras.main);
+    sharpen(this.cameras.main, 'fit');
     const { width } = view(this);
     const owned = profile.data.cardsUnlocked;
     fadeIn(this);

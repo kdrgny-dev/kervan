@@ -16,7 +16,6 @@ import { displayStyle, textStyle, UI } from '../ui/theme';
 import { sharpen, view } from '../render/resolution';
 
 const CARD_W = 330;
-const CARD_H = 430;
 const COVER_W = CARD_W - 36;
 const COVER_H = Math.round((COVER_W * 270) / 480);
 
@@ -31,6 +30,9 @@ export class CampaignScene extends Phaser.Scene {
   private cards = new Map<CampaignId, Card>();
   private story!: StoryDialog;
   private leaving = false;
+  /** Telefonda görünür yükseklik 600; kartlar ve butonlar ona göre sıkışır. */
+  private cardH = 430;
+  private cardY = 350;
 
   constructor() {
     super('campaigns');
@@ -47,15 +49,19 @@ export class CampaignScene extends Phaser.Scene {
     fadeIn(this);
     backdrop(this);
     wallet(this);
-    ribbon(this, width / 2, 68, 'Yolculuk seç', { width: 400 });
+    const tight = height < 700;
+    this.cardH = tight ? height - 190 : 430;
+    this.cardY = tight ? 300 : 350;
+    ribbon(this, width / 2, tight ? 46 : 68, 'Yolculuk seç', { width: 400 });
 
     const gap = 26;
     const x0 = width / 2 - CARD_W - gap;
-    CAMPAIGN_IDS.forEach((id, i) => this.card(id, x0 + i * (CARD_W + gap), 350, i));
-    this.upcoming(x0 + CAMPAIGN_IDS.length * (CARD_W + gap), 350);
+    CAMPAIGN_IDS.forEach((id, i) => this.card(id, x0 + i * (CARD_W + gap), this.cardY, i));
+    this.upcoming(x0 + CAMPAIGN_IDS.length * (CARD_W + gap), this.cardY);
 
-    new Button(this, 145, height - 70, 'Geri', () => this.scene.start('menu'), { width: 196, height: 64, icon: 'back' });
-    new Button(this, width - 195, height - 66, 'Kahraman seç', () => this.go(), { variant: 'primary', width: 296, height: 72, fontSize: 30 });
+    const footY = tight ? height - 48 : height - 70;
+    new Button(this, 145, footY, 'Geri', () => this.scene.start('menu'), { width: 196, height: 64, icon: 'back' });
+    new Button(this, width - 195, footY + 4, 'Kahraman seç', () => this.go(), { variant: 'primary', width: 296, height: 72, fontSize: 30 });
 
     this.story = new StoryDialog(this);
     this.input.keyboard?.on('keydown', (e: KeyboardEvent) => {
@@ -80,10 +86,10 @@ export class CampaignScene extends Phaser.Scene {
     const root = this.add.container(x, y);
 
     const glow = this.add.graphics().setAlpha(0);
-    glow.lineStyle(8, UI.goldNum, 1).strokeRoundedRect(-CARD_W / 2 - 6, -CARD_H / 2 - 6, CARD_W + 12, CARD_H + 12, 22);
-    root.add([glow, slice(this, 'ui.panel', 0, 0, CARD_W, CARD_H).setAlpha(locked ? 0.6 : 1)]);
+    glow.lineStyle(8, UI.goldNum, 1).strokeRoundedRect(-CARD_W / 2 - 6, -this.cardH / 2 - 6, CARD_W + 12, this.cardH + 12, 22);
+    root.add([glow, slice(this, 'ui.panel', 0, 0, CARD_W, this.cardH).setAlpha(locked ? 0.6 : 1)]);
 
-    const top = -CARD_H / 2 + 18;
+    const top = -this.cardH / 2 + 18;
     root.add(this.cover(CAMPAIGN_ART.covers[id], 0, top + COVER_H / 2, locked));
     root.add(this.add.text(0, top + COVER_H + 30, def.name, displayStyle(30, { color: locked ? UI.dim : UI.text })).setOrigin(0.5));
     root.add(this.add.text(0, top + COVER_H + 58, def.era, textStyle(14, { color: UI.gold, fontStyle: '800' })).setOrigin(0.5));
@@ -93,13 +99,13 @@ export class CampaignScene extends Phaser.Scene {
         .setOrigin(0.5, 0),
     );
 
-    const foot = CARD_H / 2 - 40;
+    const foot = this.cardH / 2 - 40;
     if (locked) {
       root.add(this.add.image(-96, foot, icon('lock')).setDisplaySize(30, 30));
       root.add(this.add.text(-74, foot, `Hesap Sv ${def.unlockLevel}’da açılır`, displayStyle(17, { color: UI.muted })).setOrigin(0, 0.5));
     } else root.add(this.progress(id, foot));
 
-    const zone = this.add.zone(0, 0, CARD_W, CARD_H).setInteractive({ useHandCursor: !locked });
+    const zone = this.add.zone(0, 0, CARD_W, this.cardH).setInteractive({ useHandCursor: !locked });
     zone.on('pointerup', () => {
       if (locked) return shake(this, root);
       if (this.selected === id) return this.go();
@@ -146,12 +152,12 @@ export class CampaignScene extends Phaser.Scene {
 
   private upcoming(x: number, y: number) {
     const root = this.add.container(x, y);
-    root.add(slice(this, 'ui.panel', 0, 0, CARD_W, CARD_H).setAlpha(0.6));
-    const top = -CARD_H / 2 + 18;
+    root.add(slice(this, 'ui.panel', 0, 0, CARD_W, this.cardH).setAlpha(0.6));
+    const top = -this.cardH / 2 + 18;
     root.add(this.cover(CAMPAIGN_ART.locked, 0, top + COVER_H / 2));
     root.add(this.add.text(0, top + COVER_H + 30, 'Yakında', displayStyle(30, { color: UI.dim })).setOrigin(0.5));
     UPCOMING.forEach((u, i) => {
-      const cy = top + COVER_H + 84 + i * 62;
+      const cy = top + COVER_H + 84 + i * (this.cardH < 430 ? 54 : 62);
       root.add(this.add.image(-CARD_W / 2 + 54, cy, icon('lock')).setDisplaySize(30, 30).setAlpha(0.6));
       root.add(this.add.text(-CARD_W / 2 + 84, cy - 12, u.name, displayStyle(22, { color: UI.dim })).setOrigin(0, 0.5));
       root.add(this.add.text(-CARD_W / 2 + 84, cy + 14, u.era, textStyle(13, { color: UI.muted })).setOrigin(0, 0.5));
@@ -170,7 +176,7 @@ export class CampaignScene extends Phaser.Scene {
     for (const [id, c] of this.cards) {
       const on = id === this.selected;
       this.tweens.killTweensOf([c.root, c.glow]);
-      this.tweens.add({ targets: c.root, y: 350 + (on ? -10 : 0), scale: on ? 1.03 : 1, alpha: 1, duration: 180, ease: 'Back.Out' });
+      this.tweens.add({ targets: c.root, y: this.cardY + (on ? -10 : 0), scale: on ? 1.03 : 1, alpha: 1, duration: 180, ease: 'Back.Out' });
       c.glow.setAlpha(0);
       if (on) this.tweens.add({ targets: c.glow, alpha: { from: 0.35, to: 0.7 }, duration: 800, ease: 'Sine.InOut', yoyo: true, repeat: -1 });
     }

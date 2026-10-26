@@ -30,18 +30,22 @@ export class DraftOverlay {
   private focus = 1;
   private busy = false;
   private cardViews: Phaser.GameObjects.Container[] = [];
+  private cardY = 352;
 
   constructor(private readonly scene: Phaser.Scene, private readonly h: DraftHandlers) {
     const { width, height } = view(scene);
     this.root = scene.add.container(0, 0).setDepth(55).setVisible(false);
     const shade = scene.add.rectangle(0, 0, width, height, UI.bg, 0.78).setOrigin(0).setInteractive();
     this.root.add(shade);
-    this.root.add(ribbon(scene, width / 2, 82, 'Bir kart seç', { width: 380 }));
+    // Telefonda görünür yükseklik 600: her şey biraz yukarı
+    const tight = height < 700;
+    this.cardY = tight ? 290 : 352;
+    this.root.add(ribbon(scene, width / 2, tight ? 54 : 82, 'Bir kart seç', { width: 380 }));
     this.cardsLayer = scene.add.container(0, 0);
     this.root.add(this.cardsLayer);
-    this.rerollBtn = new Button(scene, width / 2, height - 92, 'Yeniden çek', () => this.h.reroll(), { width: 280, height: 60, icon: 'coin' });
+    this.rerollBtn = new Button(scene, width / 2, tight ? height - 72 : height - 92, 'Yeniden çek', () => this.h.reroll(), { width: 280, height: 60, icon: 'coin' });
     this.root.add(this.rerollBtn);
-    this.root.add(scene.add.text(width / 2, height - 44, isTouch ? 'Bir karta dokun' : '1 · 2 · 3  ya da  ← → + Enter', textStyle(15, { color: UI.dim })).setOrigin(0.5));
+    this.root.add(scene.add.text(width / 2, tight ? height - 26 : height - 44, isTouch ? 'Bir karta dokun' : '1 · 2 · 3  ya da  ← → + Enter', textStyle(15, { color: UI.dim })).setOrigin(0.5));
   }
 
   get open() {
@@ -58,7 +62,7 @@ export class DraftOverlay {
     const total = options.length * CARD_W + (options.length - 1) * GAP;
     this.cardViews = options.map((id, i) => {
       const x = width / 2 - total / 2 + CARD_W / 2 + i * (CARD_W + GAP);
-      const view = this.card(id, owned[id] ?? 0, x, 352, i);
+      const view = this.card(id, owned[id] ?? 0, x, this.cardY, i);
       this.cardsLayer.add(view);
       return view;
     });
@@ -148,7 +152,7 @@ export class DraftOverlay {
     this.cardViews.forEach((v, i) => {
       const on = i === this.focus;
       const glow = v.getByName('glow') as Phaser.GameObjects.Graphics;
-      this.scene.tweens.add({ targets: v, y: on ? 340 : 352, duration: 140, ease: 'Quad.Out' });
+      this.scene.tweens.add({ targets: v, y: this.cardY - (on ? 12 : 0), duration: 140, ease: 'Quad.Out' });
       glow.setAlpha(on ? 0.85 : 0);
     });
   }

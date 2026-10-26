@@ -39,7 +39,7 @@ export class ProgressScene extends Phaser.Scene {
   }
 
   create() {
-    sharpen(this.cameras.main);
+    sharpen(this.cameras.main, 'fit');
     ensureQuests(profile.data);
     fadeIn(this);
     backdrop(this);
