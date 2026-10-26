@@ -41,8 +41,8 @@ export class StoryDialog {
     }
     this.nameTag = scene.add.text(fx, boxY + 62, NARRATOR, displayStyle(17, { color: UI.gold })).setOrigin(0.5);
 
-    this.title = scene.add.text(width / 2 - 270, boxY - 84, '', displayStyle(26)).setOrigin(0, 0.5);
-    this.body = scene.add.text(width / 2 - 270, boxY - 52, '', textStyle(20, { wordWrap: { width: 650 }, lineSpacing: 6 })).setOrigin(0, 0);
+    this.title = scene.add.text(width / 2 - 270, boxY - 62, '', displayStyle(26)).setOrigin(0, 0.5);
+    this.body = scene.add.text(width / 2 - 270, boxY - 30, '', textStyle(20, { wordWrap: { width: 650 }, lineSpacing: 6 })).setOrigin(0, 0);
     this.hint = scene.add.text(width / 2 + 420, boxY + 86, 'Devam ▸', displayStyle(16, { color: UI.muted })).setOrigin(1, 0.5);
     scene.tweens.add({ targets: this.hint, alpha: { from: 1, to: 0.35 }, duration: 600, yoyo: true, repeat: -1 });
 
