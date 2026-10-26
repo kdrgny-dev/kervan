@@ -9,6 +9,7 @@ import type { HeroClass } from '../data/synergies';
 import type { SynergyTiers } from './synergy';
 import type { Dir, Vec } from './grid';
 import type { InputQueue } from './inputQueue';
+import type { RoadEventId } from './roadEvents';
 import type { Rng } from './rng';
 
 export interface Hero {
@@ -122,7 +123,9 @@ export type WorldEvent =
   | { type: 'waveCleared'; n: number; bonus: number }
   | { type: 'shipsStart'; until: number }
   | { type: 'campaignCleared' }
-  | { type: 'grace' };
+  | { type: 'grace' }
+  | { type: 'roadEventOpen'; id: RoadEventId }
+  | { type: 'roadEventResolved'; id: RoadEventId; line: string };
 
 export interface Loadout {
   leader: HeroKind;
@@ -172,6 +175,13 @@ export interface World {
   /** Açıkken simülasyon durur; oyuncu kart seçer. */
   draft: Draft | null;
   draftsEnabled: boolean;
+  /** Açıkken simülasyon durur; oyuncu Hüsnü'nün yol olayında seçim yapar. */
+  roadEvent: RoadEventId | null;
+  /** Kart seçimi kapanınca açılacak olay. */
+  roadEventQueued: RoadEventId | null;
+  roadEventsEnabled: boolean;
+  lastRoadEvent: number;
+  recentRoadEvents: RoadEventId[];
   syn: SynergyTiers;
   tally: Tally;
   party: Hero[];

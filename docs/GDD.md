@@ -304,6 +304,10 @@ F6 paralel yürüyebilir: grafik üretimi F0'dan itibaren başlayabilir.
 - Fetih: Hisar yavaş başlar (yarasa + zincir yılanı; mazgal 3., iskelet 4., mancınık 5. dalgadan); mazgal 26 can ve biraz daha yavaş; Taş Nöbetçi 260 can, en fazla 2 mazgal, 8 sn'de bir çağırır.
 - Bot ölçümü (60 oyun, medyan dalga): yeni oyuncu 15, Yol·orta 22, Fetih·orta 22 (önce 8), güçlü ~20 (bot duvar hatası sınırı). Fetih·orta kafile 35 (önce 14), silinme 10/60 (önce 18).
 
+### Yol olayları
+
+- Dalga sonu %40 ihtimalle (2. dalgadan itibaren, iki olay arasında en az 2 dalga, son 4 olay tekrarlanmaz) kart seçiminden sonra Hüsnü bir olay anlatır: tüccar, kuyu, zar, falcı, demirci, haydut, kervansaray, lanetli sandık (`src/sim/roadEvents.ts`). Bedeller dalgayla büyür; her olayda bedava bir seçenek var. Olay ve sonuç ekranında oyun bekler.
+
 ### Sesler
 
 - Ses motoru dosya tabanlı: `public/assets/audio/<olay>_<n>.mp3` dosyaları `src/audio/sounds.ts`'te listelenince sentez yerine onlar çalar (varyantlar rastgele, sık seslerde hafif ton farkı). Dosyası olmayan olaylar sentezde kalır.
