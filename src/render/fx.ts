@@ -23,9 +23,9 @@ export class Fx {
     this.puffs = scene.add
       .particles(0, 0, FX_TEXTURES.dot, {
         ...base,
-        speed: { min: 60, max: 200 },
+        speed: { min: 50, max: 150 },
         lifespan: { min: 250, max: 450 },
-        scale: { start: 1.3, end: 0 },
+        scale: { start: 1, end: 0 },
         alpha: { start: 1, end: 0 },
       })
       .setDepth(14);

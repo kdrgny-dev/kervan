@@ -15,6 +15,9 @@ import { view } from '../render/resolution';
 const DEPTH = 40;
 /** Telefonda göstergelerin oturduğu üst şeridin yüksekliği; oyun dünyası bunun altında başlar. */
 export const HUD_BAND = 68;
+/** Afişler oyun alanını kapatmasın diye küçük ve göstergelerin hemen altında. */
+const BANNER_SCALE = 0.7;
+const BANNER_Y = HUD_BAND + 52;
 
 /** Oyun içi gösterge katmanı (docs/design/stage4/mockups/hud.png). */
 export class Hud {
@@ -71,7 +74,7 @@ export class Hud {
 
     this.powers = scene.add.container(width / 2, height - 40).setDepth(DEPTH);
     this.synergies = scene.add.container(compact ? xpX + 180 : 16, compact ? 34 : 84).setDepth(DEPTH);
-    this.toastText = scene.add.text(width / 2, 200, '', displayStyle(42)).setOrigin(0.5).setDepth(DEPTH + 2).setStroke(UI.ink, 8).setAlpha(0);
+    this.toastText = scene.add.text(width / 2, BANNER_Y + 70, '', displayStyle(30)).setOrigin(0.5).setDepth(DEPTH + 2).setStroke(UI.ink, 8).setAlpha(0);
   }
 
   update(w: World) {
@@ -187,10 +190,10 @@ export class Hud {
 
   /** Dalga afişi: boss için kırmızı, temizlendi için ödüllü sarı. */
   banner(kind: 'wave' | 'boss' | 'clear' | 'region', title: string, bonus?: number, sub?: string, region?: RegionId) {
-    const { width, height } = view(this.scene);
+    const { width } = view(this.scene);
     const danger = kind === 'boss';
-    const y = kind === 'wave' ? 170 : height / 2 - 40;
-    const c = this.scene.add.container(width / 2, y).setDepth(DEPTH + 3);
+    const y = BANNER_Y;
+    const c = this.scene.add.container(width / 2, y).setDepth(DEPTH + 3).setScale(BANNER_SCALE);
     const w = kind === 'wave' ? 380 : 580;
     const art = region && REGION_BANNER[region];
     let ink: string = danger ? UI.text : UI.ink;
@@ -214,21 +217,21 @@ export class Hud {
     }
 
     if (danger) {
-      c.setScale(0.2, 1).setAlpha(0);
+      c.setScale(0.2 * BANNER_SCALE, BANNER_SCALE).setAlpha(0);
       this.scene.tweens.chain({
         targets: c,
         tweens: [
-          { scaleX: 1, alpha: 1, duration: 280, ease: 'Back.Out' },
-          { y: y - 40, alpha: 0, duration: 220, delay: 1400, ease: 'Quad.In', onComplete: () => c.destroy() },
+          { scaleX: BANNER_SCALE, alpha: 1, duration: 280, ease: 'Back.Out' },
+          { y: y - 20, alpha: 0, duration: 220, delay: 1400, ease: 'Quad.In', onComplete: () => c.destroy() },
         ],
       });
     } else {
-      c.setAlpha(0).setY(y + 30);
+      c.setAlpha(0).setY(y - 20);
       this.scene.tweens.chain({
         targets: c,
         tweens: [
           { y, alpha: 1, duration: 240, ease: 'Back.Out' },
-          { y: y - 30, alpha: 0, duration: 200, delay: kind === 'wave' ? 700 : kind === 'region' ? 2200 : 1000, ease: 'Quad.In', onComplete: () => c.destroy() },
+          { y: y - 20, alpha: 0, duration: 200, delay: kind === 'wave' ? 700 : kind === 'region' ? 2200 : 1000, ease: 'Quad.In', onComplete: () => c.destroy() },
         ],
       });
     }
