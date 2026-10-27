@@ -63,6 +63,23 @@ export function phoneGrid(hudBand: number) {
   return { w: Math.max(16, Math.min(DESKTOP_GRID.w, Math.floor(box.w / cell))), h: PHONE_ROWS };
 }
 
+/** Masaüstünde kare ekranda yaklaşık bu kadar CSS px; büyük ekran arenaya satır ekler. */
+const DESKTOP_CELL_CSS = 60;
+const DESKTOP_MAX_ROWS = 20;
+
+/**
+ * Büyük ekranda 24×15 arena sadece büyür, kafile ve düşmanlar yine aynı alana sıkışır.
+ * Ekran izin verdikçe satır eklenir, en-boy 16:10 kalır.
+ */
+export function desktopGrid() {
+  // Geliştirmede küçük pencerede denemek için: ?rows=20
+  const forced = import.meta.env?.DEV ? Number(new URLSearchParams(window.location.search).get('rows')) : 0;
+  const fit = Math.min(window.innerWidth / LOGICAL_W, window.innerHeight / LOGICAL_H);
+  const rows = forced || Math.floor((LOGICAL_H * fit) / DESKTOP_CELL_CSS);
+  const h = Math.min(DESKTOP_MAX_ROWS, Math.max(DESKTOP_GRID.h, rows));
+  return { w: Math.round((h * DESKTOP_GRID.w) / DESKTOP_GRID.h), h };
+}
+
 /** Yüksek çözünürlükte çizimler de daha büyük rasterleştirilir. */
 export const RASTER = UNIT >= 2 ? 3 : 2;
 

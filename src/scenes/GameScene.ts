@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { CELL, GRID_H, GRID_W } from '../config';
+import { CELL, DESKTOP_GRID, GRID_H, GRID_W } from '../config';
 import { PHONE_LAYOUT, RES, sharpen, UNIT, view } from '../render/resolution';
 import { SPAWN_WARN_MS } from '../data/balance';
 import { ENEMIES } from '../data/enemies';
@@ -130,7 +130,7 @@ export class GameScene extends Phaser.Scene {
     });
     this.overlay = this.add.container(0, 0).setDepth(60).setVisible(false);
     this.pauseMenu = this.buildPauseMenu();
-    this.countdownText = this.add.text(view(this).width / 2, view(this).height / 2, '', displayStyle(140, { color: UI.gold, stroke: '#14121c', strokeThickness: 12 })).setOrigin(0.5).setDepth(70);
+    this.countdownText = this.add.text(view(this).width / 2, view(this).height / 2, '', displayStyle(90, { color: UI.gold, stroke: '#14121c', strokeThickness: 9 })).setOrigin(0.5).setDepth(70);
 
     bindControls(this, {
       onDir: (d) => {
@@ -148,17 +148,20 @@ export class GameScene extends Phaser.Scene {
 
     ['ONE', 'TWO', 'THREE'].forEach((k, i) => this.input.keyboard?.on(`keydown-${k}`, () => this.draftUi.confirm(i)));
 
-    if (this.phone) this.phoneCameras();
+    if (this.phone) this.splitCameras(HUD_BAND * UNIT);
+    else if (GRID_H !== DESKTOP_GRID.h) this.splitCameras(0);
     this.restart();
   }
 
-  // ---------- telefon görünümü ----------
+  // ---------- ayrık kameralar (telefon, büyük arena) ----------
 
-  /** Arena göstergelerin altındaki alana bütünüyle sığar; arayüz ayrı kamerada sabit kalır. */
-  private phoneCameras() {
+  /**
+   * Arena kendi kamerasında top pikselin altındaki alana bütünüyle sığar; arayüz ayrı kamerada
+   * yerleşim boyutunda kalır. Telefonda top gösterge şeridi kadardır, şerit oyun alanını örtmez.
+   */
+  private splitCameras(top: number) {
     const world = this.cameras.main;
-    // Dünya göstergelerin altında başlar; şerit hiçbir zaman oyun alanını örtmez
-    world.setViewport(0, HUD_BAND * UNIT, this.scale.width, this.scale.height - HUD_BAND * UNIT);
+    world.setViewport(0, top, this.scale.width, this.scale.height - top);
     const ui = sharpen(this.cameras.add(0, 0, this.scale.width, this.scale.height));
     // Kamera kafileyi izlerse arenanın bir kısmı ekran dışında kalıyor ve yön duygusu kayboluyor
     world.setZoom(Math.min(world.width / (GRID_W * CELL), world.height / (GRID_H * CELL)));
@@ -320,7 +323,7 @@ export class GameScene extends Phaser.Scene {
         const color = ENEMIES[e.kind].color;
         const boss = !!ENEMIES[e.kind].boss;
         this.killView(this.enemyViews, e.id);
-        this.fx.puff(enemy?.x ?? px(e.pos.x), enemy?.y ?? px(e.pos.y), color, boss ? 60 : 14);
+        this.fx.puff(enemy?.x ?? px(e.pos.x), enemy?.y ?? px(e.pos.y), color, boss ? 40 : 8);
         if (boss) {
           this.fx.confetti(px(e.pos.x), px(e.pos.y), 60);
           this.shake(300, 0.012);
@@ -334,8 +337,8 @@ export class GameScene extends Phaser.Scene {
         audio.play('slash');
         break;
       case 'explosion':
-        this.oneShot(e.kind === 'cannon' ? FX.cannonBlast : FX.explosion, px(e.x), px(e.y), CELL * (e.radius * 2 + 1) * 0.9);
-        this.fx.puff(px(e.x), px(e.y), e.kind === 'cannon' ? 0xb8a890 : 0xff8a2b, 18);
+        this.oneShot(e.kind === 'cannon' ? FX.cannonBlast : FX.explosion, px(e.x), px(e.y), CELL * (e.radius * 2 + 1) * 0.7);
+        this.fx.puff(px(e.x), px(e.y), e.kind === 'cannon' ? 0xb8a890 : 0xff8a2b, 10);
         audio.play('explosion');
         break;
       case 'shockwaveWarn': {
@@ -378,7 +381,7 @@ export class GameScene extends Phaser.Scene {
         for (const v of this.heroViews.values()) v.flash(0xfff3c4, 160, 'tint');
         const leader = this.heroViews.get(this.world.party[0]?.id ?? -1);
         if (leader) this.fx.confetti(leader.x, leader.y, 30);
-        for (const v of this.heroViews.values()) this.popImage(FX.levelUp, v.x, v.y, CELL * 1.2);
+        for (const v of this.heroViews.values()) this.popImage(FX.levelUp, v.x, v.y, CELL * 0.8);
         audio.play('levelUp');
         break;
       }
@@ -455,7 +458,7 @@ export class GameScene extends Phaser.Scene {
           size: CELL - 10,
           shape: 'square',
           sprite: look.sprite,
-          spriteSize: CELL * 1.15 * look.scale,
+          spriteSize: CELL * look.scale,
           tint: look.tint,
         });
         this.heroViews.set(hero.id, view);
@@ -487,7 +490,7 @@ export class GameScene extends Phaser.Scene {
         const def = ENEMIES[enemy.kind];
         const boss = !!def.boss;
         const look = def.look;
-        const base = ENEMIES[look?.as ?? enemy.kind].boss ? 1.8 : 1.05;
+        const base = ENEMIES[look?.as ?? enemy.kind].boss ? 1.8 : 0.95;
         view = new UnitView(this, {
           color: def.color,
           glyph: def.glyph,
@@ -690,7 +693,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private slash(pos: Vec) {
-    this.oneShot(FX.slash, px(pos.x), px(pos.y), CELL * 1.1).setAngle(Phaser.Math.Between(-40, 40));
+    this.oneShot(FX.slash, px(pos.x), px(pos.y), CELL * 0.9).setAngle(Phaser.Math.Between(-40, 40));
   }
 
   private firstFrame(animKey: string) {
