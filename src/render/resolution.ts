@@ -1,15 +1,17 @@
 import type Phaser from 'phaser';
-import { CELL, GRID_H, GRID_W } from '../config';
+import { CELL, DESKTOP_GRID } from '../config';
 
 /** Masaüstü yerleşim boyutu ve oyun dünyasının (arena) boyutu. */
-export const LOGICAL_W = GRID_W * CELL;
-export const LOGICAL_H = GRID_H * CELL;
+export const LOGICAL_W = DESKTOP_GRID.w * CELL;
+export const LOGICAL_H = DESKTOP_GRID.h * CELL;
 
 const hasWindow = typeof window !== 'undefined';
 
 /** Yatay tutulan telefon: kısa kenarı küçük dokunmatik ekran (tabletler hariç). Açılışta belirlenir. */
 export const PHONE_LAYOUT =
-  hasWindow && window.matchMedia('(pointer: coarse)').matches && Math.min(window.innerWidth, window.innerHeight) < 500;
+  hasWindow &&
+  ((import.meta.env?.DEV && new URLSearchParams(window.location.search).has('phone')) ||
+    (window.matchMedia('(pointer: coarse)').matches && Math.min(window.innerWidth, window.innerHeight) < 500));
 
 /**
  * Tuvalin mantıksal boyuta oranı. Tuval ekranın gerçek piksel yoğunluğunda açılır, sahneler
@@ -30,13 +32,36 @@ export const UI_SCALE = PHONE_LAYOUT ? 1.2 : 1;
 /** Bir yerleşim biriminin tuval pikseli. */
 export const UNIT = RES * UI_SCALE;
 
-/** Telefonda tuval ekranın oranında açılır (yanlarda boşluk kalmaz); masaüstünde 16:10. */
+/** Çentik payları düşüldükten sonra tuvale kalan alan (CSS px, yatay). */
+function screenBox() {
+  const css = getComputedStyle(document.body);
+  const pad = (side: string) => parseFloat(css.getPropertyValue(`padding-${side}`)) || 0;
+  const w = window.innerWidth - pad('left') - pad('right');
+  const h = window.innerHeight - pad('top') - pad('bottom');
+  return { w: Math.max(w, h), h: Math.min(w, h) };
+}
+
+/** Telefonda tuval kalan alanın oranında açılır (siyah bant kalmaz); masaüstünde 16:10. */
 export const CANVAS = (() => {
   const height = LOGICAL_H * RES;
   if (!PHONE_LAYOUT) return { width: LOGICAL_W * RES, height };
-  const aspect = Math.max(window.innerWidth, window.innerHeight) / Math.min(window.innerWidth, window.innerHeight);
-  return { width: Math.round(height * Math.min(2.4, Math.max(LOGICAL_W / LOGICAL_H, aspect))), height };
+  const box = screenBox();
+  return { width: Math.round(height * Math.min(2.4, Math.max(LOGICAL_W / LOGICAL_H, box.w / box.h))), height };
 })();
+
+/** Telefon arenasının satır sayısı; kareler ekranda ~32 pt olur. */
+const PHONE_ROWS = 11;
+
+/**
+ * Telefonda masaüstü arenası ekrana ancak çok küçük karelerle sığıyor; satır sayısı sabit tutulur,
+ * sütunlar ekranın genişliğine göre seçilir.
+ */
+export function phoneGrid(hudBand: number) {
+  const box = screenBox();
+  const band = (hudBand * UI_SCALE * box.h) / LOGICAL_H;
+  const cell = (box.h - band) / PHONE_ROWS;
+  return { w: Math.max(16, Math.min(DESKTOP_GRID.w, Math.floor(box.w / cell))), h: PHONE_ROWS };
+}
 
 /** Yüksek çözünürlükte çizimler de daha büyük rasterleştirilir. */
 export const RASTER = UNIT >= 2 ? 3 : 2;

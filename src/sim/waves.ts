@@ -1,4 +1,4 @@
-import { GRID_H, GRID_W } from '../config';
+import { arenaRatio, GRID_H, GRID_W } from '../config';
 import {
   SAFE_SPAWN_DIST,
   SPAWN_RETRY_MS,
@@ -84,7 +84,7 @@ function rollWave(w: World, n: number): PendingSpawn[] {
   const minCost = Math.min(...kinds.map((k) => ENEMIES[k].cost));
   const bossWave = n % BOSS_EVERY === 0;
   const roster: EnemyKind[] = bossWave ? [bossAt(n, w.route)] : [];
-  const scaled = waveBudget(n) * w.mods.enemyCountMult;
+  const scaled = waveBudget(n) * w.mods.enemyCountMult * Math.min(1, arenaRatio());
   let budget = Math.floor(bossWave ? scaled / 2 : scaled);
   while (budget >= minCost) {
     const affordable = kinds.filter((k) => ENEMIES[k].cost <= budget);

@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
-import { CANVAS } from './render/resolution';
+import { setGrid } from './config';
+import { CANVAS, PHONE_LAYOUT, phoneGrid } from './render/resolution';
+import { HUD_BAND } from './ui/hud';
 import { audio } from './audio/audio';
 import { profile } from './meta/profile';
 import { isDesktop, toggleFullscreen } from './platform';
@@ -16,6 +18,11 @@ import { ShopScene } from './scenes/ShopScene';
 audio.configure(profile.data.settings);
 audio.unlockOnGesture();
 audio.preload();
+
+if (PHONE_LAYOUT) {
+  const grid = phoneGrid(HUD_BAND);
+  setGrid(grid.w, grid.h);
+}
 
 const game = new Phaser.Game({
   type: Phaser.AUTO,
