@@ -9,7 +9,7 @@ import type { SaveData } from '../meta/save';
 import { type Building, CAMP, CAMP_SLOTS, NARRATOR_ART } from '../render/sprites';
 import { buyGemUpgrade, nextGemCost, nextUpgradeCost, unlockHero, upgradeHero } from '../meta/shop';
 import { icon } from '../ui/assets';
-import { Button, enter, fmt, panel, pips, shake, slice, tab } from '../ui/kit';
+import { Button, enter, fit, fmt, panel, pips, shake, slice, tab } from '../ui/kit';
 import { backdrop, fadeIn, heroBadge, wallet } from '../ui/screen';
 import { displayStyle, textStyle, UI } from '../ui/theme';
 import { sharpen, view, visibleArea } from '../render/resolution';
@@ -179,42 +179,44 @@ export class ShopScene extends Phaser.Scene {
     const save = profile.data;
     // Efsanevi kahramanlar altınla açılmaz; destanı bitirene kadar listede yok
     const kinds = HERO_KINDS.filter((k) => !HEROES[k].legendary || save.unlocked.includes(k));
-    const rowH = Math.min(100, (PANEL.h - 30) / kinds.length);
+    // Can ve hasar aynı satırda yan yana; yedi kahraman da panele sığar
+    const rowH = Math.min(84, (PANEL.h - 24) / kinds.length);
     const top = PANEL.y - PANEL.h / 2 + 12 + rowH / 2;
     kinds.forEach((kind, i) => {
       const y = top + i * rowH;
       const def = HEROES[kind];
-      root.add(heroBadge(this, 150, y, kind, 64));
-      root.add(this.add.text(200, y - 12, def.name, displayStyle(25)).setOrigin(0, 0.5));
-      root.add(this.add.text(200, y + 15, def.role, textStyle(14, { color: UI.muted })).setOrigin(0, 0.5));
+      root.add(heroBadge(this, 130, y, kind, 56));
+      root.add(fit(this.add.text(168, y - 11, def.name, displayStyle(22)).setOrigin(0, 0.5), 170));
+      root.add(fit(this.add.text(168, y + 13, def.role, textStyle(13, { color: UI.muted })).setOrigin(0, 0.5), 170));
       if (i < kinds.length - 1) root.add(this.add.rectangle(PANEL.x, y + rowH / 2, PANEL.w - 64, 2, UI.panelEdge));
 
       if (!save.unlocked.includes(kind)) {
-        root.add(this.add.text(368, y, 'Kilidi açınca yükseltmeler burada görünür.', textStyle(16, { color: UI.muted })).setOrigin(0, 0.5));
+        root.add(this.add.text(360, y, 'Kilidi açınca yükseltmeler burada görünür.', textStyle(16, { color: UI.muted })).setOrigin(0, 0.5));
         const cost = UNLOCK_COST[kind];
-        const btn: Button = new Button(this, 912, y, `Kilidi aç · ${fmt(cost)}`, () => this.buy(btn, () => unlockHero(save, kind)), {
+        const btn: Button = new Button(this, 920, y, `Kilidi aç · ${fmt(cost)}`, () => this.buy(btn, () => unlockHero(save, kind)), {
           variant: 'primary',
-          width: 250,
-          height: 54,
-          fontSize: 21,
+          width: 230,
+          height: Math.min(54, rowH - 14),
+          fontSize: 19,
           icon: 'lock',
         });
         root.add(btn);
         return;
       }
-      this.statRow(root, kind, 'hp', 'Can', 'heart', y - 23);
-      this.statRow(root, kind, 'dmg', 'Hasar', 'sword', y + 23);
+      const btnH = Math.min(40, rowH - 26);
+      this.statRow(root, kind, 'hp', 'Can', 'heart', 350, y, btnH);
+      this.statRow(root, kind, 'dmg', 'Hasar', 'sword', 700, y, btnH);
     });
   }
 
-  private statRow(root: Phaser.GameObjects.Container, kind: HeroKind, stat: HeroStat, label: string, glyph: 'heart' | 'sword', y: number) {
+  private statRow(root: Phaser.GameObjects.Container, kind: HeroKind, stat: HeroStat, label: string, glyph: 'heart' | 'sword', x: number, y: number, btnH: number) {
     const save = profile.data;
     const level = save.upgrades[kind][stat];
-    root.add(this.add.image(380, y, icon(glyph)).setDisplaySize(18, 18));
-    root.add(this.add.text(396, y, label.toLocaleUpperCase('tr-TR'), textStyle(14, { color: UI.muted, fontStyle: '800' })).setOrigin(0, 0.5));
-    root.add(pips(this, 462, y, MAX_UPGRADE, level, 14, 5));
+    root.add(this.add.image(x, y, icon(glyph)).setDisplaySize(18, 18));
+    root.add(this.add.text(x + 14, y, label.toLocaleUpperCase('tr-TR'), textStyle(13, { color: UI.muted, fontStyle: '800' })).setOrigin(0, 0.5));
+    root.add(pips(this, x + 70, y, MAX_UPGRADE, level, 12, 3));
     const cost = nextUpgradeCost(save, kind, stat);
-    root.add(this.priceButton(720, y, cost, 'coin', 102, 40, (b) => this.buy(b, () => upgradeHero(save, kind, stat))));
+    root.add(this.priceButton(x + 280, y, cost, 'coin', 92, btnH, (b) => this.buy(b, () => upgradeHero(save, kind, stat))));
   }
 
   // ---------- Genel ----------

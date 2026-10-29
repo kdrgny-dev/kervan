@@ -60,7 +60,7 @@ export class CollectionScene extends Phaser.Scene {
     if (!open) c.add(this.add.image(-TILE_W / 2 + 34, 0, icon('lock')).setDisplaySize(24, 24));
 
     const tx = -TILE_W / 2 + 66;
-    const textW = TILE_W - 66 - 12;
+    const textW = TILE_W - 66 - 20;
     const name = this.add.text(tx, -32, open ? def.name : '???', displayStyle(15, { color: open ? UI.text : UI.dim })).setOrigin(0, 0.5);
     if (name.width > textW) name.setScale(textW / name.width);
     c.add(name);
@@ -68,7 +68,11 @@ export class CollectionScene extends Phaser.Scene {
     const dot = this.add.circle(tx + 5, -14, 4, color);
     c.add([dot, this.add.text(tx + 13, -14, tag, textStyle(11, { color: UI.muted })).setOrigin(0, 0.5)]);
     const body = open ? def.desc : `Açılış: Seviye ${CARD_UNLOCK_LEVEL[id] ?? '?'}`;
-    c.add(this.add.text(tx, -3, body, textStyle(12, { color: open ? UI.muted : UI.dim, wordWrap: { width: textW }, lineSpacing: -2 })).setOrigin(0, 0));
+    const bodyText = this.add.text(tx, -3, body, textStyle(12, { color: open ? UI.muted : UI.dim, wordWrap: { width: textW }, lineSpacing: -2 })).setOrigin(0, 0);
+    // Üç satırı aşan açıklama kartın altından taşmasın
+    const room = TILE_H / 2 - 14;
+    if (bodyText.height > room) bodyText.setScale(room / bodyText.height);
+    c.add(bodyText);
     return c;
   }
 }
