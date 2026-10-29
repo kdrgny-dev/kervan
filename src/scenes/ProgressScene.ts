@@ -222,8 +222,9 @@ export class ProgressScene extends Phaser.Scene {
     const w = 300;
     const h = 84;
     const x0 = PANEL.x - w - 14;
-    const y0 = PANEL.y - PANEL.h / 2 + 64;
-    this.add.text(PANEL.x + PANEL.w / 2 - 50, PANEL.y - PANEL.h / 2 - 26, `${got.length}/${ACHIEVEMENT_IDS.length}`, displayStyle(20, { color: UI.gold })).setOrigin(1, 0.5);
+    const y0 = PANEL.y - PANEL.h / 2 + 82;
+    // Sekmelerin üstüne binmesin, panelin içinde sağ üstte
+    this.add.text(PANEL.x + PANEL.w / 2 - 28, PANEL.y - PANEL.h / 2 + 26, `${got.length}/${ACHIEVEMENT_IDS.length}`, displayStyle(20, { color: UI.gold })).setOrigin(1, 0.5);
     ACHIEVEMENT_IDS.forEach((id, i) => {
       const def = ACHIEVEMENTS[id];
       const done = got.includes(id);

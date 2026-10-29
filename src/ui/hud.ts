@@ -13,8 +13,9 @@ import { displayStyle, UI } from './theme';
 import { view } from '../render/resolution';
 
 const DEPTH = 40;
-/** Telefonda göstergelerin oturduğu üst şeridin yüksekliği; oyun dünyası bunun altında başlar. */
-export const HUD_BAND = 68;
+/** Göstergelerin oturduğu üst şeridin yüksekliği; oyun dünyası bunun altında başlar. */
+export const HUD_BAND = 56;
+const MID = HUD_BAND / 2;
 /** Afişler oyun alanını kapatmasın diye küçük ve göstergelerin hemen altında. */
 const BANNER_SCALE = 0.7;
 const BANNER_Y = HUD_BAND + 52;
@@ -38,42 +39,38 @@ export class Hud {
   private powerKeys = '';
   private last = { gold: -1, gems: -1, level: -1 };
 
-  /** compact: telefon düzeni; her şey üst şeritte, oyun alanının üstüne binmez. */
+  /** Her şey üst şeritte; oyun alanının üstüne binmez. */
   constructor(
     private readonly scene: Phaser.Scene,
     onPause: () => void,
-    private readonly compact = false,
   ) {
     const { width, height } = view(scene);
     // Aynı derinlikte ilk eklenen en altta kalır; 40'ın altına inerse dünya kamerasına düşer
-    if (compact) scene.add.rectangle(0, 0, width, HUD_BAND, UI.bg).setOrigin(0).setDepth(DEPTH);
-    const pill = (caption: string, color?: string) => new Pill(scene, 16, 34, { caption, height: 42, color }).setDepth(DEPTH);
+    scene.add.rectangle(0, 0, width, HUD_BAND, UI.bg).setOrigin(0).setDepth(DEPTH);
+    const pill = (caption: string, color?: string) => new Pill(scene, 12, MID, { caption, height: 36, color }).setDepth(DEPTH);
     this.wave = pill('Dalga');
     this.party = pill('Kafile');
     this.foes = pill('Düşman', UI.danger);
 
-    const xpX = compact ? width / 2 : 602;
-    this.xp = new Bar(scene, xpX, 34, 310, 'xp').setDepth(DEPTH);
-    this.levelText = scene.add.text(0, 1, '1', displayStyle(20)).setOrigin(0.5);
+    const xpX = width / 2;
+    this.xp = new Bar(scene, xpX, MID, 280, 'xp').setDepth(DEPTH);
+    this.levelText = scene.add.text(0, 1, '1', displayStyle(17)).setOrigin(0.5);
     const disc = scene.add.graphics();
-    disc.fillStyle(0x3d74c9).fillCircle(0, 0, 21).lineStyle(3, 0x14121c).strokeCircle(0, 0, 21);
-    disc.lineStyle(2, 0x7fb3ec, 0.8).strokeCircle(0, 0, 17);
-    this.level = scene.add.container(xpX - 172, 34, [disc, this.levelText]).setDepth(DEPTH + 1);
+    disc.fillStyle(0x3d74c9).fillCircle(0, 0, 17).lineStyle(3, 0x14121c).strokeCircle(0, 0, 17);
+    disc.lineStyle(2, 0x7fb3ec, 0.8).strokeCircle(0, 0, 13);
+    this.level = scene.add.container(xpX - 156, MID, [disc, this.levelText]).setDepth(DEPTH + 1);
 
-    new Button(scene, width - 38, 34, '', onPause, { width: 52, height: 52, icon: 'pause', iconOnly: true }).setDepth(DEPTH);
-    this.gem = new Pill(scene, width - 76, 34, { icon: 'gem', align: 'right', height: 42 }).setDepth(DEPTH);
-    this.coin = new Pill(scene, width - 200, 34, { icon: 'coin', align: 'right', height: 42 }).setDepth(DEPTH);
+    new Button(scene, width - 32, MID, '', onPause, { width: 44, height: 44, icon: 'pause', iconOnly: true }).setDepth(DEPTH);
+    this.gem = new Pill(scene, width - 64, MID, { icon: 'gem', align: 'right', height: 36 }).setDepth(DEPTH);
+    this.coin = new Pill(scene, width - 180, MID, { icon: 'coin', align: 'right', height: 36 }).setDepth(DEPTH);
 
-    // Boss çubuğu seviye çubuğunun yerine geçer; oyun alanına taşmasın
-    const bossName = compact
-      ? scene.add.text(-196, 0, '', displayStyle(15)).setOrigin(1, 0.5).setStroke(UI.ink, 4).setName('bossName')
-      : scene.add.text(0, 0, '', displayStyle(15)).setOrigin(0.5).setStroke(UI.ink, 4).setName('bossName');
-    this.bossBar = new Bar(scene, 0, 0, compact ? 380 : 310, 'boss');
-    const bossParts = compact ? [bossName, this.bossBar] : [this.bossBar, bossName];
-    this.boss = scene.add.container(compact ? width / 2 + 60 : xpX, 34, bossParts).setDepth(DEPTH).setVisible(false);
+    // Boss çubuğu seviye çubuğunun yerine geçer
+    const bossName = scene.add.text(-196, 0, '', displayStyle(15)).setOrigin(1, 0.5).setStroke(UI.ink, 4).setName('bossName');
+    this.bossBar = new Bar(scene, 0, 0, 380, 'boss');
+    this.boss = scene.add.container(width / 2 + 60, MID, [bossName, this.bossBar]).setDepth(DEPTH).setVisible(false);
 
-    this.powers = scene.add.container(width / 2, height - 40).setDepth(DEPTH);
-    this.synergies = scene.add.container(compact ? xpX + 180 : 16, compact ? 34 : 84).setDepth(DEPTH);
+    this.powers = scene.add.container(width / 2, height - 34).setDepth(DEPTH);
+    this.synergies = scene.add.container(xpX + 166, MID).setDepth(DEPTH);
     this.toastText = scene.add.text(width / 2, BANNER_Y + 70, '', displayStyle(30)).setOrigin(0.5).setDepth(DEPTH + 2).setStroke(UI.ink, 8).setAlpha(0);
   }
 
@@ -113,7 +110,7 @@ export class Hud {
     } else if (!boss && this.boss.visible) this.boss.setVisible(false);
     this.xp.setVisible(!boss);
     this.level.setVisible(!boss);
-    if (this.compact) this.synergies.setVisible(!boss);
+    this.synergies.setVisible(!boss);
     if (boss) this.bossBar.setRatio(boss.hp / boss.maxHp);
 
     this.renderPowers(w, now);
@@ -128,19 +125,17 @@ export class Hud {
     if (key === this.synergyKey) return;
     this.synergyKey = key;
     this.synergies.removeAll(true);
-    // Telefonda şeritte yan yana, masaüstünde sol kenarda dar sütun
-    const room = this.compact ? Math.max(0, Math.floor((view(this.scene).width - 340 - this.synergies.x) / 92)) : active.length;
-    active.slice(0, this.compact ? Math.min(3, room) : room).forEach((c, i) => {
+    const room = Math.max(0, Math.floor((view(this.scene).width - 300 - this.synergies.x) / 80));
+    active.slice(0, Math.min(3, room)).forEach((c, i) => {
       const n = counts[c];
       const tier = n >= SYNERGY_TIERS[1] ? 2 : n >= SYNERGY_TIERS[0] ? 1 : 0;
-      const x = this.compact ? i * 92 : 0;
-      const y = this.compact ? 0 : i * 40;
+      const x = i * 80;
       const bg = this.scene.add.graphics();
-      bg.fillStyle(UI.panel2, this.compact ? 1 : 0.85).fillRoundedRect(x, y - 17, 84, 34, 17);
-      bg.lineStyle(2, tier > 0 ? UI.goldNum : UI.panelEdge).strokeRoundedRect(x, y - 17, 84, 34, 17);
-      const face = this.scene.add.image(x + 18, y, portrait(SYNERGIES[c].hero)).setDisplaySize(28, 28);
+      bg.fillStyle(UI.panel2).fillRoundedRect(x, -15, 74, 30, 15);
+      bg.lineStyle(2, tier > 0 ? UI.goldNum : UI.panelEdge).strokeRoundedRect(x, -15, 74, 30, 15);
+      const face = this.scene.add.image(x + 16, 0, portrait(SYNERGIES[c].hero)).setDisplaySize(24, 24);
       const label = tier === 2 ? `${n}★` : `${n}/${SYNERGY_TIERS[Math.min(tier, 1)]}`;
-      const count = this.scene.add.text(x + 74, y, label, displayStyle(16, { color: tier > 0 ? UI.gold : UI.text })).setOrigin(1, 0.5);
+      const count = this.scene.add.text(x + 66, 0, label, displayStyle(15, { color: tier > 0 ? UI.gold : UI.text })).setOrigin(1, 0.5);
       this.synergies.add([bg, face, count]);
     });
   }
@@ -155,10 +150,10 @@ export class Hud {
     const keys = active.join(',');
     if (keys !== this.powerKeys) {
       this.powers.removeAll(true);
-      const gap = 64;
+      const gap = 50;
       active.forEach((k, i) => {
         const x = (i - (active.length - 1) / 2) * gap;
-        const img = this.scene.add.image(x, 0, timers[k].icon).setDisplaySize(48, 48).setName(`icon:${k}`);
+        const img = this.scene.add.image(x, 0, timers[k].icon).setDisplaySize(38, 38).setName(`icon:${k}`);
         const secs = this.scene.add.text(x + 18, 18, '', displayStyle(15)).setOrigin(0.5).setStroke(UI.ink, 4).setName(`secs:${k}`);
         this.powers.add([img, secs]);
         if (!this.powerKeys.split(',').includes(k)) {

@@ -19,7 +19,7 @@ audio.configure(profile.data.settings);
 audio.unlockOnGesture();
 audio.preload();
 
-const grid = PHONE_LAYOUT ? phoneGrid(HUD_BAND) : desktopGrid();
+const grid = PHONE_LAYOUT ? phoneGrid(HUD_BAND) : desktopGrid(HUD_BAND);
 setGrid(grid.w, grid.h);
 
 const game = new Phaser.Game({

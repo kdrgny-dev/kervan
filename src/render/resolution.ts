@@ -69,15 +69,15 @@ const DESKTOP_MAX_ROWS = 20;
 
 /**
  * Büyük ekranda 24×15 arena sadece büyür, kafile ve düşmanlar yine aynı alana sıkışır.
- * Ekran izin verdikçe satır eklenir, en-boy 16:10 kalır.
+ * Ekran izin verdikçe satır eklenir; sütunlar gösterge şeridinin altında kalan alana göre seçilir.
  */
-export function desktopGrid() {
+export function desktopGrid(hudBand: number) {
   // Geliştirmede küçük pencerede denemek için: ?rows=20
   const forced = import.meta.env?.DEV ? Number(new URLSearchParams(window.location.search).get('rows')) : 0;
   const fit = Math.min(window.innerWidth / LOGICAL_W, window.innerHeight / LOGICAL_H);
   const rows = forced || Math.floor((LOGICAL_H * fit) / DESKTOP_CELL_CSS);
   const h = Math.min(DESKTOP_MAX_ROWS, Math.max(DESKTOP_GRID.h, rows));
-  return { w: Math.round((h * DESKTOP_GRID.w) / DESKTOP_GRID.h), h };
+  return { w: Math.round((h * LOGICAL_W) / (LOGICAL_H - hudBand)), h };
 }
 
 /** Yüksek çözünürlükte çizimler de daha büyük rasterleştirilir. */
