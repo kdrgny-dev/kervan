@@ -103,10 +103,11 @@ export class DraftOverlay {
     const color = RARITY_COLOR[cursed ? 'cursed' : def.rarity];
     const c = this.scene.add.container(x, y);
 
-    const glow = this.scene.add.graphics().setName('glow').setAlpha(0);
-    glow.lineStyle(8, color, 1).strokeRoundedRect(-CARD_W / 2 - 6, -CARD_H / 2 - 6, CARD_W + 12, CARD_H + 12, 24);
-    c.add(glow);
     c.add(slice(this.scene, 'ui.card', 0, 0, CARD_W, CARD_H));
+    // Seçim çerçevesi kartın kendi kenarına oturur; dışına ikinci bir çerçeve çizmez
+    const glow = this.scene.add.graphics().setName('glow').setAlpha(0);
+    glow.lineStyle(5, color, 1).strokeRoundedRect(-CARD_W / 2 + 6, -CARD_H / 2 + 6, CARD_W - 12, CARD_H - 12, 16);
+    c.add(glow);
     // NineSlice'a tint verilince WebGL'de kart hiç çizilmiyor; lanet rengi üst katmanla
     if (cursed) {
       const veil = this.scene.add.graphics();
@@ -153,7 +154,7 @@ export class DraftOverlay {
       const on = i === this.focus;
       const glow = v.getByName('glow') as Phaser.GameObjects.Graphics;
       this.scene.tweens.add({ targets: v, y: this.cardY - (on ? 12 : 0), duration: 140, ease: 'Quad.Out' });
-      glow.setAlpha(on ? 0.85 : 0);
+      glow.setAlpha(on ? 1 : 0);
     });
   }
 }

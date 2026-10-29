@@ -6,19 +6,22 @@ import { campaignUnlocked } from '../meta/progression';
 import { bindPad } from '../input/gamepad';
 import { profile } from '../meta/profile';
 import { icon, type IconName, portrait } from '../ui/assets';
-import { Button, enter, fmt, ribbon, shake, slice } from '../ui/kit';
+import { Button, enter, fit, fmt, ribbon, shake, slice } from '../ui/kit';
 import { backdrop, fadeIn, wallet } from '../ui/screen';
 import { displayStyle, textStyle, UI } from '../ui/theme';
 import { sharpen, view } from '../render/resolution';
 
-const CARD_H = 280;
+const CARD_H = 250;
 const GAP = 14;
+/** Kart çerçevesinin kalın kenarı; içerik bunun içinde kalır. */
+const INSET = 28;
+/** Can/hasar satırı ya da fiyatın kart içindeki yüksekliği. */
+const BOTTOM = CARD_H / 2 - 30;
 
 interface Card {
   root: Phaser.GameObjects.Container;
   frame: Phaser.GameObjects.NineSlice;
   selectedFrame?: Phaser.GameObjects.NineSlice;
-  glow?: Phaser.GameObjects.Graphics;
   tag?: Phaser.GameObjects.Container;
   baseY: number;
 }
@@ -27,8 +30,7 @@ export class HeroSelectScene extends Phaser.Scene {
   private selected: HeroKind = 'knight';
   private cards = new Map<HeroKind, Card>();
   private campaign: CampaignId = 'road';
-  /** Ekran genişledikçe kartlar da genişler (masaüstünde 168, telefonda 190'a kadar). */
-  private cardW = 168;
+  private cardW = 160;
 
   constructor() {
     super('heroSelect');
@@ -54,9 +56,9 @@ export class HeroSelectScene extends Phaser.Scene {
       this.add.text(width / 2, 122, `${c.name} · ${c.era}`, displayStyle(20, { color: UI.gold })).setOrigin(0.5);
     }
 
-    this.cardW = Math.min(190, Math.floor((width - 60) / HERO_KINDS.length - GAP));
+    this.cardW = Math.min(160, Math.floor((width - 60) / HERO_KINDS.length - GAP));
     const total = HERO_KINDS.length * this.cardW + (HERO_KINDS.length - 1) * GAP;
-    HERO_KINDS.forEach((kind, i) => this.card(kind, width / 2 - total / 2 + this.cardW / 2 + i * (this.cardW + GAP), 320, i));
+    HERO_KINDS.forEach((kind, i) => this.card(kind, width / 2 - total / 2 + this.cardW / 2 + i * (this.cardW + GAP), (150 + height - 130) / 2, i));
 
     new Button(this, 145, height - 90, 'Geri', () => this.back(), { width: 196, height: 64, icon: 'back' });
     new Button(this, width - 195, height - 86, 'Yola çık', () => this.start(), { variant: 'primary', width: 296, height: 76, fontSize: 34 });
@@ -82,32 +84,28 @@ export class HeroSelectScene extends Phaser.Scene {
     const up = save.upgrades[kind];
     const root = this.add.container(x, y);
 
-    let glow: Phaser.GameObjects.Graphics | undefined;
-    if (!locked) {
-      glow = this.add.graphics().setAlpha(0);
-      glow.lineStyle(8, UI.goldNum, 1).strokeRoundedRect(-this.cardW / 2 - 6, -CARD_H / 2 - 6, this.cardW + 12, CARD_H + 12, 22);
-    }
-    if (glow) root.add(glow);
     const frame = slice(this, locked ? 'ui.card_locked' : 'ui.card', 0, 0, this.cardW, CARD_H);
     root.add(frame);
     const selectedFrame = locked ? undefined : slice(this, 'ui.card_selected', 0, 0, this.cardW, CARD_H).setVisible(false);
     if (selectedFrame) root.add(selectedFrame);
 
-    const face = this.add.image(0, -58, portrait(kind)).setDisplaySize(148, 148);
+    const inner = this.cardW - INSET;
+    const faceSize = Math.min(120, inner);
+    const face = this.add.image(0, -CARD_H / 2 + 14 + faceSize / 2, portrait(kind)).setDisplaySize(faceSize, faceSize);
     root.add(face);
-    const name = this.add.text(0, 30, def.name, displayStyle(26)).setOrigin(0.5);
-    const role = this.add.text(0, 46, def.role, textStyle(13, { color: UI.muted, align: 'center', wordWrap: { width: this.cardW - 14 } })).setOrigin(0.5, 0);
+    const name = fit(this.add.text(0, 22, def.name, displayStyle(24)).setOrigin(0.5), inner);
+    const role = this.add.text(0, 38, def.role, textStyle(13, { color: UI.muted, align: 'center', wordWrap: { width: inner } })).setOrigin(0.5, 0);
     root.add([name, role]);
 
     if (locked) {
       face.setTint(0x55505f);
       name.setColor(UI.dim);
-      root.add(this.add.image(0, -50, icon('lock')).setDisplaySize(52, 52));
-      root.add(def.legendary ? this.add.text(0, 110, 'Destan ödülü', displayStyle(20, { color: UI.gold })).setOrigin(0.5) : this.price(kind));
+      root.add(this.add.image(0, face.y, icon('lock')).setDisplaySize(44, 44));
+      root.add(def.legendary ? fit(this.add.text(0, BOTTOM, 'Destan ödülü', displayStyle(17, { color: UI.gold })).setOrigin(0.5), inner) : this.price(kind));
     } else {
       const hp = Math.round(def.hp * (1 + UPGRADE_STEP * up.hp));
       const dmg = Math.round(def.dmg * (1 + UPGRADE_STEP * up.dmg));
-      root.add(this.stats(0, 110, [['heart', hp], ['sword', dmg], ['range', def.range]]));
+      root.add(this.stats(0, BOTTOM, [['heart', hp], ['sword', dmg], ['range', def.range]]));
     }
 
     let tag: Phaser.GameObjects.Container | undefined;
@@ -116,7 +114,7 @@ export class HeroSelectScene extends Phaser.Scene {
       const bg = this.add.graphics();
       bg.fillStyle(UI.goldNum).fillRoundedRect(-label.width / 2 - 8, -12, label.width + 16, 24, 6);
       bg.lineStyle(2, 0x7a4f19).strokeRoundedRect(-label.width / 2 - 8, -12, label.width + 16, 24, 6);
-      tag = this.add.container(this.cardW / 2 - 34, -CARD_H / 2 - 4, [bg, label]).setVisible(false);
+      tag = this.add.container(0, -CARD_H / 2, [bg, label]).setVisible(false);
       root.add(tag);
     }
 
@@ -129,7 +127,7 @@ export class HeroSelectScene extends Phaser.Scene {
     });
     root.add(zone);
 
-    this.cards.set(kind, { root, frame, selectedFrame, glow, tag, baseY: y });
+    this.cards.set(kind, { root, frame, selectedFrame, tag, baseY: y });
     enter(this, root, { y: 60 }, 80 + index * 50, 220);
   }
 
@@ -139,7 +137,7 @@ export class HeroSelectScene extends Phaser.Scene {
     const w = 26 + 8 + amount.width;
     coin.x = -w / 2 + 13;
     amount.x = coin.x + 21;
-    return this.add.container(0, 110, [coin, amount]);
+    return fit(this.add.container(0, BOTTOM, [coin, amount]), this.cardW - INSET);
   }
 
   private stats(x: number, y: number, items: [IconName, number][]) {
@@ -153,7 +151,7 @@ export class HeroSelectScene extends Phaser.Scene {
     }
     // Kahraman sayısı arttıkça kartlar daralıyor; satır kartın içinde kalsın
     const total = cx - 9;
-    const k = Math.min(1, (this.cardW - 14) / total);
+    const k = Math.min(1, (this.cardW - INSET) / total);
     return this.add.container(x - (total * k) / 2, y, parts).setScale(k);
   }
 
@@ -168,15 +166,10 @@ export class HeroSelectScene extends Phaser.Scene {
     for (const [kind, c] of this.cards) {
       const on = kind === this.selected;
       this.tweens.killTweensOf(c.root);
-      if (c.glow) this.tweens.killTweensOf(c.glow);
       c.selectedFrame?.setVisible(on);
       c.frame.setVisible(!(on && c.selectedFrame));
       c.tag?.setVisible(on);
-      this.tweens.add({ targets: c.root, y: c.baseY + (on ? -10 : 0), scale: on ? 1.04 : 1, alpha: 1, duration: 180, ease: 'Back.Out' });
-      if (c.glow) {
-        c.glow.setAlpha(0);
-        if (on) this.tweens.add({ targets: c.glow, alpha: { from: 0.35, to: 0.7 }, duration: 800, ease: 'Sine.InOut', yoyo: true, repeat: -1 });
-      }
+      this.tweens.add({ targets: c.root, y: c.baseY + (on ? -10 : 0), alpha: 1, duration: 180, ease: 'Back.Out' });
     }
   }
 

@@ -372,3 +372,9 @@ export function shake(scene: Phaser.Scene, target: Phaser.GameObjects.GameObject
   const x = t.x;
   scene.tweens.add({ targets: t, x: { from: x - 6, to: x + 6 }, duration: 40, yoyo: true, repeat: 2, ease: 'Sine.InOut', onComplete: () => (t.x = x) });
 }
+
+/** Yazı ya da satır verilen genişliği aşıyorsa küçülür; dar kartlarda taşmayı önler. */
+export function fit<T extends Phaser.GameObjects.Components.Transform & { width: number }>(obj: T, max: number) {
+  if (obj.width > max) obj.setScale(max / obj.width);
+  return obj;
+}

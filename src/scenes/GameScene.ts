@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { CELL, DESKTOP_GRID, GRID_H, GRID_W } from '../config';
+import { CELL, GRID_H, GRID_W } from '../config';
 import { PHONE_LAYOUT, RES, sharpen, UNIT, view } from '../render/resolution';
 import { SPAWN_WARN_MS } from '../data/balance';
 import { ENEMIES } from '../data/enemies';
@@ -107,7 +107,7 @@ export class GameScene extends Phaser.Scene {
     this.arena = drawArena(this).setDepth(-10);
     this.markers = new Map();
     this.fx = new Fx(this);
-    this.hud = new Hud(this, () => this.togglePause(), this.phone);
+    this.hud = new Hud(this, () => this.togglePause());
     this.draftUi = new DraftOverlay(this, {
       pick: (id) => {
         if (!pickCard(this.world, id)) return;
@@ -148,16 +148,15 @@ export class GameScene extends Phaser.Scene {
 
     ['ONE', 'TWO', 'THREE'].forEach((k, i) => this.input.keyboard?.on(`keydown-${k}`, () => this.draftUi.confirm(i)));
 
-    if (this.phone) this.splitCameras(HUD_BAND * UNIT);
-    else if (GRID_H !== DESKTOP_GRID.h) this.splitCameras(0);
+    this.splitCameras(HUD_BAND * UNIT);
     this.restart();
   }
 
-  // ---------- ayrık kameralar (telefon, büyük arena) ----------
+  // ---------- ayrık kameralar ----------
 
   /**
-   * Arena kendi kamerasında top pikselin altındaki alana bütünüyle sığar; arayüz ayrı kamerada
-   * yerleşim boyutunda kalır. Telefonda top gösterge şeridi kadardır, şerit oyun alanını örtmez.
+   * Arena kendi kamerasında gösterge şeridinin altındaki alana bütünüyle sığar; arayüz ayrı
+   * kamerada yerleşim boyutunda kalır, şerit oyun alanını örtmez.
    */
   private splitCameras(top: number) {
     const world = this.cameras.main;

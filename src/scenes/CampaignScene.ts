@@ -90,9 +90,10 @@ export class CampaignScene extends Phaser.Scene {
     const locked = !campaignUnlocked(save, id);
     const root = this.add.container(x, y).setScale(this.cardScale);
 
+    // Seçim çerçevesi kartın kendi kenarına oturur; dışına ikinci bir çerçeve çizmez
     const glow = this.add.graphics().setAlpha(0);
-    glow.lineStyle(8, UI.goldNum, 1).strokeRoundedRect(-CARD_W / 2 - 6, -this.cardH / 2 - 6, CARD_W + 12, this.cardH + 12, 22);
-    root.add([glow, slice(this, 'ui.panel', 0, 0, CARD_W, this.cardH).setAlpha(locked ? 0.6 : 1)]);
+    glow.lineStyle(5, UI.goldNum, 1).strokeRoundedRect(-CARD_W / 2 + 2, -this.cardH / 2 + 2, CARD_W - 4, this.cardH - 4, 16);
+    root.add([slice(this, 'ui.panel', 0, 0, CARD_W, this.cardH).setAlpha(locked ? 0.6 : 1), glow]);
 
     const top = -this.cardH / 2 + 18;
     root.add(this.cover(CAMPAIGN_ART.covers[id], 0, top + COVER_H / 2, locked));
@@ -182,8 +183,7 @@ export class CampaignScene extends Phaser.Scene {
       const on = id === this.selected;
       this.tweens.killTweensOf([c.root, c.glow]);
       this.tweens.add({ targets: c.root, y: this.cardY + (on ? -10 : 0), scale: (on ? 1.03 : 1) * this.cardScale, alpha: 1, duration: 180, ease: 'Back.Out' });
-      c.glow.setAlpha(0);
-      if (on) this.tweens.add({ targets: c.glow, alpha: { from: 0.35, to: 0.7 }, duration: 800, ease: 'Sine.InOut', yoyo: true, repeat: -1 });
+      c.glow.setAlpha(on ? 1 : 0);
     }
   }
 
