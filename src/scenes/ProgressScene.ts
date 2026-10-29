@@ -29,13 +29,15 @@ function untilMidnight(now = new Date()) {
 
 export class ProgressScene extends Phaser.Scene {
   private tab: Tab = 'quests';
+  private page = 0;
 
   constructor() {
     super('progress');
   }
 
-  init(data: { tab?: Tab }) {
+  init(data: { tab?: Tab; page?: number }) {
     this.tab = data.tab ?? 'map';
+    this.page = data.page ?? 0;
   }
 
   create() {
@@ -116,7 +118,8 @@ export class ProgressScene extends Phaser.Scene {
   // ---------- Günlük ----------
 
   private journal() {
-    const seen = STORY_ORDER.filter((id) => profile.data.story.seen.includes(id));
+    // En yeni anlatılan en üstte
+    const seen = profile.data.story.seen.filter((id) => STORY_ORDER.includes(id)).reverse();
     const dialog = new StoryDialog(this);
     const top = PANEL.y - PANEL.h / 2;
     this.add.text(PANEL.x, top + 44, 'Kervanbaşının anlattıkları · okumak için tıkla', textStyle(15, { color: UI.muted })).setOrigin(0.5);
@@ -127,7 +130,11 @@ export class ProgressScene extends Phaser.Scene {
     const cols = 2;
     const w = 440;
     const h = 64;
-    seen.forEach((id, i) => {
+    // Panele sığan kadar satır; fazlası sayfalara bölünür
+    const perPage = cols * 5;
+    const pages = Math.ceil(seen.length / perPage);
+    const page = Math.min(pages - 1, this.page);
+    seen.slice(page * perPage, (page + 1) * perPage).forEach((id, i) => {
       const x = PANEL.x - w / 2 - 10 + (i % cols) * (w + 20);
       const y = top + 100 + Math.floor(i / cols) * (h + 10);
       const c = this.add.container(x, y);
@@ -141,6 +148,12 @@ export class ProgressScene extends Phaser.Scene {
       zone.on('pointerup', () => !dialog.open && dialog.play([id], () => undefined));
       c.add(zone);
     });
+    if (pages < 2) return;
+    const y = top + PANEL.h - 44;
+    const go = (p: number) => this.scene.restart({ tab: 'journal', page: p });
+    if (page > 0) new Button(this, PANEL.x - 170, y, 'Önceki', () => go(page - 1), { width: 150, height: 44, fontSize: 18 });
+    if (page < pages - 1) new Button(this, PANEL.x + 170, y, 'Sonraki', () => go(page + 1), { width: 150, height: 44, fontSize: 18 });
+    this.add.text(PANEL.x, y, `${page + 1} / ${pages}`, displayStyle(18, { color: UI.muted })).setOrigin(0.5);
   }
 
   // ---------- Görevler ----------
